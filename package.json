@@ -1,0 +1,14 @@
+{
+  "name": "pokemon-scraper",
+  "version": "0.1.0",
+  "description": "Scraper pour lots cartes Pokemon (Wizards)",
+  "main": "scraper.js",
+  "scripts": {
+    "start": "node scraper.js"
+  },
+  "dependencies": {
+    "puppeteer-extra": "^3.2.3",
+    "puppeteer-extra-plugin-stealth": "^2.11.1",
+    "puppeteer": "^25.1.0"
+  }
+}

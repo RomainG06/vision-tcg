@@ -1,106 +1,109 @@
-import Database from 'better-sqlite3';
-
-const DB_PATH = process.env.DB_PATH || './dev.db';
+import { initDatabase, run } from './database.js';
+import { logger } from '../utils/logger.js';
 
 /**
  * Seed database with sample data for testing
  */
-export function seed() {
-  const db = new Database(DB_PATH);
+export async function seed() {
+  logger.info('Seeding database with sample data...');
   
-  console.log('Seeding database...');
+  await initDatabase();
   
-  try {
-    // Create a sample scrape run
-    const runResult = db.prepare(`
-      INSERT INTO scrape_runs (started_at, completed_at, status, source, query, total_found)
-      VALUES (datetime('now'), datetime('now'), 'completed', 'leboncoin', 'pokemon wizards', 3)
-    `).run();
-    
-    const scrapeRunId = runResult.lastInsertRowid;
-    
-    // Insert sample listings
-    const listings = [
-      {
-        scrape_run_id: scrapeRunId,
-        source: 'leboncoin',
-        external_id: 'lbc_123',
-        url: 'https://leboncoin.fr/ad/123',
-        title: 'Lot cartes Pokemon Wizards Base Set Française',
-        description: 'Beau lot de 150 cartes Pokemon édition Wizards en français',
-        price: 80,
-        location: 'Nice',
-        lat: 43.7102,
-        lon: 7.2620,
-        distance_km: 0,
-        score: 95.5,
-        is_wizards: 1,
-        is_french: 1,
-        is_lot: 1,
-        card_count_estimate: 150
-      },
-      {
-        scrape_run_id: scrapeRunId,
-        source: 'vinted',
-        external_id: 'vinted_456',
-        url: 'https://vinted.fr/items/456',
-        title: 'Cartes Pokémon Jungle et Fossil',
-        description: 'Quelques cartes des extensions Jungle et Fossil',
-        price: 25,
-        location: 'Antibes',
-        lat: 43.5808,
-        lon: 7.1239,
-        distance_km: 15,
-        score: 72.3,
-        is_wizards: 1,
-        is_french: 0,
-        is_lot: 0,
-        card_count_estimate: 30
-      },
-      {
-        scrape_run_id: scrapeRunId,
-        source: 'leboncoin',
-        external_id: 'lbc_789',
-        url: 'https://leboncoin.fr/ad/789',
-        title: 'Collection Pokemon moderne',
-        description: 'Cartes récentes Épée et Bouclier',
-        price: 120,
-        location: 'Cannes',
-        lat: 43.5528,
-        lon: 7.0174,
-        distance_km: 25,
-        score: 15.2,
-        is_wizards: 0,
-        is_french: 1,
-        is_lot: 1,
-        card_count_estimate: 200
-      }
-    ];
-    
-    const insertStmt = db.prepare(`
+  // Insert sample listings
+  const sampleListings = [
+    {
+      url: 'https://www.leboncoin.fr/example1',
+      source: 'leboncoin',
+      title: 'Lot 150 cartes Pokemon Wizards Base Set Jungle Fossil FR',
+      description: 'Collection complète de cartes Wizards en français. Bon état.',
+      price: 80,
+      location: 'Nice',
+      latitude: 43.7102,
+      longitude: 7.2620,
+      image_url: 'https://example.com/image1.jpg',
+      posted_at: new Date().toISOString(),
+      is_wizards: 1,
+      is_french: 1,
+      is_lot: 1,
+      card_count_estimate: 150,
+      distance_km: 0,
+      score: 92
+    },
+    {
+      url: 'https://www.leboncoin.fr/example2',
+      source: 'leboncoin',
+      title: 'Cartes Pokemon modernes Épée et Bouclier',
+      description: 'Lot de cartes récentes',
+      price: 30,
+      location: 'Antibes',
+      latitude: 43.5808,
+      longitude: 7.1239,
+      posted_at: new Date().toISOString(),
+      is_wizards: 0,
+      is_french: 1,
+      is_lot: 1,
+      card_count_estimate: 50,
+      distance_km: 15,
+      score: 35
+    },
+    {
+      url: 'https://www.vinted.fr/example3',
+      source: 'vinted',
+      title: 'Pokemon Base Set Dracaufeu Holo FR',
+      description: 'Charizard première édition français',
+      price: 450,
+      location: 'Cannes',
+      latitude: 43.5513,
+      longitude: 7.0128,
+      posted_at: new Date().toISOString(),
+      is_wizards: 1,
+      is_french: 1,
+      is_lot: 0,
+      card_count_estimate: 1,
+      distance_km: 25,
+      score: 78
+    }
+  ];
+  
+  for (const listing of sampleListings) {
+    run(`
       INSERT INTO listings (
-        scrape_run_id, source, external_id, url, title, description,
-        price, location, lat, lon, distance_km,
-        score, is_wizards, is_french, is_lot, card_count_estimate
-      ) VALUES (
-        @scrape_run_id, @source, @external_id, @url, @title, @description,
-        @price, @location, @lat, @lon, @distance_km,
-        @score, @is_wizards, @is_french, @is_lot, @card_count_estimate
-      )
-    `);
-    
-    listings.forEach(listing => insertStmt.run(listing));
-    
-    console.log(`✅ Seeded ${listings.length} sample listings`);
-  } catch (error) {
-    console.error('❌ Seeding failed:', error);
-    throw error;
-  } finally {
-    db.close();
+        url, source, title, description, price, location,
+        latitude, longitude, image_url, posted_at,
+        is_wizards, is_french, is_lot, card_count_estimate,
+        distance_km, score, status
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'new')
+    `, [
+      listing.url,
+      listing.source,
+      listing.title,
+      listing.description,
+      listing.price,
+      listing.location,
+      listing.latitude,
+      listing.longitude,
+      listing.image_url,
+      listing.posted_at,
+      listing.is_wizards,
+      listing.is_french,
+      listing.is_lot,
+      listing.card_count_estimate,
+      listing.distance_km,
+      listing.score
+    ]);
   }
-}
-
-// Run if called directly
-if (import.meta.url === `file://${process.argv[1]}`) {
-  seed();
+  
+  // Insert a sample scrape run
+  run(`
+    INSERT INTO scrape_runs (started_at, completed_at, status, total_found, errors_count)
+    VALUES (?, ?, 'completed', 3, 0)
+  `, [new Date().toISOString(), new Date().toISOString()]);
+  
+  // Insert sample keywords
+  const keywords = ['wizards', 'base set', 'jungle', 'fossil', 'neo', 'première édition', 'édition 1'];
+  for (const keyword of keywords) {
+    run(`INSERT INTO keywords (keyword, priority) VALUES (?, 5)`, [keyword]);
+  }
+  
+  logger.info('Database seeded successfully');
 }

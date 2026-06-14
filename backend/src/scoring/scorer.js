@@ -1,4 +1,4 @@
-import Database from 'better-sqlite3';
+import { all } from '../db/database.js';
 import { config } from '../utils/config.js';
 
 /**
@@ -10,10 +10,8 @@ export function scoreListing(listing) {
   let score = 0;
   const text = `${listing.title} ${listing.description || ''}`.toLowerCase();
   
-  // Get keywords from database
-  const db = new Database(config.database.path);
-  const keywords = db.prepare('SELECT keyword, category, weight FROM keywords').all();
-  db.close();
+  // Load keywords from database
+  const keywords = all('SELECT keyword FROM keywords WHERE priority >= 3');
   
   // 1. Wizards edition detection (0-40 points)
   const wizardsKeywords = keywords.filter(k => k.category === 'wizards' || k.category === 'edition');

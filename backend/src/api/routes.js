@@ -1,9 +1,27 @@
 import { Router } from 'express';
-import Database from 'better-sqlite3';
-import { config } from '../utils/config.js';
+import { all, get as getOne, run } from '../db/database.js';
 import { logger } from '../utils/logger.js';
 
 export const router = Router();
+
+/**
+ * GET /api/docs - API documentation
+ */
+router.get('/docs', (req, res) => {
+  res.json({
+    version: '1.0.0',
+    description: 'Vision TCG API - Détection et scoring de lots Pokemon',
+    endpoints: [
+      { method: 'GET', path: '/health', description: 'Health check' },
+      { method: 'GET', path: '/api/docs', description: 'This documentation' },
+      { method: 'GET', path: '/api/listings', description: 'List all listings with filters' },
+      { method: 'GET', path: '/api/listings/:id', description: 'Get single listing' },
+      { method: 'PATCH', path: '/api/listings/:id', description: 'Update listing' },
+      { method: 'GET', path: '/api/scrape-runs', description: 'Get scrape runs history' },
+      { method: 'GET', path: '/api/stats', description: 'Get statistics' }
+    ]
+  });
+});
 
 /**
  * GET /api/listings
@@ -20,8 +38,6 @@ router.get('/listings', (req, res) => {
       limit = 50,
       offset = 0
     } = req.query;
-    
-    const db = new Database(config.database.path, { readonly: true });
     
     let query = 'SELECT * FROM listings WHERE 1=1';
     const params = [];
@@ -54,18 +70,16 @@ router.get('/listings', (req, res) => {
     query += ' ORDER BY score DESC, scraped_at DESC LIMIT ? OFFSET ?';
     params.push(parseInt(limit), parseInt(offset));
     
-    const listings = db.prepare(query).all(...params);
+    const listings = all(query, params);
     
-    const total = db.prepare('SELECT COUNT(*) as count FROM listings WHERE 1=1').get();
-    
-    db.close();
+    const totalResult = getOne('SELECT COUNT(*) as count FROM listings WHERE 1=1');
     
     res.json({
       listings,
       pagination: {
         limit: parseInt(limit),
         offset: parseInt(offset),
-        total: total.count
+        total: totalResult ? totalResult.count : 0
       }
     });
   } catch (error) {
@@ -80,9 +94,7 @@ router.get('/listings', (req, res) => {
  */
 router.get('/listings/:id', (req, res) => {
   try {
-    const db = new Database(config.database.path, { readonly: true });
-    const listing = db.prepare('SELECT * FROM listings WHERE id = ?').get(req.params.id);
-    db.close();
+    const listing = getOne('SELECT * FROM listings WHERE id = ?', [req.params.id]);
     
     if (!listing) {
       return res.status(404).json({ error: 'Listing not found' });
@@ -102,7 +114,6 @@ router.get('/listings/:id', (req, res) => {
 router.patch('/listings/:id', (req, res) => {
   try {
     const { status, notes } = req.body;
-    const db = new Database(config.database.path);
     
     const updates = [];
     const params = [];
@@ -118,25 +129,16 @@ router.patch('/listings/:id', (req, res) => {
     }
     
     if (updates.length === 0) {
-      db.close();
       return res.status(400).json({ error: 'No updates provided' });
     }
     
+    updates.push('updated_at = ?');
+    params.push(new Date().toISOString());
     params.push(req.params.id);
     
-    const result = db.prepare(`
-      UPDATE listings 
-      SET ${updates.join(', ')} 
-      WHERE id = ?
-    `).run(...params);
+    run(`UPDATE listings SET ${updates.join(', ')} WHERE id = ?`, params);
     
-    if (result.changes === 0) {
-      db.close();
-      return res.status(404).json({ error: 'Listing not found' });
-    }
-    
-    const updated = db.prepare('SELECT * FROM listings WHERE id = ?').get(req.params.id);
-    db.close();
+    const updated = getOne('SELECT * FROM listings WHERE id = ?', [req.params.id]);
     
     res.json(updated);
   } catch (error) {
@@ -147,17 +149,16 @@ router.patch('/listings/:id', (req, res) => {
 
 /**
  * GET /api/scrape-runs
- * Get scraping run history
+ * Get scraping runs history
  */
 router.get('/scrape-runs', (req, res) => {
   try {
-    const db = new Database(config.database.path, { readonly: true });
-    const runs = db.prepare(`
-      SELECT * FROM scrape_runs 
-      ORDER BY started_at DESC 
-      LIMIT 50
-    `).all();
-    db.close();
+    const { limit = 20 } = req.query;
+    
+    const runs = all(
+      'SELECT * FROM scrape_runs ORDER BY started_at DESC LIMIT ?',
+      [parseInt(limit)]
+    );
     
     res.json({ runs });
   } catch (error) {
@@ -168,52 +169,43 @@ router.get('/scrape-runs', (req, res) => {
 
 /**
  * GET /api/stats
- * Get summary statistics
+ * Get statistics
  */
 router.get('/stats', (req, res) => {
   try {
-    const db = new Database(config.database.path, { readonly: true });
+    const total = getOne('SELECT COUNT(*) as count FROM listings');
+    const wizards = getOne('SELECT COUNT(*) as count FROM listings WHERE is_wizards = 1');
+    const french = getOne('SELECT COUNT(*) as count FROM listings WHERE is_french = 1');
+    const highScore = getOne('SELECT COUNT(*) as count FROM listings WHERE score >= 70');
+    const avgScore = getOne('SELECT AVG(score) as avg FROM listings');
+    const avgPrice = getOne('SELECT AVG(price) as avg FROM listings');
     
-    const stats = {
-      total_listings: db.prepare('SELECT COUNT(*) as count FROM listings').get().count,
-      by_status: db.prepare(`
-        SELECT status, COUNT(*) as count 
-        FROM listings 
-        GROUP BY status
-      `).all(),
-      by_source: db.prepare(`
-        SELECT source, COUNT(*) as count 
-        FROM listings 
-        GROUP BY source
-      `).all(),
-      avg_score: db.prepare('SELECT AVG(score) as avg FROM listings').get().avg,
-      high_score_count: db.prepare('SELECT COUNT(*) as count FROM listings WHERE score >= 70').get().count,
-      wizards_count: db.prepare('SELECT COUNT(*) as count FROM listings WHERE is_wizards = 1').get().count
-    };
+    const byStatus = all(`
+      SELECT status, COUNT(*) as count 
+      FROM listings 
+      GROUP BY status
+    `);
     
-    db.close();
+    const bySource = all(`
+      SELECT source, COUNT(*) as count 
+      FROM listings 
+      GROUP BY source
+    `);
     
-    res.json(stats);
+    res.json({
+      total_listings: total ? total.count : 0,
+      wizards_count: wizards ? wizards.count : 0,
+      french_count: french ? french.count : 0,
+      high_score_count: highScore ? highScore.count : 0,
+      avg_score: avgScore ? avgScore.avg : 0,
+      avg_price: avgPrice ? avgPrice.avg : 0,
+      by_status: byStatus,
+      by_source: bySource
+    });
   } catch (error) {
     logger.error('Error fetching stats:', error);
     res.status(500).json({ error: error.message });
   }
 });
 
-/**
- * GET /api/docs
- * Simple API documentation
- */
-router.get('/docs', (req, res) => {
-  res.json({
-    version: '1.0.0',
-    endpoints: {
-      'GET /api/listings': 'List all listings with filters',
-      'GET /api/listings/:id': 'Get single listing',
-      'PATCH /api/listings/:id': 'Update listing status/notes',
-      'GET /api/scrape-runs': 'Get scraping history',
-      'GET /api/stats': 'Get summary statistics',
-      'GET /health': 'Health check'
-    }
-  });
-});
+export default router;

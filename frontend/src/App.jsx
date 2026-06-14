@@ -1,131 +1,292 @@
 import { useState, useEffect } from 'react';
-import { fetchListings, fetchStats } from './services/api';
-import LotList from './components/LotList';
 import FilterBar from './components/FilterBar';
+import LotList from './components/LotList';
+import api from './services/api';
+import theme from './theme';
 
 function App() {
   const [listings, setListings] = useState([]);
+  const [filteredListings, setFilteredListings] = useState([]);
   const [stats, setStats] = useState(null);
   const [filters, setFilters] = useState({
-    status: 'new',
+    status: 'all',
     minScore: 0,
     maxPrice: 1500,
-    maxDistance: 50
+    maxDistance: 50,
   });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  // Load initial data
   useEffect(() => {
     loadData();
-  }, [filters]);
+  }, []);
+
+  // Apply filters
+  useEffect(() => {
+    applyFilters();
+  }, [listings, filters]);
 
   const loadData = async () => {
-    setLoading(true);
     try {
+      setLoading(true);
       const [listingsData, statsData] = await Promise.all([
-        fetchListings(filters),
-        fetchStats()
+        api.getListings(),
+        api.getStats(),
       ]);
-      setListings(listingsData.listings);
+      setListings(listingsData);
       setStats(statsData);
-    } catch (error) {
-      console.error('Failed to load data:', error);
+    } catch (err) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
+  const applyFilters = () => {
+    let filtered = [...listings];
+
+    if (filters.status !== 'all') {
+      filtered = filtered.filter(l => l.status === filters.status);
+    }
+
+    filtered = filtered.filter(l =>
+      l.score >= filters.minScore &&
+      l.price <= filters.maxPrice &&
+      l.distance_km <= filters.maxDistance
+    );
+
+    setFilteredListings(filtered);
+  };
+
+  const handleFilterChange = (newFilters) => {
+    setFilters({ ...filters, ...newFilters });
+  };
+
+  const handleListingUpdate = async (id, updates) => {
+    try {
+      await api.updateListing(id, updates);
+      await loadData();
+    } catch (err) {
+      console.error('Failed to update listing:', err);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div style={styles.loading}>
+        <div style={styles.loadingSpinner}></div>
+        <div style={styles.loadingText}>Chargement des annonces...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={styles.error}>
+        <div style={styles.errorIcon}>⚠️</div>
+        <div style={styles.errorText}>Erreur: {error}</div>
+        <button style={styles.errorButton} onClick={loadData}>
+          Réessayer
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div style={styles.container}>
+    <div style={styles.app}>
       <header style={styles.header}>
-        <h1 style={styles.title}>🎴 Vision TCG</h1>
-        <p style={styles.subtitle}>Détection de lots Pokémon Wizards</p>
+        <div style={styles.headerContent}>
+          <h1 style={styles.title}>
+            <span style={styles.titleIcon}>🃏</span> Vision TCG
+          </h1>
+          <p style={styles.subtitle}>
+            Détection et priorisation de lots de cartes{' '}
+            <span style={styles.subtitleHighlight}>Pokémon Wizards</span>
+          </p>
+        </div>
       </header>
 
-      {stats && (
-        <div style={styles.stats}>
-          <div style={styles.statCard}>
-            <div style={styles.statValue}>{stats.total_listings}</div>
-            <div style={styles.statLabel}>Annonces totales</div>
-          </div>
-          <div style={styles.statCard}>
-            <div style={styles.statValue}>{stats.wizards_count}</div>
-            <div style={styles.statLabel}>Wizards détectés</div>
-          </div>
-          <div style={styles.statCard}>
-            <div style={styles.statValue}>{stats.high_score_count}</div>
-            <div style={styles.statLabel}>Score &gt; 70</div>
-          </div>
-          <div style={styles.statCard}>
-            <div style={styles.statValue}>
-              {stats.avg_score ? Math.round(stats.avg_score) : 0}
+      <div style={styles.container}>
+        <FilterBar filters={filters} onChange={handleFilterChange} />
+
+        {stats && (
+          <div style={styles.stats}>
+            <div style={styles.statCard}>
+              <div style={styles.statLabel}>Total annonces</div>
+              <div style={styles.statValue}>{stats.total_listings || 0}</div>
             </div>
-            <div style={styles.statLabel}>Score moyen</div>
+            <div style={styles.statCard}>
+              <div style={styles.statLabel}>Score moyen</div>
+              <div style={styles.statValue}>
+                {stats.avg_score ? stats.avg_score.toFixed(1) : '0'}
+              </div>
+            </div>
+            <div style={styles.statCard}>
+              <div style={styles.statLabel}>Prix moyen</div>
+              <div style={styles.statValue}>
+                {stats.avg_price ? Math.round(stats.avg_price) : '0'}€
+              </div>
+            </div>
+            <div style={styles.statCard}>
+              <div style={styles.statLabel}>Wizards FR</div>
+              <div style={styles.statValue}>
+                {stats.wizards_count || 0}
+              </div>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <FilterBar filters={filters} onChange={setFilters} />
-
-      {loading ? (
-        <div style={styles.loading}>Chargement...</div>
-      ) : (
-        <LotList listings={listings} onUpdate={loadData} />
-      )}
+        <LotList
+          listings={filteredListings}
+          onUpdate={handleListingUpdate}
+        />
+      </div>
     </div>
   );
 }
 
 const styles = {
-  container: {
-    maxWidth: '1200px',
-    margin: '0 auto',
-    padding: '20px'
+  app: {
+    minHeight: '100vh',
+    background: `linear-gradient(135deg, ${theme.colors.neutral.bgDark} 0%, ${theme.colors.neutral.bgCard} 100%)`,
+    fontFamily: theme.typography.fonts.primary,
+    color: theme.colors.neutral.textPrimary,
+    padding: theme.spacing.xl,
   },
   header: {
     textAlign: 'center',
-    marginBottom: '30px',
-    padding: '20px',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    borderRadius: '10px',
-    color: 'white'
+    marginBottom: theme.spacing.xxxl,
+    paddingBottom: theme.spacing.xl,
+    borderBottom: `${theme.borders.widthMedium} solid ${theme.colors.primary.arcanePurpleLight}`,
+    boxShadow: `0 4px 12px rgba(124, 58, 237, 0.2)`,
+  },
+  headerContent: {
+    maxWidth: '1400px',
+    margin: '0 auto',
   },
   title: {
-    fontSize: '2.5rem',
-    marginBottom: '10px'
+    fontFamily: theme.typography.fonts.fantasy,
+    fontSize: theme.typography.sizes.display,
+    fontWeight: theme.typography.weights.bold,
+    marginBottom: theme.spacing.sm,
+    color: theme.colors.neutral.textPrimary,
+    textShadow: theme.shadows.glowMagic,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: theme.spacing.lg,
+  },
+  titleIcon: {
+    fontSize: '48px',
+    filter: 'drop-shadow(0 0 12px rgba(255, 215, 0, 0.6))',
   },
   subtitle: {
-    fontSize: '1.1rem',
-    opacity: 0.9
+    fontSize: theme.typography.sizes.bodyLg,
+    color: theme.colors.neutral.textSecondary,
+    marginTop: theme.spacing.sm,
+  },
+  subtitleHighlight: {
+    color: theme.colors.accent.manaBlue,
+    fontWeight: theme.typography.weights.semibold,
+  },
+  container: {
+    maxWidth: '1400px',
+    margin: '0 auto',
   },
   stats: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '15px',
-    marginBottom: '30px'
+    gap: theme.spacing.xl,
+    marginBottom: theme.spacing.xxxl,
   },
   statCard: {
-    background: 'white',
-    padding: '20px',
-    borderRadius: '8px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    textAlign: 'center'
-  },
-  statValue: {
-    fontSize: '2rem',
-    fontWeight: 'bold',
-    color: '#667eea'
+    background: theme.colors.neutral.bgCard,
+    border: `${theme.borders.widthMedium} solid ${theme.colors.primary.arcanePurpleLight}`,
+    borderRadius: theme.borders.radiusLg,
+    padding: theme.spacing.xl,
+    textAlign: 'center',
+    boxShadow: theme.shadows.md,
+    transition: `all ${theme.effects.transitionNormal}`,
   },
   statLabel: {
-    fontSize: '0.9rem',
-    color: '#666',
-    marginTop: '5px'
+    fontSize: theme.typography.sizes.bodySm,
+    color: theme.colors.neutral.textSecondary,
+    fontWeight: theme.typography.weights.semibold,
+    marginBottom: theme.spacing.sm,
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+  },
+  statValue: {
+    fontSize: theme.typography.sizes.headingLg,
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.accent.enchantGold,
+    textShadow: theme.shadows.glowRune,
   },
   loading: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: '100vh',
+    background: `linear-gradient(135deg, ${theme.colors.neutral.bgDark} 0%, ${theme.colors.neutral.bgCard} 100%)`,
+    color: theme.colors.neutral.textPrimary,
+    gap: theme.spacing.xl,
+  },
+  loadingSpinner: {
+    width: '64px',
+    height: '64px',
+    border: `4px solid ${theme.colors.neutral.border}`,
+    borderTop: `4px solid ${theme.colors.accent.manaBlue}`,
+    borderRadius: '50%',
+    animation: 'spin 1s linear infinite',
+  },
+  loadingText: {
+    fontSize: theme.typography.sizes.bodyLg,
+    color: theme.colors.neutral.textSecondary,
+  },
+  error: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: '100vh',
+    background: `linear-gradient(135deg, ${theme.colors.neutral.bgDark} 0%, ${theme.colors.neutral.bgCard} 100%)`,
+    color: theme.colors.neutral.textPrimary,
+    gap: theme.spacing.lg,
+    padding: theme.spacing.xl,
+  },
+  errorIcon: {
+    fontSize: '64px',
+    marginBottom: theme.spacing.md,
+  },
+  errorText: {
+    fontSize: theme.typography.sizes.bodyLg,
+    color: theme.colors.status.error,
     textAlign: 'center',
-    padding: '40px',
-    fontSize: '1.2rem',
-    color: '#666'
-  }
+  },
+  errorButton: {
+    background: theme.colors.primary.arcanePurpleLight,
+    color: theme.colors.neutral.textPrimary,
+    border: 'none',
+    padding: `${theme.spacing.md} ${theme.spacing.xl}`,
+    borderRadius: theme.borders.radiusMd,
+    fontSize: theme.typography.sizes.bodyMd,
+    fontWeight: theme.typography.weights.semibold,
+    cursor: 'pointer',
+    transition: `all ${theme.effects.transitionNormal}`,
+    boxShadow: theme.shadows.md,
+  },
 };
+
+// Add CSS animation for spinner
+const styleSheet = document.createElement('style');
+styleSheet.textContent = `
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+document.head.appendChild(styleSheet);
 
 export default App;

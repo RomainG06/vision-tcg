@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import LotDetail from './LotDetail';
+import theme from '../theme';
 
 function LotList({ listings, onUpdate }) {
   const [selectedLot, setSelectedLot] = useState(null);
@@ -7,7 +8,9 @@ function LotList({ listings, onUpdate }) {
   if (listings.length === 0) {
     return (
       <div style={styles.empty}>
-        Aucune annonce trouvée avec ces filtres.
+        <div style={styles.emptyIcon}>🔍</div>
+        <div style={styles.emptyText}>Aucune annonce trouvée avec ces filtres.</div>
+        <div style={styles.emptyHint}>Essayez d'ajuster vos critères de recherche</div>
       </div>
     );
   }
@@ -18,8 +21,20 @@ function LotList({ listings, onUpdate }) {
         {listings.map((listing) => (
           <div
             key={listing.id}
-            style={styles.card}
+            style={{
+              ...styles.card,
+              ...(listing.status === 'new' && styles.cardNew),
+              ...(listing.status === 'interested' && styles.cardInterested),
+            }}
             onClick={() => setSelectedLot(listing)}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-8px) scale(1.02)';
+              e.currentTarget.style.boxShadow = theme.shadows.glowMagic;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0) scale(1)';
+              e.currentTarget.style.boxShadow = theme.shadows.md;
+            }}
           >
             {listing.image_url && (
               <img
@@ -28,12 +43,18 @@ function LotList({ listings, onUpdate }) {
                 style={styles.image}
               />
             )}
+            {!listing.image_url && (
+              <div style={styles.imagePlaceholder}>
+                <span style={styles.imagePlaceholderIcon}>🎴</span>
+              </div>
+            )}
             
             <div style={styles.content}>
               <div style={styles.header}>
                 <span style={{
                   ...styles.score,
-                  background: getScoreColor(listing.score)
+                  background: getScoreGradient(listing.score),
+                  boxShadow: getScoreShadow(listing.score),
                 }}>
                   {listing.score}
                 </span>
@@ -45,19 +66,19 @@ function LotList({ listings, onUpdate }) {
               <div style={styles.meta}>
                 <span style={styles.price}>{listing.price}€</span>
                 <span style={styles.location}>
-                  📍 {listing.location} ({listing.distance_km}km)
+                  📍 {listing.location} <span style={styles.distance}>({listing.distance_km}km)</span>
                 </span>
               </div>
               
               <div style={styles.badges}>
                 {listing.is_wizards === 1 && (
-                  <span style={styles.badge}>⭐ Wizards</span>
+                  <span style={styles.badgeWizards}>⭐ Wizards</span>
                 )}
                 {listing.is_french === 1 && (
-                  <span style={styles.badge}>🇫🇷 Français</span>
+                  <span style={styles.badgeFrench}>🇫🇷 Français</span>
                 )}
                 {listing.is_lot === 1 && (
-                  <span style={styles.badge}>📦 Lot</span>
+                  <span style={styles.badgeLot}>📦 Lot</span>
                 )}
               </div>
             </div>
@@ -76,99 +97,174 @@ function LotList({ listings, onUpdate }) {
   );
 }
 
-function getScoreColor(score) {
-  if (score >= 80) return '#4caf50';
-  if (score >= 60) return '#ff9800';
-  return '#9e9e9e';
+function getScoreGradient(score) {
+  if (score >= 80) return `linear-gradient(135deg, ${theme.colors.status.legendary}, ${theme.colors.accent.goldLight})`;
+  if (score >= 60) return `linear-gradient(135deg, ${theme.colors.primary.arcanePurpleLight}, ${theme.colors.accent.manaPurple})`;
+  return `linear-gradient(135deg, ${theme.colors.neutral.border}, ${theme.colors.neutral.borderLight})`;
+}
+
+function getScoreShadow(score) {
+  if (score >= 80) return theme.shadows.glowRune;
+  if (score >= 60) return theme.shadows.glowMagic;
+  return theme.shadows.sm;
 }
 
 const styles = {
   grid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-    gap: '20px'
+    gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+    gap: theme.spacing.xl,
   },
   card: {
-    background: 'white',
-    borderRadius: '8px',
+    background: theme.colors.neutral.bgCard,
+    border: `${theme.borders.widthMedium} solid ${theme.colors.neutral.border}`,
+    borderRadius: theme.borders.radiusLg,
     overflow: 'hidden',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    boxShadow: theme.shadows.md,
     cursor: 'pointer',
-    transition: 'transform 0.2s, box-shadow 0.2s',
-    ':hover': {
-      transform: 'translateY(-4px)',
-      boxShadow: '0 4px 8px rgba(0,0,0,0.15)'
-    }
+    transition: `all ${theme.effects.transitionMagic}`,
+  },
+  cardNew: {
+    borderLeft: `4px solid ${theme.colors.status.success}`,
+  },
+  cardInterested: {
+    borderLeft: `4px solid ${theme.colors.accent.manaBlue}`,
   },
   image: {
     width: '100%',
     height: '200px',
-    objectFit: 'cover'
+    objectFit: 'cover',
+  },
+  imagePlaceholder: {
+    width: '100%',
+    height: '200px',
+    background: `linear-gradient(135deg, ${theme.colors.magic.voidDark}, ${theme.colors.magic.voidEdge})`,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  imagePlaceholderIcon: {
+    fontSize: '64px',
+    filter: 'drop-shadow(0 0 12px rgba(124, 58, 237, 0.6))',
   },
   content: {
-    padding: '15px'
+    padding: theme.spacing.lg,
   },
   header: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '10px'
+    marginBottom: theme.spacing.md,
   },
   score: {
-    padding: '4px 12px',
+    color: theme.colors.neutral.textPrimary,
+    padding: `${theme.spacing.sm} ${theme.spacing.lg}`,
     borderRadius: '20px',
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: '0.9rem'
+    fontWeight: theme.typography.weights.bold,
+    fontSize: theme.typography.sizes.bodyLg,
+    minWidth: '50px',
+    textAlign: 'center',
   },
   source: {
-    fontSize: '0.8rem',
-    color: '#999',
-    textTransform: 'uppercase'
+    background: theme.colors.neutral.bgHover,
+    color: theme.colors.neutral.textSecondary,
+    padding: `${theme.spacing.xs} ${theme.spacing.md}`,
+    borderRadius: theme.borders.radiusMd,
+    fontSize: theme.typography.sizes.bodySm,
+    fontWeight: theme.typography.weights.semibold,
+    textTransform: 'uppercase',
+    border: `${theme.borders.widthThin} solid ${theme.colors.neutral.border}`,
   },
   title: {
-    fontSize: '1.1rem',
-    marginBottom: '10px',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
+    fontSize: theme.typography.sizes.bodyLg,
+    fontWeight: theme.typography.weights.semibold,
+    color: theme.colors.neutral.textPrimary,
+    marginBottom: theme.spacing.md,
+    lineHeight: '1.4',
     display: '-webkit-box',
     WebkitLineClamp: 2,
-    WebkitBoxOrient: 'vertical'
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden',
+    minHeight: '44px',
   },
   meta: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '10px',
-    fontSize: '0.9rem'
+    marginBottom: theme.spacing.md,
+    gap: theme.spacing.sm,
   },
   price: {
-    fontWeight: 'bold',
-    fontSize: '1.2rem',
-    color: '#667eea'
+    fontSize: theme.typography.sizes.headingMd,
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.accent.enchantGold,
+    textShadow: theme.shadows.glowRune,
   },
   location: {
-    color: '#666',
-    fontSize: '0.85rem'
+    color: theme.colors.neutral.textSecondary,
+    fontSize: theme.typography.sizes.bodySm,
+    display: 'flex',
+    alignItems: 'center',
+    gap: theme.spacing.xs,
+  },
+  distance: {
+    color: theme.colors.accent.manaBlue,
+    fontWeight: theme.typography.weights.semibold,
   },
   badges: {
     display: 'flex',
-    gap: '5px',
-    flexWrap: 'wrap'
+    gap: theme.spacing.sm,
+    flexWrap: 'wrap',
   },
-  badge: {
-    fontSize: '0.75rem',
-    padding: '2px 8px',
-    background: '#f0f0f0',
-    borderRadius: '4px'
+  badgeWizards: {
+    background: `linear-gradient(135deg, ${theme.colors.status.legendary}, ${theme.colors.accent.goldLight})`,
+    color: theme.colors.magic.voidDark,
+    padding: `${theme.spacing.xs} ${theme.spacing.md}`,
+    borderRadius: theme.borders.radiusMd,
+    fontSize: theme.typography.sizes.bodySm,
+    fontWeight: theme.typography.weights.semibold,
+    boxShadow: theme.shadows.glowRune,
+  },
+  badgeFrench: {
+    background: theme.colors.primary.arcanePurpleLight,
+    color: theme.colors.neutral.textPrimary,
+    padding: `${theme.spacing.xs} ${theme.spacing.md}`,
+    borderRadius: theme.borders.radiusMd,
+    fontSize: theme.typography.sizes.bodySm,
+    fontWeight: theme.typography.weights.semibold,
+    boxShadow: theme.shadows.glowMagic,
+  },
+  badgeLot: {
+    background: theme.colors.accent.manaBlue,
+    color: theme.colors.magic.voidDark,
+    padding: `${theme.spacing.xs} ${theme.spacing.md}`,
+    borderRadius: theme.borders.radiusMd,
+    fontSize: theme.typography.sizes.bodySm,
+    fontWeight: theme.typography.weights.semibold,
+    boxShadow: theme.shadows.glowMana,
   },
   empty: {
     textAlign: 'center',
-    padding: '40px',
-    color: '#999',
-    background: 'white',
-    borderRadius: '8px'
-  }
+    padding: theme.spacing.xxxl,
+    background: theme.colors.neutral.bgCard,
+    border: `${theme.borders.widthMedium} solid ${theme.colors.neutral.border}`,
+    borderRadius: theme.borders.radiusLg,
+    boxShadow: theme.shadows.md,
+  },
+  emptyIcon: {
+    fontSize: '64px',
+    marginBottom: theme.spacing.lg,
+    opacity: 0.5,
+  },
+  emptyText: {
+    fontSize: theme.typography.sizes.bodyLg,
+    color: theme.colors.neutral.textPrimary,
+    marginBottom: theme.spacing.sm,
+  },
+  emptyHint: {
+    fontSize: theme.typography.sizes.bodySm,
+    color: theme.colors.neutral.textSecondary,
+  },
 };
 
 export default LotList;

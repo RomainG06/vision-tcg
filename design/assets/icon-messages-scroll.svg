@@ -1,0 +1,52 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="scrollGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#5A1F1F;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#8B4513;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#5A1F1F;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Scroll roll (left) -->
+  <circle cx="12" cy="32" r="6" fill="#3D0F0F" stroke="#D4AF37" stroke-width="1"/>
+  <circle cx="12" cy="32" r="4" fill="#2A0F0F"/>
+  
+  <!-- Scroll roll (right) -->
+  <circle cx="52" cy="32" r="6" fill="#3D0F0F" stroke="#D4AF37" stroke-width="1"/>
+  <circle cx="52" cy="32" r="4" fill="#2A0F0F"/>
+  
+  <!-- Parchment -->
+  <rect x="18" y="16" width="28" height="32" rx="2" fill="url(#scrollGradient)" stroke="#D4AF37" stroke-width="1.5"/>
+  
+  <!-- Parchment inner glow -->
+  <rect x="20" y="18" width="24" height="28" rx="1" fill="none" stroke="#FFD700" stroke-width="1" opacity="0.5"/>
+  
+  <!-- Text lines (runes) -->
+  <g stroke="#D4AF37" stroke-width="1" opacity="0.6">
+    <line x1="24" y1="24" x2="40" y2="24"/>
+    <line x1="24" y1="30" x2="38" y2="30"/>
+    <line x1="24" y1="36" x2="40" y2="36"/>
+    <line x1="24" y1="42" x2="36" y2="42"/>
+  </g>
+  
+  <!-- Magical stamp (seal) -->
+  <circle cx="42" cy="42" r="4" fill="none" stroke="#FFD700" stroke-width="1.5" opacity="0.7"/>
+  <circle cx="42" cy="42" r="2" fill="#FFB700" opacity="0.5"/>
+  
+  <!-- Wax seal drip -->
+  <path d="M 40 46 Q 39 48 41 50 Q 42 48 43 50" fill="#8B2323" opacity="0.7"/>
+  
+  <!-- Corner rune marks -->
+  <g fill="#D4AF37" opacity="0.4">
+    <rect x="19" y="16" width="1.5" height="1.5"/>
+    <rect x="43.5" y="16" width="1.5" height="1.5"/>
+    <rect x="19" y="45.5" width="1.5" height="1.5"/>
+  </g>
+  
+  <!-- Enchantment sparkles -->
+  <g fill="#00D9FF" opacity="0.6">
+    <circle cx="14" cy="14" r="1"/>
+    <circle cx="50" cy="50" r="1"/>
+    <circle cx="10" cy="40" r="0.8"/>
+  </g>
+</svg>

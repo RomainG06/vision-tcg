@@ -1,0 +1,90 @@
+<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="eyeGradientMagic" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00D9FF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0B3D91;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="eyeInner" cx="40%" cy="40%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#0B3D91;stop-opacity:1" />
+    </radialGradient>
+    <filter id="eyeGlowMagic">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="pixelFlickerMagic">
+      <feFlood flood-color="#FFD700" flood-opacity="0.4" result="coloredFlood"/>
+      <feComposite in="coloredFlood" in2="SourceGraphic" operator="in" result="coloredFlood"/>
+      <feMerge>
+        <feMergeNode in="coloredFlood"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Outer eye sclera (white with arcane border) -->
+  <ellipse cx="64" cy="64" rx="48" ry="32" fill="#1A2332" stroke="#7C3AED" stroke-width="2" opacity="0.8" filter="url(#eyeGlowMagic)"/>
+  
+  <!-- Iris with gradient magic -->
+  <circle cx="64" cy="64" r="22" fill="url(#eyeGradientMagic)" filter="url(#eyeGlowMagic)"/>
+  
+  <!-- Iris inner (radial glow) -->
+  <circle cx="64" cy="64" r="20" fill="url(#eyeInner)" opacity="0.6"/>
+  
+  <!-- Pupil (void-like) -->
+  <circle cx="64" cy="64" r="14" fill="#050A27"/>
+  
+  <!-- Pupil inner edge (rune glow) -->
+  <circle cx="64" cy="64" r="12" fill="none" stroke="#FFB700" stroke-width="1" opacity="0.6"/>
+  
+  <!-- Primary light reflection (mana cyan) -->
+  <circle cx="58" cy="58" r="6" fill="#00D9FF" opacity="0.7" filter="url(#eyeGlowMagic)"/>
+  <circle cx="58" cy="58" r="4" fill="#00FFF0" opacity="0.5"/>
+  
+  <!-- Secondary light (golden) -->
+  <circle cx="56" cy="56" r="2.5" fill="#FFD700" opacity="0.8"/>
+  
+  <!-- Magical rune corners (ornate) -->
+  <g stroke="#D4AF37" stroke-width="2" fill="none" opacity="0.6" filter="url(#eyeGlowMagic)">
+    <!-- Top-left corner rune -->
+    <path d="M 20 24 L 28 24 L 28 32" stroke-linecap="round"/>
+    <!-- Top-right corner rune -->
+    <path d="M 108 24 L 100 24 L 100 32" stroke-linecap="round"/>
+    <!-- Bottom-left corner rune -->
+    <path d="M 20 104 L 28 104 L 28 96" stroke-linecap="round"/>
+    <!-- Bottom-right corner rune -->
+    <path d="M 108 104 L 100 104 L 100 96" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Arcane rune symbols (pixelated magic) -->
+  <g fill="#FFB700" opacity="0.4">
+    <!-- Top -->
+    <rect x="60" y="14" width="2" height="2"/>
+    <rect x="66" y="14" width="2" height="2"/>
+    <!-- Bottom -->
+    <rect x="60" y="112" width="2" height="2"/>
+    <rect x="66" y="112" width="2" height="2"/>
+    <!-- Left -->
+    <rect x="14" y="60" width="2" height="2"/>
+    <rect x="14" y="66" width="2" height="2"/>
+    <!-- Right -->
+    <rect x="112" y="60" width="2" height="2"/>
+    <rect x="112" y="66" width="2" height="2"/>
+  </g>
+  
+  <!-- Mystical aura (pixelated dots) -->
+  <g fill="#7C3AED" opacity="0.3">
+    <rect x="30" y="30" width="2" height="2"/>
+    <rect x="96" y="30" width="2" height="2"/>
+    <rect x="30" y="96" width="2" height="2"/>
+    <rect x="96" y="96" width="2" height="2"/>
+  </g>
+  
+  <!-- Outer glow ring (mana) -->
+  <circle cx="64" cy="64" r="52" fill="none" stroke="#00D9FF" stroke-width="1.5" opacity="0.2"/>
+  <circle cx="64" cy="64" r="56" fill="none" stroke="#7C3AED" stroke-width="1" opacity="0.15"/>
+</svg>

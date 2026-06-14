@@ -11,7 +11,7 @@ export function scoreListing(listing) {
   const text = `${listing.title} ${listing.description || ''}`.toLowerCase();
   
   // Load keywords from database
-  const keywords = all('SELECT keyword FROM keywords WHERE priority >= 3');
+  const keywords = all('SELECT keyword, category, weight FROM keywords');
   
   // 1. Wizards edition detection (0-40 points)
   const wizardsKeywords = keywords.filter(k => k.category === 'wizards' || k.category === 'edition');

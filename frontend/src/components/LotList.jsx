@@ -112,8 +112,8 @@ function getScoreShadow(score) {
 const styles = {
   grid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-    gap: theme.spacing.xl,
+    gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+    gap: theme.spacing.xxl,
   },
   card: {
     background: theme.colors.neutral.bgCard,
@@ -132,8 +132,9 @@ const styles = {
   },
   image: {
     width: '100%',
-    height: '200px',
+    height: '240px',
     objectFit: 'cover',
+    borderBottom: `${theme.borders.widthThin} solid ${theme.colors.neutral.border}`,
   },
   imagePlaceholder: {
     width: '100%',
@@ -198,7 +199,7 @@ const styles = {
     fontSize: theme.typography.sizes.headingMd,
     fontWeight: theme.typography.weights.bold,
     color: theme.colors.accent.enchantGold,
-    textShadow: theme.shadows.glowRune,
+    textShadow: `0 0 12px rgba(255, 215, 0, 0.7)`,
   },
   location: {
     color: theme.colors.neutral.textSecondary,

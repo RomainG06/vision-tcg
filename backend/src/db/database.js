@@ -20,12 +20,46 @@ export async function initDatabase() {
     logger.info(`Loading existing database from ${dbPath}`);
     const buffer = readFileSync(dbPath);
     db = new SQL.Database(buffer);
+    
+    // Check if tables exist
+    try {
+      const tables = db.exec("SELECT name FROM sqlite_master WHERE type='table'");
+      const tableNames = tables[0]?.values?.flat() || [];
+      
+      if (!tableNames.includes('listings') || !tableNames.includes('scrape_runs')) {
+        logger.warn('Database file exists but tables missing. Running migrations...');
+        await runMigrations();
+      }
+    } catch (error) {
+      logger.warn('Could not check tables, running migrations...', error);
+      await runMigrations();
+    }
   } else {
     logger.info(`Creating new database at ${dbPath}`);
     db = new SQL.Database();
+    await runMigrations();
   }
   
   return db;
+}
+
+/**
+ * Run migrations (create tables)
+ */
+async function runMigrations() {
+  const { readFileSync } = await import('fs');
+  const { fileURLToPath } = await import('url');
+  const { dirname, join } = await import('path');
+  
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+  const schemaPath = join(__dirname, 'schema.sql');
+  
+  logger.info('Running database migrations...');
+  const schema = readFileSync(schemaPath, 'utf-8');
+  db.run(schema);
+  saveDatabase();
+  logger.info('Migrations completed successfully');
 }
 
 /**

@@ -1,51 +1,206 @@
-Projet: pokemon-scraper (lots Wizards)
+# 🎴 Vision TCG - Détection de Lots Pokémon Wizards
 
-But
-Automatiser la recherche d'annonces (lots de cartes Pokémon du bloc Wizards) sur eBay.fr, Leboncoin, Vinted et Facebook Marketplace.
+MVP de détection et priorisation automatique de lots de cartes Pokémon (focus éditions Wizards FR) sur les marketplaces.
 
-État actuel
-- Prototype headless Puppeteer + stealth qui collecte des liens via Bing et tente d'extraire informations simples depuis les pages (titre, prix, localisation, indication "édition française", nombre de cartes si indiqué).
-- Protection anti-bot (DataDome / CAPTCHA / Error Pages) détectée sur plusieurs sites. Le scraper fonctionne mais renvoie 0 résultats exhaustifs sans proxies résidents ou authentification.
+## 📋 Stack Technique
 
-Arborescence
-- scraper.js         : script principal (puppeteer-extra + stealth) qui parcourt Bing, visite les pages et extrait informations.
-- package.json       : dépendances listées (puppeteer-extra, puppeteer-extra-plugin-stealth, puppeteer optionnel)
-- .env.example       : variables d'environnement à renseigner (EBAY_APP_ID, CHROMIUM_PATH, etc.)
-- run.sh             : wrapper d'exécution (exemple)
+### Backend
+- **Runtime**: Node.js 20 (ESM)
+- **API**: Express + REST endpoints
+- **Database**: SQLite (better-sqlite3)
+- **Scraping**: Puppeteer (headful mode)
+- **Tests**: Jest + Supertest
 
-Installation (sur le VPS)
-1) Node.js (v20+) installé. Exemple (déjà installé sur cet environnement): /tmp/node-v20.20.2-linux-x64/bin/node
-2) Installer les dépendances dans le dossier du projet (depuis le projet):
-   PUPPETEER_SKIP_DOWNLOAD=1 /tmp/node-v20.20.2-linux-x64/bin/npm install --prefix /opt/data/pokemon-scraper
-   - PUPPETEER_SKIP_DOWNLOAD=1 empêche Puppeteer de retélécharger Chromium si tu souhaites utiliser le binaire système (/usr/bin/chromium).
-3) Lancer le scraper (exemple):
-   /tmp/node-v20.20.2-linux-x64/bin/node /opt/data/pokemon-scraper/scraper.js
+### Frontend
+- **Framework**: React 18
+- **Build**: Vite
+- **UI**: Composants minimaux inline-styled
 
-Utilisation et configuration
-- Le script lit ces variables d'environnement (ou utilise les valeurs par défaut):
-  - CHROMIUM_PATH : chemin vers le binaire Chromium (par défaut: /usr/bin/chromium)
-  - SEARCH_RADIUS  : rayon pour les recherches locales (non utilisé automatiquement par Bing, mais indiqué)
-  - EBAY_APP_ID    : App ID eBay (production pour accès API, facultatif)
+### Infra
+- **Containerisation**: Docker + Docker Compose
+- **CI/CD**: GitHub Actions
+- **Browser**: Browserless Chrome (sidecar)
 
-Sécurité et clés
-- Ne met pas de clés sensibles directement dans les fichiers du projet. Utilise des variables d'environnement ou un gestionnaire de secrets.
-- Ce dépôt prototype ne contient pas d'App ID / secrets. Le fichier .env.example montre le format.
+## 🚀 Quick Start
 
-Améliorations possibles
-- Intégration via l'API eBay (Production AppID + OAuth) pour lister les vraies annonces de façon fiable.
-- Utilisation d'un proxy résidentiel pour diminuer les blocages anti-bot.
-- Ajout d'un cache / base de données (SQLite) pour historique et déduplication.
-- Extraction plus fiable des photos et calcul €/carte.
+### Prérequis
+- Node.js 20+
+- Docker & Docker Compose (optionnel mais recommandé)
 
-Fichiers générés par l'automatisation (exemples)
-- /tmp/auto_results.json
-- /tmp/search_results.json
-- /tmp/lbc_scrape.html
+### Installation locale
 
-Si tu veux, je peux:
-- Committer ce dossier dans un dépôt Git local (/opt/data/pokemon-scraper/.git) et te fournir la commande pour le cloner ailleurs.
-- Pousser vers un repo distant si tu me fournis un accès (ou je te fournis un patch).
+```bash
+# Backend
+cd backend
+npm install
+cp .env.example .env
+npm run db:migrate
+npm run db:seed
+npm run dev
 
-Dis-moi la prochaine étape :
-- Je lance une passe de test avec ta clef Sandbox (utile pour vérifier le pipeline mais pas pour obtenir des annonces live),
-- Ou tu fournis la AppID Production et/ou un proxy résidentiel pour lancer la collecte réelle et livrer la sélection (top 8–12 annonces) automatiquement.
+# Frontend (dans un autre terminal)
+cd frontend
+npm install
+npm run dev
+```
+
+Accès:
+- Backend API: http://localhost:3000
+- Frontend: http://localhost:5173
+
+### Docker (recommandé)
+
+```bash
+# Mode développement
+docker-compose -f docker-compose.dev.yml up
+
+# Mode production
+docker-compose up
+```
+
+## 📁 Structure du Projet
+
+```
+vision-tcg/
+├── backend/
+│   ├── src/
+│   │   ├── api/           # Express server + routes
+│   │   ├── db/            # Schema + migrations + seed
+│   │   ├── fetchers/      # Scrapers (LBC, Vinted, FB)
+│   │   ├── parsers/       # HTML parsers par site
+│   │   ├── scoring/       # Algorithme de scoring
+│   │   └── utils/         # Config + Logger
+│   ├── tests/             # Jest tests
+│   └── Dockerfile
+├── frontend/
+│   ├── src/
+│   │   ├── components/    # React components
+│   │   ├── services/      # API client
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   └── Dockerfile
+└── docker-compose.yml
+```
+
+## 🔍 Fonctionnalités MVP
+
+### ✅ Implémenté
+- [x] API REST complète (listings, stats, update)
+- [x] Schéma DB avec migrations et seed
+- [x] Algorithme de scoring multi-critères
+- [x] Fetcher Leboncoin avec CAPTCHA detection
+- [x] Parser Leboncoin
+- [x] Dashboard React avec filtres
+- [x] Composants List + Detail + FilterBar
+- [x] Docker multi-stage builds
+- [x] GitHub Actions CI
+
+### 🚧 À implémenter
+- [ ] Fetcher Vinted (structure créée)
+- [ ] Fetcher Facebook Marketplace (structure créée)
+- [ ] Geocoding API pour coordonnées précises
+- [ ] Tests E2E (Playwright)
+- [ ] Job scheduler pour scraping automatique
+- [ ] Export résultats (JSON/CSV)
+
+## 🎯 Algorithme de Scoring
+
+Score sur 100 points basé sur:
+1. **Éditions Wizards** (0-40pts): Base Set, Jungle, Fossil, Neo, etc.
+2. **Langue française** (0-20pts): Détection mots-clés FR
+3. **Format lot** (0-15pts): Collection, multiple cartes
+4. **Ratio prix/carte** (0-15pts): < 0.50€/carte = optimal
+5. **Distance** (0-10pts): Depuis Nice (±50km)
+6. **Pénalités**: Cartes japonaises, modernes
+
+## 🧪 Tests
+
+```bash
+cd backend
+npm test              # Run tests
+npm test -- --coverage # Coverage report
+```
+
+Couverture cible: **70%** minimum
+
+## 📡 API Endpoints
+
+```
+GET  /health                    # Health check
+GET  /api/docs                  # API documentation
+GET  /api/listings              # List avec filtres
+GET  /api/listings/:id          # Détail annonce
+PATCH /api/listings/:id         # Update status/notes
+GET  /api/scrape-runs           # Historique scraping
+GET  /api/stats                 # Statistiques
+```
+
+### Exemple requête
+
+```bash
+curl "http://localhost:3000/api/listings?min_score=70&status=new&max_price=1500"
+```
+
+## 🔐 Variables d'Environnement
+
+Voir `backend/.env.example` pour la configuration complète.
+
+**Essentielles:**
+- `DB_PATH`: Chemin base SQLite
+- `CHROMIUM_WS`: WebSocket Browserless
+- `MAX_BUDGET`: Budget max (défaut: 1500€)
+- `TARGET_LAT/LON`: Coordonnées Nice
+
+## 🐛 Debugging
+
+### CAPTCHA détecté
+En cas de CAPTCHA, le fetcher:
+1. Sauvegarde screenshot + HTML dans `screenshots/`
+2. Interrompt l'exécution
+3. Retourne erreur avec paths des fichiers
+
+**Solution:** Résoudre manuellement ou utiliser proxy/service anti-CAPTCHA.
+
+### Logs
+```bash
+# Niveau debug
+LOG_LEVEL=debug npm run dev
+```
+
+## 📦 Déploiement
+
+```bash
+# Build images
+docker-compose build
+
+# Run en production
+docker-compose up -d
+
+# Vérifier logs
+docker-compose logs -f
+```
+
+## 🤝 Contribution
+
+1. Créer une branche feature: `git checkout -b feat/ma-feature`
+2. Commit format: `type(scope): message`
+   - Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`
+3. Tests passants: `npm test`
+4. Push et PR vers `dev`
+
+## 📄 License
+
+MIT
+
+## 🎯 Contraintes Projet
+
+- **Budget max:** 1500€
+- **Zone:** Nice ±50km
+- **Priorité:** Cartes Wizards FR
+- **Mode scraping:** Headful (détection humaine)
+- **Intervention humaine:** Obligatoire sur CAPTCHA
+
+---
+
+**Status:** 🟢 MVP Structure Complete  
+**Next:** Implémenter Vinted/FB fetchers + geocoding réel

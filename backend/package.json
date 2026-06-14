@@ -1,0 +1,35 @@
+{
+  "name": "vision-tcg-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Backend API pour détection et scoring de lots de cartes Pokémon",
+  "main": "src/api/server.js",
+  "scripts": {
+    "start": "node src/api/server.js",
+    "dev": "node --watch src/api/server.js",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "lint": "eslint src/",
+    "db:migrate": "node src/db/migrations.js",
+    "db:seed": "node src/db/seed.js"
+  },
+  "keywords": ["pokemon", "tcg", "scraper", "api"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "better-sqlite3": "^9.2.2",
+    "puppeteer": "^21.7.0",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5",
+    "jsdom": "^23.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3",
+    "eslint": "^8.56.0",
+    "eslint-config-standard": "^17.1.0"
+  }
+}

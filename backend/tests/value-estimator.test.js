@@ -79,7 +79,9 @@ describe('Value Estimator', () => {
       };
       
       const result = estimateValue(listing);
-      expect(result.value_estimate_high).toBeGreaterThan(100);
+      // With additive bonuses: base 0.10-0.50 + holo +200%/+500% + rares +100%/+300% + Charizard +1000%/+5000%
+      // = 0.10 × (1 + 13) = 1.3 to 0.50 × (1 + 58) = 29.5
+      expect(result.value_estimate_high).toBeGreaterThan(10);
       expect(result.confidence).toBe('high');
       expect(result.methodology).toContain('Charizard');
     });
@@ -128,7 +130,9 @@ describe('Value Estimator', () => {
       };
       
       const result = estimateValue(listing);
-      expect(result.value_estimate_high).toBeGreaterThan(1000);
+      // With additive bonuses: +200% + +50% + +200% + +50% = +500%
+      // Low: 200 × 0.10 × 6 = 120€, High: 200 × 0.50 × 11 = 1100€
+      expect(result.value_estimate_high).toBeGreaterThan(500);
       expect(result.confidence).toBe('high');
       expect(result.methodology).toContain('Wizards');
       expect(result.methodology).toContain('française');

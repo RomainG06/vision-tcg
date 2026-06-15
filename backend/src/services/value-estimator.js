@@ -31,72 +31,77 @@ export function estimateValue(listing) {
   let baseLow = 0.10;
   let baseHigh = 0.50;
   
-  // 3. Appliquer les multiplicateurs
-  let multiplierLow = 1.0;
-  let multiplierHigh = 1.0;
+  // 3. Système de bonus additif (au lieu de multiplicatif)
+  // Base = 1.0, on ajoute des bonus qui s'additionnent
+  let bonusLow = 0; // Bonus en %
+  let bonusHigh = 0; // Bonus en %
   let confidenceScore = 50; // Score 0-100
   const reasons = [];
   
-  // 3.1. Wizards (× 3 à × 5)
+  // 3.1. Wizards (+200% à +400%)
   if (opportunitySignals.includes('wizards_detected')) {
-    multiplierLow *= 3.0;
-    multiplierHigh *= 5.0;
+    bonusLow += 200;
+    bonusHigh += 400;
     confidenceScore += 20;
-    reasons.push('Éditions Wizards (× 3-5)');
+    reasons.push('Éditions Wizards (+200% à +400%)');
   }
   
-  // 3.2. Français (× 1.5 à × 2)
+  // 3.2. Français (+50% à +100%)
   if (opportunitySignals.includes('french_edition')) {
-    multiplierLow *= 1.5;
-    multiplierHigh *= 2.0;
+    bonusLow += 50;
+    bonusHigh += 100;
     confidenceScore += 10;
-    reasons.push('Édition française (× 1.5-2)');
+    reasons.push('Édition française (+50% à +100%)');
   }
   
-  // 3.3. Holographiques (× 3 à × 10)
+  // 3.3. Holographiques (+200% à +500%)
   if (opportunitySignals.includes('holographic')) {
-    multiplierLow *= 3.0;
-    multiplierHigh *= 10.0;
+    bonusLow += 200;
+    bonusHigh += 500;
     confidenceScore += 15;
-    reasons.push('Cartes holographiques (× 3-10)');
+    reasons.push('Cartes holographiques (+200% à +500%)');
   }
   
-  // 3.4. Cartes rares (× 2 à × 5)
+  // 3.4. Cartes rares (+100% à +300%)
   if (opportunitySignals.includes('rare_cards')) {
-    multiplierLow *= 2.0;
-    multiplierHigh *= 5.0;
+    bonusLow += 100;
+    bonusHigh += 300;
     confidenceScore += 15;
-    reasons.push('Cartes rares mentionnées (× 2-5)');
+    reasons.push('Cartes rares (+100% à +300%)');
   }
   
-  // 3.5. Set complet (× 1.5 à × 2)
+  // 3.5. Set complet (+50% à +100%)
   if (opportunitySignals.includes('complete_set')) {
-    multiplierLow *= 1.5;
-    multiplierHigh *= 2.0;
+    bonusLow += 50;
+    bonusHigh += 100;
     confidenceScore += 10;
-    reasons.push('Set complet (× 1.5-2)');
+    reasons.push('Set complet (+50% à +100%)');
   }
   
   // 3.6. Détection de cartes ultra-rares spécifiques
   const ultraRares = [
-    { keyword: 'charizard', name: 'Charizard', mult: [10, 50] },
-    { keyword: 'dracaufeu', name: 'Dracaufeu', mult: [10, 50] },
-    { keyword: 'lugia', name: 'Lugia', mult: [5, 20] },
-    { keyword: 'celebi', name: 'Celebi', mult: [5, 20] },
-    { keyword: 'mewtwo', name: 'Mewtwo', mult: [5, 15] },
-    { keyword: '1st edition', name: '1st Edition', mult: [5, 20] },
-    { keyword: '1ere edition', name: '1ère Édition', mult: [5, 20] },
-    { keyword: 'shadowless', name: 'Shadowless', mult: [10, 30] }
+    { keyword: 'charizard', name: 'Charizard', bonus: [1000, 5000] },
+    { keyword: 'dracaufeu', name: 'Dracaufeu', bonus: [1000, 5000] },
+    { keyword: 'lugia', name: 'Lugia', bonus: [400, 2000] },
+    { keyword: 'celebi', name: 'Celebi', bonus: [400, 2000] },
+    { keyword: 'mewtwo', name: 'Mewtwo', bonus: [400, 1500] },
+    { keyword: '1st edition', name: '1st Edition', bonus: [400, 2000] },
+    { keyword: '1ere edition', name: '1ère Édition', bonus: [400, 2000] },
+    { keyword: 'shadowless', name: 'Shadowless', bonus: [1000, 3000] }
   ];
   
   ultraRares.forEach(rare => {
     if (fullText.includes(rare.keyword)) {
-      multiplierLow *= rare.mult[0];
-      multiplierHigh *= rare.mult[1];
+      bonusLow += rare.bonus[0];
+      bonusHigh += rare.bonus[1];
       confidenceScore += 20;
-      reasons.push(`${rare.name} détecté (× ${rare.mult[0]}-${rare.mult[1]})`);
+      reasons.push(`${rare.name} détecté (+${rare.bonus[0]}% à +${rare.bonus[1]}%)`);
     }
   });
+  
+  // Calculer les multiplicateurs finaux (1 + bonus%)
+  const multiplierLow = 1 + (bonusLow / 100);
+  const multiplierHigh = 1 + (bonusHigh / 100);
   
   // 4. Calcul de l'estimation
   const estimateLow = Math.round(cardCount * baseLow * multiplierLow);

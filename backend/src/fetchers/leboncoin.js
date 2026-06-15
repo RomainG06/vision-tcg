@@ -105,11 +105,20 @@ export class LeboncoinFetcher extends BaseFetcher {
             continue;
           }
           
+          // Longer delay between page loads to avoid rate limiting
+          await this.randomDelay(2000, 4000);
+          
           await this.page.goto(url, { 
-            waitUntil: 'domcontentloaded',  // Faster than networkidle2
-            timeout: 15000  // Reduced timeout
+            waitUntil: 'domcontentloaded',
+            timeout: 15000
           });
-          await this.randomDelay(500, 1500);
+          
+          // Random scroll to simulate human behavior
+          await this.page.evaluate(() => {
+            window.scrollTo(0, Math.random() * 500);
+          });
+          
+          await this.randomDelay(1000, 2000);
           
           const html = await this.page.content();
           const listing = await parseLeboncoinListing(html, url);

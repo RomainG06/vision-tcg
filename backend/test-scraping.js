@@ -141,6 +141,8 @@ async function saveToDatabase(listings, source) {
       ]);
     } catch (error) {
       logger.error(`Failed to save listing ${listing.url}: ${error.message}`);
+      logger.error(`Error stack: ${error.stack}`);
+      logger.error(`Listing data: ${JSON.stringify(listing, null, 2)}`);
       throw error; // Re-throw to see the actual error
     }
   }

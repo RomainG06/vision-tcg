@@ -99,12 +99,19 @@ export function query(sql, params = []) {
  * Execute a statement (INSERT, UPDATE, DELETE)
  * @param {string} sql - SQL statement
  * @param {Array} params - Statement parameters
+ * @returns {number} lastInsertRowid for INSERT statements
  */
 export function run(sql, params = []) {
   if (!db) throw new Error('Database not initialized');
   
   db.run(sql, params);
+  
+  // Get last insert ID if it was an INSERT
+  const lastId = db.exec('SELECT last_insert_rowid() as id')[0]?.values[0]?.[0];
+  
   saveDatabase(); // Auto-save after writes
+  
+  return lastId || 0;
 }
 
 /**

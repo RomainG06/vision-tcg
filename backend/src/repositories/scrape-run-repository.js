@@ -28,10 +28,10 @@ export class ScrapeRunRepository {
     
     const result = run(`
       INSERT INTO scrape_runs (started_at, source, query, status, results_count, errors_count, metadata)
-      VALUES (datetime('now'), ?, ?, ?, ?, ?, ?)
-    `, [source, query, status, results_count, errors_count, metadata]);
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `, [new Date().toISOString(), source, query, status, results_count, errors_count, metadata]);
     
-    return result.lastInsertRowid;
+    return result;
   }
   
   /**
@@ -105,7 +105,8 @@ export class ScrapeRunRepository {
     }
     
     if (updates.status === 'completed' || updates.status === 'failed') {
-      fields.push('completed_at = datetime(\'now\')');
+      fields.push('completed_at = ?');
+      params.push(new Date().toISOString());
     }
     
     if (fields.length === 0) {

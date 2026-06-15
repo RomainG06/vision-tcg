@@ -2,10 +2,17 @@ import { updateListing } from '../services/api';
 import theme from '../theme';
 
 function LotDetail({ listing, onClose, onUpdate }) {
+  console.log('[LotDetail] Received listing:', { 
+    id: listing.id, 
+    title: listing.title?.substring(0, 30),
+    hasId: !!listing.id 
+  });
+  
   const handleStatusChange = async (newStatus) => {
+    console.log('[LotDetail] Button clicked, listing.id:', listing.id);
     try {
       await updateListing(listing.id, { status: newStatus });
-      onUpdate();
+      onUpdate(listing.id, { status: newStatus });
       onClose();
     } catch (error) {
       console.error('Failed to update status:', error);

@@ -1,0 +1,153 @@
+{
+  "hunting_theme": "Hunting Dashboard - Premium Collector Interface",
+  "colors": {
+    "primary": {
+      "obsidian": "#0A0E27",
+      "midnight": "#121633",
+      "deep-dark": "#1A1F3A",
+      "slate": "#1E2847"
+    },
+    "status": {
+      "common": "#4B5563",
+      "rare": "#7C3AED",
+      "epic": "#0EA5E9",
+      "legendary": "#FFD700",
+      "mythique": "#FF1744"
+    },
+    "accents": {
+      "hunter-gold": "#E6B85C",
+      "mana-cyan": "#00D9FF",
+      "prey-red": "#FF1744",
+      "success-green": "#10B981",
+      "warning-orange": "#F59E0B"
+    },
+    "text": {
+      "primary": "#F8FAFC",
+      "secondary": "#CBD5E1",
+      "tertiary": "#94A3B8",
+      "muted": "#64748B"
+    },
+    "rarity_gradient": {
+      "common": "linear-gradient(135deg, #4B5563 0%, #3F4556 100%)",
+      "rare": "linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)",
+      "epic": "linear-gradient(135deg, #0EA5E9 0%, #0369A1 100%)",
+      "legendary": "linear-gradient(135deg, #FFD700 0%, #F59E0B 100%)",
+      "mythique": "linear-gradient(135deg, #FF1744 0%, #D32F2F 100%)"
+    }
+  },
+  "typography": {
+    "fonts": {
+      "primary": "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+      "heading": "Outfit, Inter, sans-serif",
+      "mono": "JetBrains Mono, Courier New, monospace"
+    },
+    "scale": {
+      "display": "48px, weight 700",
+      "heading_xl": "36px, weight 700",
+      "heading_lg": "28px, weight 700",
+      "heading_md": "24px, weight 600",
+      "body_lg": "16px, weight 500",
+      "body_md": "14px, weight 500",
+      "body_sm": "13px, weight 400",
+      "tiny": "11px, weight 500",
+      "mono_sm": "12px, weight 500"
+    }
+  },
+  "spacing": {
+    "xs": "4px",
+    "sm": "8px",
+    "md": "12px",
+    "lg": "16px",
+    "xl": "24px",
+    "xxl": "32px",
+    "xxxl": "48px"
+  },
+  "shadows": {
+    "sm": "0 1px 2px rgba(0, 0, 0, 0.5)",
+    "md": "0 4px 12px rgba(0, 0, 0, 0.6)",
+    "lg": "0 8px 24px rgba(0, 0, 0, 0.7)",
+    "xl": "0 16px 32px rgba(0, 0, 0, 0.8)",
+    "glow_rare": "0 0 20px rgba(124, 58, 237, 0.4)",
+    "glow_epic": "0 0 20px rgba(14, 165, 233, 0.4)",
+    "glow_legendary": "0 0 20px rgba(255, 215, 0, 0.3)",
+    "glow_mythique": "0 0 20px rgba(255, 23, 68, 0.5)"
+  },
+  "hunting_concepts": {
+    "profil_de_chasse": "Hunt Profile - custom search configurations",
+    "radar": "Live detection radar - shows active hunts",
+    "opportunites": "Opportunities - detected listings",
+    "niveau_rarete": "Rarity Level - item quality tier",
+    "score_opportunite": "Opportunity Score - 0-100 ranking",
+    "risque": "Risk Level - low/medium/high",
+    "potentiel": "Potential - value gain estimation",
+    "alerte": "Alert - notification trigger",
+    "watchlist": "Watchlist - saved items for later",
+    "historique": "History - past hunts and discoveries"
+  },
+  "scoring_system": {
+    "score_0_39": {
+      "name": "Normal",
+      "color": "#4B5563",
+      "icon": "○",
+      "description": "Standard listing, no special interest"
+    },
+    "score_40_59": {
+      "name": "Intéressant",
+      "color": "#7C3AED",
+      "icon": "◆",
+      "description": "Interesting, worth monitoring"
+    },
+    "score_60_74": {
+      "name": "Rare",
+      "color": "#0EA5E9",
+      "icon": "◈",
+      "description": "Good opportunity detected"
+    },
+    "score_75_89": {
+      "name": "Épique",
+      "color": "#FFD700",
+      "icon": "★",
+      "description": "Strong opportunity"
+    },
+    "score_90_100": {
+      "name": "Légendaire",
+      "color": "#FF1744",
+      "icon": "✦",
+      "description": "Exceptional - contact immediately"
+    },
+    "mythique": {
+      "name": "Mythique",
+      "color": "#FF1744",
+      "icon": "✧",
+      "description": "Price anomaly - verify urgently"
+    }
+  },
+  "badge_types": [
+    "WIZARDS",
+    "FR",
+    "LOT",
+    "HOLO",
+    "SOUS-COTÉ",
+    "PROCHE",
+    "À VÉRIFIER",
+    "ENVOI RAPIDE",
+    "NEUF",
+    "PSA GRADED",
+    "1ÈRE ÉD",
+    "CERTIFIÉ",
+    "TENDANCE"
+  ],
+  "hunt_status": {
+    "idle": "Inactive",
+    "running": "Hunting...",
+    "analyzing": "Analyzing...",
+    "complete": "Hunt Complete",
+    "alert": "Alert!"
+  },
+  "animations": {
+    "scan_pulse": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+    "radar_sweep": "radar-sweep 3s linear infinite",
+    "hunt_pulse": "hunt-pulse 1.5s ease-in-out infinite",
+    "score_glow": "score-glow 2s ease-in-out infinite"
+  }
+}

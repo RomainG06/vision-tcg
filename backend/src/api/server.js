@@ -4,7 +4,8 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { config } from '../utils/config.js';
 import { logger } from '../utils/logger.js';
-import { router } from './routes.js';
+import router from './routes.js';
+import profileRoutes from './routes-profiles.js';
 import { initDatabase } from '../db/database.js';
 
 export const app = express();
@@ -38,6 +39,7 @@ app.get('/health', (req, res) => {
 
 // API routes
 app.use('/api', router);
+app.use('/api', profileRoutes);
 
 // 404 handler
 app.use((req, res) => {
@@ -62,10 +64,19 @@ export async function start() {
     
     // Start server
     const port = config.port;
-    app.listen(port, () => {
+    const server = app.listen(port, () => {
       logger.info(`Server running on http://localhost:${port}`);
       logger.info(`Environment: ${config.nodeEnv}`);
       logger.info(`API docs: http://localhost:${port}/api/docs`);
+    });
+    
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        logger.error(`Port ${port} is already in use. Try: PORT=3001 npm run dev`);
+        process.exit(1);
+      } else {
+        throw err;
+      }
     });
   } catch (error) {
     logger.error('Failed to start server:', error);
@@ -74,6 +85,6 @@ export async function start() {
 }
 
 // Start if running directly
-if (import.meta.url === `file://${process.argv[1]}`) {
-  start();
-}
+// Note: Always start the server when this file is imported as the main module
+// The original condition doesn't work reliably on Windows
+start();

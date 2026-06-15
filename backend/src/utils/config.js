@@ -1,39 +1,43 @@
 import dotenv from 'dotenv';
-dotenv.config();
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 export const config = {
   port: process.env.PORT || 3000,
   nodeEnv: process.env.NODE_ENV || 'development',
+  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
   
-  database: {
-    path: process.env.DB_PATH || './dev.db'
-  },
-  
-  chromium: {
-    ws: process.env.CHROMIUM_WS || 'ws://localhost:3001',
-    headless: process.env.CHROMIUM_HEADLESS === 'true'
-  },
-  
-  scraping: {
-    maxResults: parseInt(process.env.MAX_RESULTS || '50'),
-    timeout: parseInt(process.env.SCRAPE_TIMEOUT || '60000')
-  },
-  
-  scoring: {
-    maxBudget: parseFloat(process.env.MAX_BUDGET || '1500'),
-    target: {
-      lat: parseFloat(process.env.TARGET_LAT || '43.7102'),
-      lon: parseFloat(process.env.TARGET_LON || '7.2620')
-    },
-    maxDistanceKm: parseFloat(process.env.MAX_DISTANCE_KM || '50')
-  },
-  
+  // Rate limiting
   rateLimit: {
-    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'),
-    max: parseInt(process.env.RATE_LIMIT_MAX || '100')
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100 // limit each IP to 100 requests per windowMs
   },
   
-  logging: {
-    level: process.env.LOG_LEVEL || 'info'
+  // Scoring weights
+  scoring: {
+    wizardsWeight: 40,
+    frenchWeight: 20,
+    lotWeight: 20,
+    priceWeight: 10,
+    distanceWeight: 10
+  },
+  
+  // Geographic constraints
+  geo: {
+    centerLat: 43.7102,  // Nice
+    centerLon: 7.2620,
+    maxDistanceKm: 50,
+    maxBudget: 1500
+  },
+  
+  // Scraping config
+  scraping: {
+    headless: false,  // MVP uses headful mode (required for CAPTCHA handling)
+    timeout: 30000,
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
   }
 };

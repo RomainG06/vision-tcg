@@ -1,11 +1,29 @@
-import { Router } from 'express';
-import { all, get as getOne, run } from '../db/database.js';
+import express from 'express';
 import { logger } from '../utils/logger.js';
+import { ListingRepository } from '../repositories/listing-repository.js';
+import { ScrapeRunRepository } from '../repositories/scrape-run-repository.js';
 
-export const router = Router();
+const router = express.Router();
+
+// Initialize repositories
+const listingRepo = new ListingRepository();
+const scrapeRunRepo = new ScrapeRunRepository();
 
 /**
- * GET /api/docs - API documentation
+ * Map database listing to frontend format
+ */
+function mapListing(listing) {
+  if (!listing) return null;
+  
+  return {
+    ...listing,
+    image_url: listing.images, // Map 'images' to 'image_url' for frontend
+  };
+}
+
+/**
+ * GET /api/docs
+ * API documentation
  */
 router.get('/docs', (req, res) => {
   res.json({
@@ -29,181 +47,135 @@ router.get('/docs', (req, res) => {
  */
 router.get('/listings', (req, res) => {
   try {
-    const { 
-      source, 
-      status = 'new',
-      min_score,
-      max_price,
-      max_distance,
-      limit = 50,
-      offset = 0
-    } = req.query;
+    const filters = {
+      source: req.query.source,
+      status: req.query.status || 'new',
+      minScore: req.query.min_score ? parseFloat(req.query.min_score) : undefined,
+      maxPrice: req.query.max_price ? parseFloat(req.query.max_price) : undefined,
+      maxDistance: req.query.max_distance ? parseFloat(req.query.max_distance) : undefined,
+      limit: req.query.limit ? parseInt(req.query.limit) : 50,
+      offset: req.query.offset ? parseInt(req.query.offset) : 0
+    };
     
-    let query = 'SELECT * FROM listings WHERE 1=1';
-    const params = [];
-    
-    if (source) {
-      query += ' AND source = ?';
-      params.push(source);
-    }
-    
-    if (status && status !== 'all') {
-      query += ' AND status = ?';
-      params.push(status);
-    }
-    
-    if (min_score) {
-      query += ' AND score >= ?';
-      params.push(parseFloat(min_score));
-    }
-    
-    if (max_price) {
-      query += ' AND price <= ?';
-      params.push(parseFloat(max_price));
-    }
-    
-    if (max_distance) {
-      query += ' AND distance_km <= ?';
-      params.push(parseFloat(max_distance));
-    }
-    
-    query += ' ORDER BY score DESC, scraped_at DESC LIMIT ? OFFSET ?';
-    params.push(parseInt(limit), parseInt(offset));
-    
-    const listings = all(query, params);
-    
-    const totalResult = getOne('SELECT COUNT(*) as count FROM listings WHERE 1=1');
+    const listings = listingRepo.findAll(filters);
+    const total = listingRepo.count();
     
     res.json({
-      listings,
+      listings: listings.map(mapListing),
       pagination: {
-        limit: parseInt(limit),
-        offset: parseInt(offset),
-        total: totalResult ? totalResult.count : 0
+        limit: filters.limit,
+        offset: filters.offset,
+        total
       }
     });
   } catch (error) {
     logger.error('Error fetching listings:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 /**
  * GET /api/listings/:id
- * Get single listing by ID
+ * Get a single listing by ID
  */
 router.get('/listings/:id', (req, res) => {
   try {
-    const listing = getOne('SELECT * FROM listings WHERE id = ?', [req.params.id]);
+    const id = parseInt(req.params.id);
+    const listing = listingRepo.findById(id);
     
     if (!listing) {
       return res.status(404).json({ error: 'Listing not found' });
     }
     
-    res.json(listing);
+    res.json(mapListing(listing));
   } catch (error) {
-    logger.error('Error fetching listing:', error);
-    res.status(500).json({ error: error.message });
+    logger.error(`Error fetching listing ${req.params.id}:`, error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 /**
  * PATCH /api/listings/:id
- * Update listing status or notes
+ * Update a listing (status, notes)
  */
 router.patch('/listings/:id', (req, res) => {
   try {
-    const { status, notes } = req.body;
+    const id = parseInt(req.params.id);
+    const updates = {};
     
-    const updates = [];
-    const params = [];
-    
-    if (status) {
-      updates.push('status = ?');
-      params.push(status);
+    if (req.body.status !== undefined) {
+      updates.status = req.body.status;
     }
     
-    if (notes !== undefined) {
-      updates.push('notes = ?');
-      params.push(notes);
+    if (req.body.notes !== undefined) {
+      updates.notes = req.body.notes;
     }
     
-    if (updates.length === 0) {
+    if (Object.keys(updates).length === 0) {
       return res.status(400).json({ error: 'No updates provided' });
     }
     
-    // Add ID parameter for WHERE clause
-    params.push(req.params.id);
+    listingRepo.update(id, updates);
+    const updated = listingRepo.findById(id);
     
-    run(`UPDATE listings SET ${updates.join(', ')} WHERE id = ?`, params);
+    if (!updated) {
+      return res.status(404).json({ error: 'Listing not found' });
+    }
     
-    const updated = getOne('SELECT * FROM listings WHERE id = ?', [req.params.id]);
-    
-    res.json(updated);
+    res.json(mapListing(updated));
   } catch (error) {
-    logger.error('Error updating listing:', error);
-    res.status(500).json({ error: error.message });
+    logger.error(`Error updating listing ${req.params.id}:`, error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 /**
  * GET /api/scrape-runs
- * Get scraping runs history
+ * Get scrape runs history
  */
 router.get('/scrape-runs', (req, res) => {
   try {
-    const { limit = 20 } = req.query;
+    const filters = {
+      source: req.query.source,
+      status: req.query.status,
+      limit: req.query.limit ? parseInt(req.query.limit) : 50
+    };
     
-    const runs = all(
-      'SELECT * FROM scrape_runs ORDER BY started_at DESC LIMIT ?',
-      [parseInt(limit)]
-    );
+    const runs = scrapeRunRepo.findAll(filters);
+    const stats = scrapeRunRepo.getStats();
     
-    res.json({ runs });
+    res.json({
+      runs,
+      stats
+    });
   } catch (error) {
     logger.error('Error fetching scrape runs:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 /**
  * GET /api/stats
- * Get statistics
+ * Get overall statistics
  */
 router.get('/stats', (req, res) => {
   try {
-    const total = getOne('SELECT COUNT(*) as count FROM listings');
-    const wizards = getOne('SELECT COUNT(*) as count FROM listings WHERE is_wizards = 1');
-    const french = getOne('SELECT COUNT(*) as count FROM listings WHERE is_french = 1');
-    const highScore = getOne('SELECT COUNT(*) as count FROM listings WHERE score >= 70');
-    const avgScore = getOne('SELECT AVG(score) as avg FROM listings');
-    const avgPrice = getOne('SELECT AVG(price) as avg FROM listings');
+    const stats = {
+      total: listingRepo.count(),
+      viewed: listingRepo.countByStatus('reviewed'),
+      passed: listingRepo.countByStatus('rejected'),
+      interesting: listingRepo.countByStatus('interested'),
+      new: listingRepo.countByStatus('new'),
+      avgScore: Math.round(listingRepo.getAverageScore() * 10) / 10,
+      avgPrice: Math.round(listingRepo.getAveragePrice() * 100) / 100,
+      highScore: listingRepo.countHighScore(),
+      bySource: listingRepo.countBySource()
+    };
     
-    const byStatus = all(`
-      SELECT status, COUNT(*) as count 
-      FROM listings 
-      GROUP BY status
-    `);
-    
-    const bySource = all(`
-      SELECT source, COUNT(*) as count 
-      FROM listings 
-      GROUP BY source
-    `);
-    
-    res.json({
-      total_listings: total ? total.count : 0,
-      wizards_count: wizards ? wizards.count : 0,
-      french_count: french ? french.count : 0,
-      high_score_count: highScore ? highScore.count : 0,
-      avg_score: avgScore ? avgScore.avg : 0,
-      avg_price: avgPrice ? avgPrice.avg : 0,
-      by_status: byStatus,
-      by_source: bySource
-    });
+    res.json(stats);
   } catch (error) {
     logger.error('Error fetching stats:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 

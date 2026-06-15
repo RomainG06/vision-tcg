@@ -83,7 +83,11 @@ export class LeboncoinFetcher extends BaseFetcher {
         const items = Array.from(document.querySelectorAll('[data-qa-id="aditem_container"] a'));
         return items
           .map(a => a.href)
-          .filter(href => href && href.includes('/ad/'))
+          .filter(href => 
+            href && 
+            href.includes('/ad/') && 
+            href.startsWith('https://www.leboncoin.fr/')
+          )
           .slice(0, 50);
       });
       
@@ -94,8 +98,27 @@ export class LeboncoinFetcher extends BaseFetcher {
       for (const url of listingUrls.slice(0, maxResults)) {
         try {
           logger.debug(`Fetching listing: ${url}`);
-          await this.page.goto(url, { waitUntil: 'networkidle2', timeout: 20000 });
-          await this.randomDelay(500, 1500);
+          
+          // Validate URL before navigating
+          if (!url.startsWith('https://www.leboncoin.fr/')) {
+            logger.warn(`Skipping invalid URL: ${url}`);
+            continue;
+          }
+          
+          // Longer delay between page loads to avoid rate limiting
+          await this.randomDelay(2000, 4000);
+          
+          await this.page.goto(url, { 
+            waitUntil: 'domcontentloaded',
+            timeout: 15000
+          });
+          
+          // Random scroll to simulate human behavior
+          await this.page.evaluate(() => {
+            window.scrollTo(0, Math.random() * 500);
+          });
+          
+          await this.randomDelay(1000, 2000);
           
           const html = await this.page.content();
           const listing = await parseLeboncoinListing(html, url);
@@ -105,6 +128,7 @@ export class LeboncoinFetcher extends BaseFetcher {
           }
         } catch (error) {
           logger.error(`Failed to fetch listing ${url}:`, error.message);
+          // Continue to next listing instead of crashing
         }
       }
       

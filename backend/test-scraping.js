@@ -6,6 +6,7 @@
 
 import { LeboncoinFetcher } from './src/fetchers/leboncoin.js';
 import { VintedFetcher } from './src/fetchers/vinted.js';
+import { FacebookFetcher } from './src/fetchers/facebook.js';
 import { logger } from './src/utils/logger.js';
 import { initDatabase, run, all, close } from './src/db/database.js';
 import { scoreListing } from './src/scoring/scorer.js';
@@ -83,6 +84,44 @@ async function testVinted() {
     
   } catch (error) {
     logger.error(`❌ Vinted scraping failed: ${error.message}`);
+    throw error;
+  } finally {
+    await fetcher.close();
+  }
+}
+
+/**
+ * Test Facebook Marketplace scraping
+ */
+async function testFacebook() {
+  logger.info('🔍 Testing Facebook Marketplace scraper...\\n');
+  
+  const fetcher = new FacebookFetcher();
+  
+  try {
+    const listings = await fetcher.fetch('cartes pokemon lot wizards', {
+      location: 'Nice, France',
+      radius: 50,
+      maxResults: 3
+    });
+    
+    logger.info(`✅ Found ${listings.length} listings on Facebook Marketplace\\n`);
+    
+    listings.forEach((listing, index) => {
+      logger.info(`\\n📦 Listing ${index + 1}:`);
+      logger.info(`   Title: ${listing.title}`);
+      logger.info(`   Price: ${listing.price}€`);
+      logger.info(`   Location: ${listing.location}`);
+      logger.info(`   URL: ${listing.url}`);
+    });
+    
+    return listings;
+    
+  } catch (error) {
+    logger.error(`❌ Facebook Marketplace scraping failed: ${error.message}`);
+    if (error.message.includes('login')) {
+      logger.warn('⚠️  Facebook requires login - consider using authenticated session');
+    }
     throw error;
   } finally {
     await fetcher.close();
@@ -195,6 +234,14 @@ async function main() {
       listings = await testVinted();
       if (saveToDb && listings.length > 0) {
         await saveToDatabase(listings, 'vinted');
+      }
+    }
+    
+    if (site === 'facebook' || site === 'all') {
+      logger.info('\n' + '='.repeat(60) + '\n');
+      listings = await testFacebook();
+      if (saveToDb && listings.length > 0) {
+        await saveToDatabase(listings, 'facebook');
       }
     }
     

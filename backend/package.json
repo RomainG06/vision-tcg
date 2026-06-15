@@ -13,9 +13,11 @@
     "db:migrate": "node src/db/migrate-cli.js",
     "db:seed": "node src/db/seed-cli.js",
     "resolve:captcha": "node resolve-captcha.js",
+    "clear:cookies": "node -e \"import('./src/utils/cookie-manager.js').then(m => m.clearCookies())\"",
     "scrape:test": "node test-scraping.js leboncoin",
     "scrape:lbc": "node test-scraping.js leboncoin --save",
     "scrape:vinted": "node test-scraping.js vinted --save",
+    "scrape:facebook": "node test-scraping.js facebook --save",
     "scrape:all": "node test-scraping.js all --save"
   },
   "keywords": [

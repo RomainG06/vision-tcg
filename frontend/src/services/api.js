@@ -34,6 +34,13 @@ export async function fetchListing(id) {
  * Update listing
  */
 export async function updateListing(id, updates) {
+  console.log('[API] updateListing called with:', { id, updates });
+  
+  if (!id || id === 'undefined') {
+    console.error('[API] Invalid ID:', id);
+    throw new Error(`Invalid listing ID: ${id}`);
+  }
+  
   const response = await fetch(`${API_URL}/api/listings/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },

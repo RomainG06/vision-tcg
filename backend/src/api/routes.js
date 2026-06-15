@@ -173,11 +173,9 @@ router.get('/scrape-runs', (req, res) => {
 router.get('/stats', (req, res) => {
   try {
     const total = getOne('SELECT COUNT(*) as count FROM listings');
-    const wizards = getOne('SELECT COUNT(*) as count FROM listings WHERE is_wizards = 1');
-    const french = getOne('SELECT COUNT(*) as count FROM listings WHERE is_french = 1');
     const highScore = getOne('SELECT COUNT(*) as count FROM listings WHERE score >= 70');
     const avgScore = getOne('SELECT AVG(score) as avg FROM listings');
-    const avgPrice = getOne('SELECT AVG(price) as avg FROM listings');
+    const avgPrice = getOne('SELECT AVG(price) as avg FROM listings WHERE price > 0');
     
     const byStatus = all(`
       SELECT status, COUNT(*) as count 
@@ -192,18 +190,16 @@ router.get('/stats', (req, res) => {
     `);
     
     res.json({
-      total_listings: total ? total.count : 0,
-      wizards_count: wizards ? wizards.count : 0,
-      french_count: french ? french.count : 0,
-      high_score_count: highScore ? highScore.count : 0,
-      avg_score: avgScore ? avgScore.avg : 0,
-      avg_price: avgPrice ? avgPrice.avg : 0,
-      by_status: byStatus,
-      by_source: bySource
+      total: total?.count || 0,
+      highScore: highScore?.count || 0,
+      avgScore: Math.round((avgScore?.avg || 0) * 10) / 10,
+      avgPrice: Math.round((avgPrice?.avg || 0) * 100) / 100,
+      byStatus: byStatus || [],
+      bySource: bySource || []
     });
   } catch (error) {
     logger.error('Error fetching stats:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Failed to fetch stats' });
   }
 });
 

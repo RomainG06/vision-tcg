@@ -36,7 +36,7 @@ export const config = {
   
   // Scraping config
   scraping: {
-    headless: false,  // MVP uses headful mode
+    headless: false,  // MVP uses headful mode (required for CAPTCHA handling)
     timeout: 30000,
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
   }

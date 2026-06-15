@@ -29,7 +29,7 @@ export class BaseFetcher {
     logger.info(`Initializing ${this.source} fetcher...`);
     
     this.browser = await puppeteer.launch({
-      headless: config.chromium.headless,
+      headless: config.scraping?.headless ?? false,  // Default to headful for MVP
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',

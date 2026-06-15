@@ -143,11 +143,29 @@ router.post('/scrape', async (req, res) => {
     
     // Normalize listings
     logger.info(`Normalizing ${allRawListings.length} raw listings`);
-    const normalized = normalizeListings(allRawListings);
+    const allNormalized = [];
+    const allInvalid = [];
+    
+    // Group by source for normalization
+    const bySource = {};
+    for (const raw of allRawListings) {
+      const src = raw.source || 'unknown';
+      if (!bySource[src]) bySource[src] = [];
+      bySource[src].push(raw);
+    }
+    
+    // Normalize each source group
+    for (const [source, listings] of Object.entries(bySource)) {
+      const { normalized, invalid } = normalizeListings(listings, source, scrapeRunId);
+      allNormalized.push(...normalized);
+      allInvalid.push(...invalid);
+    }
+    
+    logger.info(`Normalized: ${allNormalized.length} valid, ${allInvalid.length} invalid`);
     
     // Score listings using profile
-    logger.info(`Scoring ${normalized.length} normalized listings`);
-    const scored = scoreListings(normalized, profile);
+    logger.info(`Scoring ${allNormalized.length} normalized listings`);
+    const scored = scoreListings(allNormalized, profile);
     
     // Filter by profile criteria
     logger.info('Filtering by profile criteria (budget, distance, min_score)');
@@ -186,7 +204,8 @@ router.post('/scrape', async (req, res) => {
       sources: activeSources,
       stats: {
         raw: allRawListings.length,
-        normalized: normalized.length,
+        normalized: allNormalized.length,
+        invalid: allInvalid.length,
         scored: scored.length,
         filtered: filtered.length,
         saved: savedCount,

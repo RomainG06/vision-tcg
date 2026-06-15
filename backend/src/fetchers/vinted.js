@@ -64,23 +64,75 @@ export class VintedFetcher extends BaseFetcher {
       
       // Wait for listings to load
       try {
-        await this.page.waitForSelector('article.feed-grid__item', { timeout: 10000 });
+        // Try multiple selectors
+        const selectors = [
+          'article.feed-grid__item',
+          'div.feed-grid__item',
+          'article[data-testid*="item"]',
+          '.new-item-box'
+        ];
+        
+        let selectorFound = null;
+        for (const selector of selectors) {
+          try {
+            await this.page.waitForSelector(selector, { timeout: 5000 });
+            selectorFound = selector;
+            logger.info(`✅ Found elements with selector: ${selector}`);
+            break;
+          } catch (e) {
+            logger.debug(`Selector ${selector} not found`);
+          }
+        }
+        
+        if (!selectorFound) {
+          throw new Error('No valid selector found');
+        }
       } catch (error) {
         logger.warn('No listings found or page structure changed');
         await this.saveDebugInfo('no_results');
         return [];
       }
       
-      // Extract listing URLs
+      // Extract listing URLs - try multiple strategies
       const listingUrls = await this.page.evaluate(() => {
-        const items = Array.from(document.querySelectorAll('article.feed-grid__item a[href*="/items/"]'));
-        return items
+        // Strategy 1: article links
+        let items = Array.from(document.querySelectorAll('article a[href*="/items/"]'));
+        console.log(`Strategy 1 (article a): Found ${items.length} links`);
+        
+        // Strategy 2: any link with /items/
+        if (items.length === 0) {
+          items = Array.from(document.querySelectorAll('a[href*="/items/"]'));
+          console.log(`Strategy 2 (a[href*="/items/"]): Found ${items.length} links`);
+        }
+        
+        // Strategy 3: feed-grid items
+        if (items.length === 0) {
+          items = Array.from(document.querySelectorAll('.feed-grid a, [class*="feed"] a'));
+          console.log(`Strategy 3 (feed-grid): Found ${items.length} links`);
+        }
+        
+        const urls = items
           .map(a => a.href)
           .filter(href => href && href.includes('/items/'))
-          .slice(0, 50);
+          // Remove duplicates
+          .filter((url, index, self) => self.indexOf(url) === index);
+        
+        console.log(`Total unique URLs: ${urls.length}`);
+        if (urls.length > 0) {
+          console.log(`First URL sample: ${urls[0]}`);
+        }
+        
+        return urls.slice(0, 50);
       });
       
-      logger.info(`Found ${listingUrls.length} listings on Vinted`);
+      logger.info(`Found ${listingUrls.length} listing URLs on Vinted`);
+      if (listingUrls.length > 0) {
+        logger.debug(`First URL: ${listingUrls[0]}`);
+      } else {
+        logger.error('❌ No URLs extracted! Saving debug info...');
+        await this.saveDebugInfo('no_urls_extracted');
+        return [];
+      }
       
       // Fetch details for each listing
       const listings = [];

@@ -15,15 +15,10 @@ export class VintedFetcher extends BaseFetcher {
   /**
    * Build search URL
    */
-  buildSearchUrl(query, options = {}) {
-    // Vinted search URL structure
-    const params = new URLSearchParams({
-      search_text: query,
-      catalog_ids: '1084', // Jeux & Jouets > Cartes à collectionner
-      order: 'relevance'
-    });
-    
-    return `${this.baseUrl}/catalog?${params.toString()}`;
+  buildSearchUrl(query) {
+    // Vinted uses simple search parameter in path
+    const searchQuery = encodeURIComponent(query);
+    return `${this.baseUrl}/vetements?search_text=${searchQuery}&order=newest_first`;
   }
   
   /**
@@ -69,7 +64,7 @@ export class VintedFetcher extends BaseFetcher {
       
       // Wait for listings to load
       try {
-        await this.page.waitForSelector('.feed-grid__item', { timeout: 10000 });
+        await this.page.waitForSelector('article.feed-grid__item', { timeout: 10000 });
       } catch (error) {
         logger.warn('No listings found or page structure changed');
         await this.saveDebugInfo('no_results');
@@ -78,7 +73,7 @@ export class VintedFetcher extends BaseFetcher {
       
       // Extract listing URLs
       const listingUrls = await this.page.evaluate(() => {
-        const items = Array.from(document.querySelectorAll('.feed-grid__item a'));
+        const items = Array.from(document.querySelectorAll('article.feed-grid__item a[href*="/items/"]'));
         return items
           .map(a => a.href)
           .filter(href => href && href.includes('/items/'))

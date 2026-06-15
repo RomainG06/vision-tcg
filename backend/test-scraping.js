@@ -66,7 +66,7 @@ async function testVinted() {
   const fetcher = new VintedFetcher();
   
   try {
-    const listings = await fetcher.fetch('pokemon cartes wizards', {
+    const listings = await fetcher.fetch('cartes pokemon lot wizards', {
       maxResults: 3
     });
     

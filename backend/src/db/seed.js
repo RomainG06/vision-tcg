@@ -1,4 +1,4 @@
-import { initDatabase, run } from './database.js';
+import { initDatabase, run, saveDatabase } from './database.js';
 import { scoreListing } from '../scoring/scorer-simple.js';
 
 const sampleListings = [
@@ -108,6 +108,13 @@ async function seed() {
     
     console.log('🎉 Seed completed successfully!');
     console.log(`📦 Inserted ${sampleListings.length} sample listings`);
+    
+    // IMPORTANT: Save to disk!
+    console.log('\n💾 Saving database to disk...');
+    await saveDatabase();
+    console.log('✅ Database saved successfully!');
+    
+    process.exit(0);
     
   } catch (error) {
     console.error('❌ Seed failed:', error);

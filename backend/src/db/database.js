@@ -1,5 +1,6 @@
 import initSqlJs from 'sql.js';
 import fs from 'fs/promises';
+import fsSync from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -33,15 +34,15 @@ export async function initDatabase() {
   }
   
   // Auto-save toutes les 30s
-  setInterval(() => saveDatabase(), 30000);
+  setInterval(() => saveDatabaseSync(), 30000);
   
   // Save on exit
   process.on('exit', () => {
-    saveDatabase();
+    saveDatabaseSync();
   });
   
   process.on('SIGINT', () => {
-    saveDatabase();
+    saveDatabaseSync();
     process.exit(0);
   });
   
@@ -73,12 +74,23 @@ async function runMigrations() {
   }
 }
 
-function saveDatabase() {
+async function saveDatabase() {
   if (!db) return;
   
   try {
     const data = db.export();
-    fs.writeFile(DB_PATH, data);
+    await fs.writeFile(DB_PATH, data);
+  } catch (err) {
+    console.error('❌ Error saving database:', err);
+  }
+}
+
+function saveDatabaseSync() {
+  if (!db) return;
+  
+  try {
+    const data = db.export();
+    fsSync.writeFileSync(DB_PATH, data);
   } catch (err) {
     console.error('❌ Error saving database:', err);
   }
@@ -156,9 +168,9 @@ export function run(query, params = []) {
 /**
  * Close database connection
  */
-export function close() {
+export async function close() {
   if (db) {
-    saveDatabase();
+    await saveDatabase();
     db.close();
     db = null;
   }

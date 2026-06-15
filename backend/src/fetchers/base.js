@@ -1,8 +1,12 @@
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-extra';
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import { config } from '../utils/config.js';
 import { logger } from '../utils/logger.js';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
+
+// Add stealth plugin to hide automation signals
+puppeteer.use(StealthPlugin());
 
 /**
  * Base fetcher class with common functionality
@@ -25,16 +29,25 @@ export class BaseFetcher {
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
-        '--disable-blink-features=AutomationControlled'
+        '--disable-blink-features=AutomationControlled',
+        '--disable-web-security',
+        '--disable-features=IsolateOrigins,site-per-process',
+        '--lang=fr-FR,fr',
+        '--window-size=1920,1080'
       ]
     });
     
     this.page = await this.browser.newPage();
     
-    // Set user agent
+    // Set realistic user agent (recent Windows Chrome)
     await this.page.setUserAgent(
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     );
+    
+    // Set language preference
+    await this.page.setExtraHTTPHeaders({
+      'Accept-Language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7'
+    });
     
     // Set viewport
     await this.page.setViewport({ width: 1920, height: 1080 });

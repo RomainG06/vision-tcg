@@ -1,13 +1,16 @@
-import puppeteer from 'puppeteer-extra';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+import puppeteer from 'puppeteer';
+// import StealthPlugin from 'puppeteer-extra-plugin-stealth';  // Disabled for MVP
 import { config } from '../utils/config.js';
 import { logger } from '../utils/logger.js';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
-import { join } from 'path';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { loadCookies, saveCookies } from '../utils/cookie-manager.js';
 
-// Add stealth plugin to hide automation signals
-puppeteer.use(StealthPlugin());
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// puppeteer.use(StealthPlugin());  // Disabled for MVP
 
 /**
  * Base fetcher class with common functionality

@@ -5,6 +5,7 @@ import rateLimit from 'express-rate-limit';
 import { config } from '../utils/config.js';
 import { logger } from '../utils/logger.js';
 import router from './routes.js';
+import profileRoutes from './routes-profiles.js';
 import { initDatabase } from '../db/database.js';
 
 export const app = express();
@@ -38,6 +39,7 @@ app.get('/health', (req, res) => {
 
 // API routes
 app.use('/api', router);
+app.use('/api', profileRoutes);
 
 // 404 handler
 app.use((req, res) => {

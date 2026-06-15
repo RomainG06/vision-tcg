@@ -8,7 +8,7 @@ import { LeboncoinFetcher } from './src/fetchers/leboncoin.js';
 import { VintedFetcher } from './src/fetchers/vinted.js';
 import { logger } from './src/utils/logger.js';
 import { initDatabase, run, all, closeDatabase } from './src/db/database.js';
-import { calculateScore } from './src/scoring/scorer.js';
+import { scoreListing } from './src/scoring/scorer.js';
 
 process.env.LOG_LEVEL = 'debug';
 

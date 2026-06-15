@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hunting Dashboard — Design System Preview</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0A0E27 0%, #121633 100%);
+      color: #F8FAFC;
+      line-height: 1.6;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid #E6B85C;
+      box-shadow: 0 0 30px rgba(230, 184, 92, 0.15);
+    }
+
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #F8FAFC;
+      text-shadow: 0 0 20px rgba(230, 184, 92, 0.3);
+    }
+
+    .tagline {
+      font-size: 16px;
+      color: #CBD5E1;
+      margin-top: 8px;
+    }
+
+    .tagline-highlight {
+      color: #E6B85C;
+      font-weight: 600;
+    }
+
+    .section {
+      margin-bottom: 64px;
+    }
+
+    h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: #E6B85C;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(230, 184, 92, 0.3);
+      letter-spacing: 1px;
+    }
+
+    .description {
+      color: #CBD5E1;
+      margin-bottom: 24px;
+      padding: 16px;
+      background: rgba(230, 184, 92, 0.05);
+      border-left: 3px solid #E6B85C;
+      border-radius: 4px;
+    }
+
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .color-swatch {
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #E6B85C;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .color-box {
+      width: 100%;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: #F8FAFC;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    }
+
+    .color-info {
+      padding: 12px;
+      background: #1A1F3A;
+      font-size: 11px;
+      color: #CBD5E1;
+    }
+
+    .color-name {
+      font-weight: 600;
+      color: #E6B85C;
+      margin-bottom: 4px;
+    }
+
+    .concepts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .concept-card {
+      background: #1A1F3A;
+      border: 1px solid #E6B85C;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(230, 184, 92, 0.1);
+    }
+
+    .concept-title {
+      font-weight: 700;
+      color: #E6B85C;
+      margin-bottom: 8px;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+    }
+
+    .concept-desc {
+      font-size: 12px;
+      color: #CBD5E1;
+      line-height: 1.5;
+    }
+
+    .scoring-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #1A1F3A;
+      border: 1px solid #E6B85C;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 16px;
+      box-shadow: 0 4px 12px rgba(230, 184, 92, 0.1);
+    }
+
+    .scoring-table thead {
+      background: #121633;
+      border-bottom: 2px solid #E6B85C;
+    }
+
+    .scoring-table th {
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #E6B85C;
+      font-size: 13px;
+    }
+
+    .scoring-table td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(230, 184, 92, 0.1);
+      font-size: 12px;
+    }
+
+    .scoring-table tr:hover {
+      background: rgba(230, 184, 92, 0.05);
+    }
+
+    .score-range {
+      font-weight: 600;
+      color: #F8FAFC;
+    }
+
+    .score-rarity {
+      color: #E6B85C;
+      font-weight: 600;
+    }
+
+    .mockup-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+
+    .mockup-container {
+      background: #1A1F3A;
+      border: 1px solid #E6B85C;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(230, 184, 92, 0.1);
+      position: relative;
+    }
+
+    .mockup-container h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #E6B85C;
+    }
+
+    .mockup-container svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: linear-gradient(135deg, #0A0E27 0%, #121633 100%);
+      border-radius: 8px;
+      margin-top: 12px;
+    }
+
+    .badge-showcase {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .badge {
+      background: #1A1F3A;
+      border-radius: 6px;
+      padding: 12px;
+      text-align: center;
+      border: 1px solid;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .badge-wizards {
+      border-color: #7C3AED;
+      background: #7C3AED;
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(124, 58, 237, 0.05));
+      color: #7C3AED;
+    }
+
+    .badge-fr {
+      border-color: #0EA5E9;
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(14, 165, 233, 0.05));
+      color: #0EA5E9;
+    }
+
+    .badge-lot {
+      border-color: #10B981;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.05));
+      color: #10B981;
+    }
+
+    .badge-holo {
+      border-color: #FFD700;
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
+      color: #FFD700;
+    }
+
+    .badge-underpriced {
+      border-color: #FF1744;
+      background: linear-gradient(135deg, rgba(255, 23, 68, 0.2), rgba(255, 23, 68, 0.05));
+      color: #FF1744;
+    }
+
+    .badge-close {
+      border-color: #10B981;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+      color: #10B981;
+    }
+
+    .footer {
+      margin-top: 64px;
+      padding-top: 24px;
+      border-top: 1px solid #E6B85C;
+      text-align: center;
+      color: #CBD5E1;
+      font-size: 12px;
+    }
+
+    .highlight {
+      color: #E6B85C;
+      font-weight: 600;
+    }
+
+    code {
+      background: #121633;
+      border: 1px solid #E6B85C;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #00D9FF;
+    }
+
+    .features-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .feature {
+      background: #1A1F3A;
+      border: 1px solid #E6B85C;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(230, 184, 92, 0.1);
+    }
+
+    .feature-title {
+      font-weight: 600;
+      color: #E6B85C;
+      margin-bottom: 8px;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+    }
+
+    .feature-desc {
+      font-size: 12px;
+      color: #CBD5E1;
+      line-height: 1.5;
+    }
+
+    .radar-visualization {
+      background: #0A0E27;
+      border: 1px solid #E6B85C;
+      border-radius: 8px;
+      padding: 24px;
+      margin: 24px 0;
+      text-align: center;
+      min-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .radar-visualization svg {
+      max-width: 300px;
+      width: 100%;
+    }
+
+    @media (max-width: 1024px) {
+      .mockup-grid {
+        grid-template-columns: 1fr;
+      }
+      h1 {
+        font-size: 36px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>🎯 Hunting Dashboard</h1>
+      <div class="tagline">
+        <strong>Design System: </strong> <span class="tagline-highlight">Premium Collector Radar</span><br>
+        <em>Crypto/Trading Dashboard meets Collectible Marketplace</em>
+      </div>
+    </div>
+
+    <!-- Overview Section -->
+    <div class="section">
+      <h2>🧭 Overview</h2>
+      <div class="description">
+        A premium dark-mode interface for serious collectors hunting valuable opportunities. Inspired by trading dashboards, game inventories, mission radars, and collectible marketplaces—with collector energy, not childish aesthetics.
+      </div>
+      <div class="features-list">
+        <div class="feature">
+          <div class="feature-title">💼 PROFESSIONAL TONE</div>
+          <div class="feature-desc">Dark premium interface inspired by Bloomberg, Stripe, Linear — serious collector tools</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">🎪 COLLECTOR ENERGY</div>
+          <div class="feature-desc">Adventure + discovery + hunting metaphors woven throughout UI</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">🎯 OPPORTUNITY FOCUS</div>
+          <div class="feature-desc">Every screen designed to detect, track, and convert collector opportunities</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">📊 DATA VISUALIZATION</div>
+          <div class="feature-desc">Radar animations, score glows, rarity tiers—visual storytelling</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Color Palette Section -->
+    <div class="section">
+      <h2>🎨 Color Palette</h2>
+      <div class="description">
+        Dark mode optimized. Primary colors inspire hunting/treasure aesthetics.
+      </div>
+      
+      <h3 style="color: #CBD5E1; font-size: 14px; margin-top: 24px; margin-bottom: 16px;">PRIMARY COLORS</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-box" style="background: #0A0E27;">OBSIDIAN</div>
+          <div class="color-info">
+            <div class="color-name">#0A0E27</div>
+            <div>Main background void</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-box" style="background: #121633;">MIDNIGHT</div>
+          <div class="color-info">
+            <div class="color-name">#121633</div>
+            <div>Header/elevated</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-box" style="background: #1A1F3A;">DEEP DARK</div>
+          <div class="color-info">
+            <div class="color-name">#1A1F3A</div>
+            <div>Card backgrounds</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="color: #CBD5E1; font-size: 14px; margin-top: 24px; margin-bottom: 16px;">RARITY TIERS (Status Colors)</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-box" style="background: #4B5563;">COMMON</div>
+          <div class="color-info">
+            <div class="color-name">#4B5563</div>
+            <div>Standard listing</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-box" style="background: #7C3AED;">RARE</div>
+          <div class="color-info">
+            <div class="color-name">#7C3AED</div>
+            <div>Good opportunity</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-box" style="background: #0EA5E9;">EPIC</div>
+          <div class="color-info">
+            <div class="color-name">#0EA5E9</div>
+            <div>Strong opportunity</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-box" style="background: #FFD700;">LEGENDARY</div>
+          <div class="color-info">
+            <div class="color-name">#FFD700</div>
+            <div>Very strong + glow</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-box" style="background: #FF1744;">MYTHIQUE</div>
+          <div class="color-info">
+            <div class="color-name">#FF1744</div>
+            <div>Price anomaly (alert)</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="color: #CBD5E1; font-size: 14px; margin-top: 24px; margin-bottom: 16px;">ACCENT COLORS</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-box" style="background: #E6B85C;">HUNTER GOLD</div>
+          <div class="color-info"><div class="color-name">#E6B85C</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-box" style="background: #00D9FF;">MANA CYAN</div>
+          <div class="color-info"><div class="color-name">#00D9FF</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-box" style="background: #F59E0B;">WARNING</div>
+          <div class="color-info"><div class="color-name">#F59E0B</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-box" style="background: #10B981;">SUCCESS</div>
+          <div class="color-info"><div class="color-name">#10B981</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hunting Concepts -->
+    <div class="section">
+      <h2>🎯 Hunting Concepts & Terminology</h2>
+      <div class="description">
+        All UI labels use hunting metaphors. Every screen communicates the "hunt" narrative.
+      </div>
+      <div class="concepts-grid">
+        <div class="concept-card">
+          <div class="concept-title">PROFIL DE CHASSE</div>
+          <div class="concept-desc">Hunt Profile — custom search configurations, objectives, boosts, exclusions</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-title">RADAR</div>
+          <div class="concept-desc">Live Detection — animated sweep showing active hunts & detected targets</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-title">OPPORTUNITÉS</div>
+          <div class="concept-desc">Detected Listings — feed of matching items ranked by score</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-title">NIVEAU DE RARETÉ</div>
+          <div class="concept-desc">Rarity Level — Common → Rare → Epic → Legendary → Mythique</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-title">SCORE D'OPPORTUNITÉ</div>
+          <div class="concept-desc">Opportunity Score — 0–100 ranking of listing fit (algorithm-driven)</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-title">RISQUE</div>
+          <div class="concept-desc">Risk Assessment — Low / Medium / High risk indicator per listing</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-title">POTENTIEL</div>
+          <div class="concept-desc">Value Gain — estimated profit/return on purchase</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-title">ALERTE</div>
+          <div class="concept-desc">Notification Trigger — alert conditions & thresholds</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-title">WATCHLIST</div>
+          <div class="concept-desc">Saved Items — tracked listings for later action</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-title">HISTORIQUE</div>
+          <div class="concept-desc">Hunt History — past hunts, discoveries, actions, conversions</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scoring System -->
+    <div class="section">
+      <h2>📈 Scoring System (0–100)</h2>
+      <div class="description">
+        Each opportunity receives an AI-calculated score based on boosts, exclusions, and market data.
+      </div>
+      <table class="scoring-table">
+        <thead>
+          <tr>
+            <th>Score Range</th>
+            <th>Tier Name</th>
+            <th>Icon</th>
+            <th>Interpretation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="score-range">0–39</td>
+            <td class="score-rarity">Normal</td>
+            <td>○</td>
+            <td>Standard listing, no special interest</td>
+          </tr>
+          <tr>
+            <td class="score-range">40–59</td>
+            <td class="score-rarity">Intéressant</td>
+            <td>◆</td>
+            <td>Interesting, worth monitoring</td>
+          </tr>
+          <tr>
+            <td class="score-range">60–74</td>
+            <td class="score-rarity">Rare</td>
+            <td>◈</td>
+            <td>Good opportunity detected</td>
+          </tr>
+          <tr>
+            <td class="score-range">75–89</td>
+            <td class="score-rarity">Épique</td>
+            <td>★</td>
+            <td>Strong opportunity, act soon</td>
+          </tr>
+          <tr>
+            <td class="score-range">90–100</td>
+            <td class="score-rarity">Légendaire</td>
+            <td>✦</td>
+            <td>Exceptional, contact immediately</td>
+          </tr>
+          <tr>
+            <td class="score-range">ANOMALY</td>
+            <td class="score-rarity">Mythique</td>
+            <td>✧</td>
+            <td>Price anomaly, verify urgently</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Badge System -->
+    <div class="section">
+      <h2>🏷️ Badge System</h2>
+      <div class="description">
+        Badges communicate key attributes at a glance. Each badge is color-coded and monospace.
+      </div>
+      <div class="badge-showcase">
+        <div class="badge badge-wizards">WIZARDS</div>
+        <div class="badge badge-fr">FR</div>
+        <div class="badge badge-lot">LOT</div>
+        <div class="badge badge-holo">HOLO</div>
+        <div class="badge badge-underpriced">SOUS-COTÉ</div>
+        <div class="badge badge-close">PROCHE</div>
+        <div class="badge badge-underpriced">À VÉRIFIER</div>
+        <div class="badge badge-wizards">ENVOI RAPIDE</div>
+        <div class="badge badge-wizards">NEUF</div>
+        <div class="badge badge-wizards">PSA GRADED</div>
+        <div class="badge badge-holo">1ÈRE ÉD</div>
+        <div class="badge badge-wizards">CERTIFIÉ</div>
+      </div>
+    </div>
+
+    <!-- Mockups -->
+    <div class="section">
+      <h2>📱 Design Mockups</h2>
+      <div class="description">
+        Interactive screens showing the dashboard, hunt profile, and opportunity cards.
+      </div>
+      <div class="mockup-grid">
+        <div class="mockup-container">
+          <h3>🎯 Hunting Dashboard (Main Screen)</h3>
+          <svg viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" style="max-height: 500px;">
+            <rect width="1440" height="900" fill="#0A0E27"/>
+            <text x="720" y="450" text-anchor="middle" fill="#E6B85C" font-size="18" font-family="Outfit">
+              [Dashboard mockup loads from hunting-dashboard.svg]
+            </text>
+          </svg>
+        </div>
+        <div class="mockup-container">
+          <h3>🛡️ Hunt Profile Configuration</h3>
+          <svg viewBox="0 0 1440 1200" xmlns="http://www.w3.org/2000/svg" style="max-height: 500px;">
+            <rect width="1440" height="1200" fill="#0A0E27"/>
+            <text x="720" y="600" text-anchor="middle" fill="#E6B85C" font-size="18" font-family="Outfit">
+              [Hunt profile mockup loads from hunt-profile.svg]
+            </text>
+          </svg>
+        </div>
+        <div class="mockup-container">
+          <h3>💎 Opportunity Card (Legendary Tier)</h3>
+          <svg viewBox="0 0 420 520" xmlns="http://www.w3.org/2000/svg" style="max-height: 500px; max-width: 350px; margin: 0 auto;">
+            <rect width="420" height="520" fill="#0A0E27"/>
+            <text x="210" y="260" text-anchor="middle" fill="#E6B85C" font-size="14" font-family="Outfit">
+              [Opportunity card loads from opportunity-card-legendary.svg]
+            </text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Radar Concept -->
+    <div class="section">
+      <h2>📡 Radar Visualization</h2>
+      <div class="description">
+        The radar is the heart of the hunting interface. Animated sweep, concentric circles, detected targets.
+      </div>
+      <div class="radar-visualization">
+        <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="64" cy="64" r="60" fill="none" stroke="#E6B85C" stroke-width="2" opacity="0.8"/>
+          <circle cx="64" cy="64" r="44" fill="none" stroke="#E6B85C" stroke-width="1" opacity="0.4"/>
+          <circle cx="64" cy="64" r="28" fill="none" stroke="#E6B85C" stroke-width="1" opacity="0.3"/>
+          <circle cx="64" cy="64" r="12" fill="none" stroke="#E6B85C" stroke-width="1" opacity="0.2"/>
+          <line x1="64" y1="16" x2="64" y2="112" stroke="#E6B85C" stroke-width="1" opacity="0.4"/>
+          <line x1="16" y1="64" x2="112" y2="64" stroke="#E6B85C" stroke-width="1" opacity="0.4"/>
+          <circle cx="64" cy="64" r="18" fill="#E6B85C" opacity="0.15"/>
+          <circle cx="64" cy="64" r="12" fill="none" stroke="#FFD700" stroke-width="1.5"/>
+          <circle cx="64" cy="64" r="6" fill="#FFD700" opacity="0.6"/>
+          <circle cx="95" cy="45" r="5" fill="none" stroke="#00D9FF" stroke-width="1.5"/>
+          <circle cx="42" cy="85" r="5" fill="none" stroke="#FF1744" stroke-width="1.5"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Key Features -->
+    <div class="section">
+      <h2>✨ Key Features</h2>
+      <div class="features-list">
+        <div class="feature">
+          <div class="feature-title">🌙 DARK PREMIUM</div>
+          <div class="feature-desc">Obsidian to midnight gradient, sophisticated dark mode</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">📡 ANIMATED RADAR</div>
+          <div class="feature-desc">Live-scan sweep, target detection, hunt visualization</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">⭐ RARITY TIERS</div>
+          <div class="feature-desc">5-tier scoring system with distinct visual styling per tier</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">🎯 HUNTING METAPHORS</div>
+          <div class="feature-desc">Profile → Radar → Opportunités → Historique (all hunting themed)</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">🏷️ BADGE SYSTEM</div>
+          <div class="feature-desc">Color-coded, scannable tags (WIZARDS, FR, LOT, HOLO, etc.)</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">💎 PREMIUM TYPOGRAPHY</div>
+          <div class="feature-desc">Outfit (headings) + Inter (body) + JetBrains Mono (badges)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Implementation -->
+    <div class="section">
+      <h2>🚀 Implementation Checklist</h2>
+      <div class="description">
+        Files and assets ready for your dev team to integrate.
+      </div>
+      <div class="features-list">
+        <div class="feature">
+          <div class="feature-title">✓ TOKENS</div>
+          <div class="feature-desc"><code>hunting-tokens.json</code> — All design constants, colors, shadows, animations</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">✓ MOCKUPS</div>
+          <div class="feature-desc"><code>hunting-dashboard.svg</code>, <code>hunt-profile.svg</code>, opportunity cards</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">✓ DOCUMENTATION</div>
+          <div class="feature-desc"><code>README-hunting-design.md</code> — Full design system guide & rationale</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">✓ ASSETS</div>
+          <div class="feature-desc"><code>logo-hunting-radar.svg</code> — Animated radar logo & components</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">✓ PREVIEW</div>
+          <div class="feature-desc"><code>preview-hunting.html</code> — Interactive design system browser (this page!)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p><strong>🎯 Hunting Dashboard Design System</strong> — Premium Collector Radar</p>
+      <p style="margin-top: 12px;">Ready for Implementation | Version 1.0 | June 2026</p>
+      <p style="margin-top: 8px;">Full documentation: <code>README-hunting-design.md</code></p>
+    </div>
+  </div>
+</body>
+</html>

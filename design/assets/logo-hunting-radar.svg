@@ -1,0 +1,96 @@
+<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="radarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E6B85C;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="radarCenter" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#E6B85C;stop-opacity:0.3" />
+    </radialGradient>
+    <filter id="radarGlow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="scanEffect">
+      <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" result="noise" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" />
+    </filter>
+    <style>
+      @keyframes radarSweep {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      @keyframes scanPulse {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 1; }
+      }
+      .radar-sweep { animation: radarSweep 4s linear infinite; }
+      .scan-pulse { animation: scanPulse 1.5s ease-in-out infinite; }
+    </style>
+  </defs>
+  
+  <!-- Outer circle frame -->
+  <circle cx="64" cy="64" r="60" fill="none" stroke="url(#radarGradient)" stroke-width="2" opacity="0.8" filter="url(#radarGlow)"/>
+  
+  <!-- Concentric circles (radar rings) -->
+  <circle cx="64" cy="64" r="44" fill="none" stroke="#E6B85C" stroke-width="1" opacity="0.4"/>
+  <circle cx="64" cy="64" r="28" fill="none" stroke="#E6B85C" stroke-width="1" opacity="0.3"/>
+  <circle cx="64" cy="64" r="12" fill="none" stroke="#E6B85C" stroke-width="1" opacity="0.2"/>
+  
+  <!-- Cross-hairs -->
+  <g stroke="#E6B85C" stroke-width="1" opacity="0.4">
+    <line x1="64" y1="16" x2="64" y2="112"/>
+    <line x1="16" y1="64" x2="112" y2="64"/>
+  </g>
+  
+  <!-- Hunting zones (quadrants highlight) -->
+  <g fill="#E6B85C" opacity="0.05">
+    <path d="M 64 64 L 100 30 A 44 44 0 0 1 98 28" />
+    <path d="M 64 64 L 98 100 A 44 44 0 0 1 100 98" />
+  </g>
+  
+  <!-- Center bullseye -->
+  <circle cx="64" cy="64" r="18" fill="url(#radarCenter)" filter="url(#radarGlow)"/>
+  <circle cx="64" cy="64" r="12" fill="none" stroke="#FFD700" stroke-width="1.5" opacity="0.8"/>
+  <circle cx="64" cy="64" r="6" fill="#FFD700" opacity="0.6"/>
+  
+  <!-- Scanning sweep line (animated) -->
+  <g class="radar-sweep" transform-origin="64 64">
+    <line x1="64" y1="64" x2="64" y2="16" stroke="url(#radarGradient)" stroke-width="2" opacity="0.8" filter="url(#radarGlow)"/>
+  </g>
+  
+  <!-- Detected targets (prey icons) -->
+  <g>
+    <!-- Target 1 (top-right) -->
+    <circle cx="95" cy="45" r="5" fill="none" stroke="#00D9FF" stroke-width="1.5" opacity="0.8"/>
+    <circle cx="95" cy="45" r="3" fill="#00D9FF" opacity="0.5"/>
+    
+    <!-- Target 2 (bottom-left) -->
+    <circle cx="42" cy="85" r="5" fill="none" stroke="#FF1744" stroke-width="1.5" opacity="0.8"/>
+    <circle cx="42" cy="85" r="3" fill="#FF1744" opacity="0.5"/>
+    
+    <!-- Target 3 (right) -->
+    <circle cx="110" cy="65" r="4" fill="none" stroke="#0EA5E9" stroke-width="1.5" opacity="0.6"/>
+    <circle cx="110" cy="65" r="2" fill="#0EA5E9" opacity="0.4"/>
+  </g>
+  
+  <!-- Danger/Alert pulse (mythique indicator) -->
+  <circle cx="64" cy="64" r="60" fill="none" stroke="#FF1744" stroke-width="0.5" opacity="0" class="scan-pulse"/>
+  
+  <!-- Corner markers (hunter's compass) -->
+  <g fill="#E6B85C" opacity="0.5">
+    <!-- N -->
+    <text x="64" y="12" font-family="JetBrains Mono" font-size="10" text-anchor="middle" fill="#E6B85C">N</text>
+    <!-- E -->
+    <text x="115" y="68" font-family="JetBrains Mono" font-size="10" text-anchor="middle" fill="#E6B85C">E</text>
+    <!-- S -->
+    <text x="64" y="118" font-family="JetBrains Mono" font-size="10" text-anchor="middle" fill="#E6B85C">S</text>
+    <!-- W -->
+    <text x="13" y="68" font-family="JetBrains Mono" font-size="10" text-anchor="middle" fill="#E6B85C">W</text>
+  </g>
+</svg>

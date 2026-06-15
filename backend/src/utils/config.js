@@ -1,39 +1,37 @@
 import dotenv from 'dotenv';
-dotenv.config();
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 export const config = {
   port: process.env.PORT || 3000,
   nodeEnv: process.env.NODE_ENV || 'development',
+  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
   
-  database: {
-    path: process.env.DB_PATH || './dev.db'
-  },
-  
-  chromium: {
-    ws: process.env.CHROMIUM_WS || 'ws://localhost:3001',
-    headless: process.env.CHROMIUM_HEADLESS === 'true'
-  },
-  
-  scraping: {
-    maxResults: parseInt(process.env.MAX_RESULTS || '50'),
-    timeout: parseInt(process.env.SCRAPE_TIMEOUT || '60000')
-  },
-  
+  // Scoring weights
   scoring: {
-    maxBudget: parseFloat(process.env.MAX_BUDGET || '1500'),
-    target: {
-      lat: parseFloat(process.env.TARGET_LAT || '43.7102'),
-      lon: parseFloat(process.env.TARGET_LON || '7.2620')
-    },
-    maxDistanceKm: parseFloat(process.env.MAX_DISTANCE_KM || '50')
+    wizardsWeight: 40,
+    frenchWeight: 20,
+    lotWeight: 20,
+    priceWeight: 10,
+    distanceWeight: 10
   },
   
-  rateLimit: {
-    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'),
-    max: parseInt(process.env.RATE_LIMIT_MAX || '100')
+  // Geographic constraints
+  geo: {
+    centerLat: 43.7102,  // Nice
+    centerLon: 7.2620,
+    maxDistanceKm: 50,
+    maxBudget: 1500
   },
   
-  logging: {
-    level: process.env.LOG_LEVEL || 'info'
+  // Scraping config
+  scraping: {
+    headless: false,  // MVP uses headful mode
+    timeout: 30000,
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
   }
 };

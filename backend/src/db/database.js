@@ -1,185 +1,86 @@
 import initSqlJs from 'sql.js';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { config } from '../utils/config.js';
-import { logger } from '../utils/logger.js';
+import fs from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const DB_PATH = path.resolve(__dirname, '../../data/dev.db');
 
 let db = null;
 let SQL = null;
 
-/**
- * Initialize SQL.js and load/create database
- */
 export async function initDatabase() {
-  if (db) return db;
-  
+  // Initialiser sql.js
   SQL = await initSqlJs();
   
-  const dbPath = config.database.path;
-  
-  if (existsSync(dbPath)) {
-    logger.info(`Loading existing database from ${dbPath}`);
-    const buffer = readFileSync(dbPath);
-    db = new SQL.Database(buffer);
-    
-    // Check if tables exist
-    try {
-      const tables = db.exec("SELECT name FROM sqlite_master WHERE type='table'");
-      const tableNames = tables[0]?.values?.flat() || [];
-      
-      if (!tableNames.includes('listings') || !tableNames.includes('scrape_runs')) {
-        logger.warn('Database file exists but tables missing. Running migrations...');
-        await runMigrations();
-      }
-    } catch (error) {
-      logger.warn('Could not check tables, running migrations...', error);
-      await runMigrations();
-    }
-  } else {
-    logger.info(`Creating new database at ${dbPath}`);
+  // Charger la DB depuis le disque si elle existe
+  try {
+    const data = await fs.readFile(DB_PATH);
+    db = new SQL.Database(data);
+    console.log('📂 Database loaded from disk');
+  } catch (err) {
+    // Créer une nouvelle DB en mémoire
     db = new SQL.Database();
-    await runMigrations();
+    console.log('✨ New database created in memory');
   }
+  
+  // Auto-save toutes les 30s
+  setInterval(() => saveDatabase(), 30000);
+  
+  // Save on exit
+  process.on('exit', () => {
+    saveDatabase();
+  });
+  
+  process.on('SIGINT', () => {
+    saveDatabase();
+    process.exit(0);
+  });
+  
+  // Auto-migration: vérifier si les tables existent
+  await runMigrations();
   
   return db;
 }
 
-/**
- * Run migrations (create tables)
- */
 async function runMigrations() {
-  const { readFileSync } = await import('fs');
-  const { fileURLToPath } = await import('url');
-  const { dirname, join } = await import('path');
-  
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = dirname(__filename);
-  const schemaPath = join(__dirname, 'schema.sql');
-  
-  logger.info('Running database migrations...');
-  const schema = readFileSync(schemaPath, 'utf-8');
-  db.run(schema);
-  saveDatabase();
-  logger.info('Migrations completed successfully');
-}
-
-/**
- * Save database to disk
- */
-export function saveDatabase() {
-  if (!db) return;
-  
-  const data = db.export();
-  const buffer = Buffer.from(data);
-  writeFileSync(config.database.path, buffer);
-  logger.debug(`Database saved to ${config.database.path}`);
-}
-
-/**
- * Execute a query and return results
- * @param {string} sql - SQL query
- * @param {Array} params - Query parameters
- * @returns {Array} Results
- */
-export function query(sql, params = []) {
-  if (!db) throw new Error('Database not initialized');
-  
-  const stmt = db.prepare(sql);
-  stmt.bind(params);
-  
-  const results = [];
-  while (stmt.step()) {
-    results.push(stmt.getAsObject());
-  }
-  stmt.free();
-  
-  return results;
-}
-
-/**
- * Execute a statement (INSERT, UPDATE, DELETE)
- * @param {string} sql - SQL statement
- * @param {Array} params - Statement parameters
- * @returns {number} lastInsertRowid for INSERT statements
- */
-export function run(sql, params = []) {
-  if (!db) throw new Error('Database not initialized');
-  
-  db.run(sql, params);
-  
-  // Get last insert ID if it was an INSERT
-  const lastId = db.exec('SELECT last_insert_rowid() as id')[0]?.values[0]?.[0];
-  
-  saveDatabase(); // Auto-save after writes
-  
-  return lastId || 0;
-}
-
-/**
- * Execute multiple statements in a transaction
- * @param {Function} callback - Function containing db operations
- */
-export function transaction(callback) {
-  if (!db) throw new Error('Database not initialized');
+  const schemaPath = path.resolve(__dirname, 'schema.sql');
   
   try {
-    db.run('BEGIN TRANSACTION');
-    callback();
-    db.run('COMMIT');
-    saveDatabase();
-  } catch (error) {
-    db.run('ROLLBACK');
-    throw error;
+    // Vérifier si la table principale existe
+    const result = db.exec("SELECT name FROM sqlite_master WHERE type='table' AND name='listings'");
+    
+    if (result.length === 0) {
+      // Tables n'existent pas, charger le schema
+      const schema = await fs.readFile(schemaPath, 'utf-8');
+      db.exec(schema);
+      console.log('✅ Database schema created');
+      await saveDatabase();
+    } else {
+      console.log('✅ Database schema already exists');
+    }
+  } catch (err) {
+    console.error('❌ Migration error:', err);
+    throw err;
   }
 }
 
-/**
- * Get a single row
- * @param {string} sql - SQL query
- * @param {Array} params - Query parameters
- * @returns {Object|null}
- */
-export function get(sql, params = []) {
-  const results = query(sql, params);
-  return results.length > 0 ? results[0] : null;
-}
-
-/**
- * Get all rows
- * @param {string} sql - SQL query
- * @param {Array} params - Query parameters
- * @returns {Array}
- */
-export function all(sql, params = []) {
-  return query(sql, params);
-}
-
-/**
- * Close database connection
- */
-export function close() {
-  if (db) {
-    saveDatabase();
-    db.close();
-    db = null;
-    logger.info('Database closed');
+function saveDatabase() {
+  if (!db) return;
+  
+  try {
+    const data = db.export();
+    fs.writeFile(DB_PATH, data);
+  } catch (err) {
+    console.error('❌ Error saving database:', err);
   }
 }
 
-// Auto-save every 30 seconds
-setInterval(() => {
-  if (db) {
-    saveDatabase();
+export function getDatabase() {
+  if (!db) {
+    throw new Error('Database not initialized. Call initDatabase() first.');
   }
-}, 30000);
+  return db;
+}
 
-// Save on process exit
-process.on('exit', () => {
-  close();
-});
-
-process.on('SIGINT', () => {
-  close();
-  process.exit(0);
-});
-
-export { db };
+export { saveDatabase };

@@ -65,8 +65,16 @@ function App() {
 
   const handleListingUpdate = async (id, updates) => {
     try {
-      await updateListing(id, updates);
-      await loadData();
+      const updated = await updateListing(id, updates);
+      
+      // Update local state with the returned listing
+      setListings(prevListings =>
+        prevListings.map(l => l.id === id ? updated : l)
+      );
+      
+      // Reload stats to reflect new counts
+      const statsData = await fetchStats();
+      setStats(statsData);
     } catch (err) {
       console.error('Failed to update listing:', err);
     }

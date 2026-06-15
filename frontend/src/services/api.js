@@ -6,7 +6,9 @@ const API_URL = import.meta.env.VITE_API_URL || '';
 export async function fetchListings(filters = {}) {
   const params = new URLSearchParams();
   
-  if (filters.status) params.append('status', filters.status);
+  // Default to 'all' to show all listings regardless of status
+  params.append('status', filters.status || 'all');
+  
   if (filters.minScore) params.append('min_score', filters.minScore);
   if (filters.maxPrice) params.append('max_price', filters.maxPrice);
   if (filters.maxDistance) params.append('max_distance', filters.maxDistance);

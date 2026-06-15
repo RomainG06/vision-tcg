@@ -19,19 +19,20 @@ export const theme = {
       legendary: '#FFD700',     // Very strong (score 75-89) + gold glow
       mythique: '#FF1744',      // Price anomaly (score 90-100) red alert
     },
-    accents: {
-      hunterGold: '#E6B85C',    // Radar sweep, primary accents
-      manaCyan: '#00D9FF',      // Energy, highlights
-      preyRed: '#FF1744',       // Alerts, danger
-      successGreen: '#10B981',  // Confirmed matches
-      warningOrange: '#F59E0B', // Caution, verify
-    },
     text: {
       primary: '#F8FAFC',       // Headlines, primary text
       secondary: '#CBD5E1',     // Body text
       tertiary: '#94A3B8',      // Labels, subtle text
       muted: '#64748B',         // Disabled, timestamps
     },
+  },
+  // Direct export for convenience (avoid theme.colors.accents.hunterGold verbosity)
+  accents: {
+    hunterGold: '#E6B85C',    // Radar sweep, primary accents
+    manaCyan: '#00D9FF',      // Energy, highlights
+    preyRed: '#FF1744',       // Alerts, danger
+    successGreen: '#10B981',  // Confirmed matches
+    warningOrange: '#F59E0B', // Caution, verify
   },
   typography: {
     fonts: {

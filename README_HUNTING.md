@@ -22,9 +22,9 @@ Commandes utiles (copier/coller)
   npm run dev
 
 - Tests rapides
-  curl http://localhost:5001/health
-  curl http://localhost:5001/api/listings
-  curl http://localhost:5001/api/listings/1
+  curl http://localhost:3001/health
+  curl http://localhost:3001/api/listings
+  curl http://localhost:3001/api/listings/1
 
 Run profile (cron / script)
 - Script attendu : /opt/data/profiles/dev/home/vision-tcg/scripts/run_profile.sh

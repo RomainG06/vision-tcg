@@ -52,13 +52,13 @@ export async function parseLeboncoinListing(html, url) {
     
     // Estimate coordinates (simplified - in production use geocoding API)
     // For MVP, we'll use approximate Nice coordinates
-    const lat = config.scoring.target.lat + (Math.random() - 0.5) * 0.1;
-    const lon = config.scoring.target.lon + (Math.random() - 0.5) * 0.1;
+    const lat = config.geo.centerLat + (Math.random() - 0.5) * 0.1;
+    const lon = config.geo.centerLon + (Math.random() - 0.5) * 0.1;
     
     // Calculate distance
     const distance = calculateDistance(
-      config.scoring.target.lat,
-      config.scoring.target.lon,
+      config.geo.centerLat,
+      config.geo.centerLon,
       lat,
       lon
     );

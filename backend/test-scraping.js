@@ -118,6 +118,23 @@ async function saveToDatabase(listings, source) {
           price, location, lat, lon, distance_km, image_url, posted_at,
           is_wizards, is_french, is_lot, card_count_estimate, score, status
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(url) DO UPDATE SET
+          scrape_run_id = excluded.scrape_run_id,
+          title = excluded.title,
+          description = excluded.description,
+          price = excluded.price,
+          location = excluded.location,
+          lat = excluded.lat,
+          lon = excluded.lon,
+          distance_km = excluded.distance_km,
+          image_url = excluded.image_url,
+          posted_at = excluded.posted_at,
+          is_wizards = excluded.is_wizards,
+          is_french = excluded.is_french,
+          is_lot = excluded.is_lot,
+          card_count_estimate = excluded.card_count_estimate,
+          score = excluded.score,
+          scraped_at = CURRENT_TIMESTAMP
       `, [
         scrapeRunId,
         listing.source,

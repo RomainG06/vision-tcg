@@ -3,6 +3,8 @@
  * Replaces scorer-simple.js with profile-based scoring
  */
 
+import { enrichListing } from './signal-detector.js';
+
 /**
  * Calculate distance between two coordinates (Haversine formula)
  * @param {number} lat1 - Latitude 1
@@ -134,20 +136,23 @@ export function scoreListing(listing, profile) {
 }
 
 /**
- * Score multiple listings
+ * Score multiple listings and enrich with signals
  * @param {Array<Object>} listings - Array of listings
  * @param {Object} profile - Profile configuration
- * @returns {Array<Object>} Listings with scores
+ * @returns {Array<Object>} Listings with scores, signals, badges, and explanation
  */
 export function scoreListings(listings, profile) {
   return listings.map(listing => {
     const { score, breakdown } = scoreListing(listing, profile);
-    return {
+    const withScore = {
       ...listing,
       score,
-      score_breakdown: JSON.stringify(breakdown)
+      score_breakdown: breakdown
     };
-  });
+    
+    // Enrich with opportunity/risk signals, badges, and explanation
+    return enrichListing(withScore, profile);
+  }).sort((a, b) => b.score - a.score);
 }
 
 /**

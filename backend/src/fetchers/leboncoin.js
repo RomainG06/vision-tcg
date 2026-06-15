@@ -32,7 +32,7 @@ export class LeboncoinFetcher extends BaseFetcher {
    * Fetch listings from Leboncoin
    */
   async fetch(query, options = {}) {
-    const { maxResults = 50 } = options;
+    const { maxResults = 50, waitForCaptcha = 60 } = options; // 60s par défaut pour résoudre CAPTCHA
     
     try {
       await this.init();
@@ -52,7 +52,21 @@ export class LeboncoinFetcher extends BaseFetcher {
       // Check for CAPTCHA
       if (await this.detectCaptcha()) {
         const debugInfo = await this.saveDebugInfo('captcha');
-        throw new Error(`CAPTCHA detected. Debug info saved: ${JSON.stringify(debugInfo)}`);
+        logger.warn(`⏳ CAPTCHA détecté ! Tu as ${waitForCaptcha} secondes pour le résoudre manuellement...`);
+        logger.warn(`   Screenshots sauvegardés : ${debugInfo?.screenshotPath}`);
+        logger.warn(`   Le script attend... résous le CAPTCHA dans le navigateur ouvert.`);
+        
+        // Wait for user to solve CAPTCHA
+        await new Promise(resolve => setTimeout(resolve, waitForCaptcha * 1000));
+        
+        // Check again after waiting
+        if (await this.detectCaptcha()) {
+          logger.error('❌ CAPTCHA toujours présent après attente');
+          throw new Error(`CAPTCHA not resolved after ${waitForCaptcha}s. Debug info: ${JSON.stringify(debugInfo)}`);
+        }
+        
+        logger.info('✅ CAPTCHA résolu ! Sauvegarde des cookies...');
+        await this.saveCookiesAfterCaptcha();
       }
       
       // Wait for listings to load

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vision TCG - Preview</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    header {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      color: #1a202c;
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    
+    .subtitle {
+      color: #718096;
+      font-size: 16px;
+    }
+    
+    .filters {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #4a5568;
+    }
+    
+    select, input {
+      padding: 10px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+    
+    select:focus, input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .stats {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+    
+    .stat {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .stat-label {
+      font-size: 14px;
+      color: #718096;
+      font-weight: 500;
+    }
+    
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1a202c;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    }
+    
+    .card-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .card-content {
+      padding: 16px;
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    
+    .score {
+      background: #4caf50;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    
+    .score.medium {
+      background: #ff9800;
+    }
+    
+    .score.low {
+      background: #9e9e9e;
+    }
+    
+    .source {
+      background: #e2e8f0;
+      color: #4a5568;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a202c;
+      margin-bottom: 12px;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+    
+    .price {
+      font-size: 20px;
+      font-weight: 700;
+      color: #667eea;
+    }
+    
+    .location {
+      color: #718096;
+      font-size: 13px;
+    }
+    
+    .badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    
+    .badge {
+      background: #f7fafc;
+      color: #4a5568;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .status-new {
+      border-left: 4px solid #4caf50;
+    }
+    
+    .status-interested {
+      border-left: 4px solid #2196f3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🃏 Vision TCG</h1>
+      <p class="subtitle">Détection et priorisation de lots de cartes Pokémon Wizards</p>
+    </header>
+    
+    <div class="filters">
+      <div class="filter-group">
+        <label>Statut</label>
+        <select>
+          <option>Tous</option>
+          <option>Nouveau</option>
+          <option>Intéressant</option>
+          <option>Passé</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label>Score minimum</label>
+        <input type="range" min="0" max="100" value="0">
+        <span style="font-size: 12px; color: #718096;">0 / 100</span>
+      </div>
+      
+      <div class="filter-group">
+        <label>Prix max (€)</label>
+        <input type="number" placeholder="Ex: 1500" value="1500">
+      </div>
+      
+      <div class="filter-group">
+        <label>Distance max (km)</label>
+        <input type="number" placeholder="Ex: 50" value="50">
+      </div>
+    </div>
+    
+    <div class="stats">
+      <div class="stat">
+        <span class="stat-label">Total annonces</span>
+        <span class="stat-value">3</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Score moyen</span>
+        <span class="stat-value">68.3</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Prix moyen</span>
+        <span class="stat-value">186€</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Wizards FR</span>
+        <span class="stat-value">2</span>
+      </div>
+    </div>
+    
+    <div class="grid">
+      <!-- Card 1 - High Score -->
+      <div class="card status-new">
+        <div class="card-image">🎴 Image Pokemon</div>
+        <div class="card-content">
+          <div class="card-header">
+            <span class="score">92</span>
+            <span class="source">leboncoin</span>
+          </div>
+          <h3 class="card-title">Lot 150 cartes Pokemon Wizards Base Set Jungle Fossil FR</h3>
+          <div class="card-meta">
+            <span class="price">80€</span>
+            <span class="location">📍 Nice, 06000 (0km)</span>
+          </div>
+          <div class="badges">
+            <span class="badge">⭐ Wizards</span>
+            <span class="badge">🇫🇷 Français</span>
+            <span class="badge">📦 Lot</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Card 2 - Medium Score -->
+      <div class="card status-interested">
+        <div class="card-image">🔥 Image Dracaufeu</div>
+        <div class="card-content">
+          <div class="card-header">
+            <span class="score medium">78</span>
+            <span class="source">vinted</span>
+          </div>
+          <h3 class="card-title">Pokemon Base Set Dracaufeu Holo FR</h3>
+          <div class="card-meta">
+            <span class="price">450€</span>
+            <span class="location">📍 Cannes (25.8km)</span>
+          </div>
+          <div class="badges">
+            <span class="badge">⭐ Wizards</span>
+            <span class="badge">🇫🇷 Français</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Card 3 - Low Score -->
+      <div class="card status-new">
+        <div class="card-image">⚔️ Image Pokemon Moderne</div>
+        <div class="card-content">
+          <div class="card-header">
+            <span class="score low">35</span>
+            <span class="source">leboncoin</span>
+          </div>
+          <h3 class="card-title">Cartes Pokemon modernes Épée et Bouclier</h3>
+          <div class="card-meta">
+            <span class="price">30€</span>
+            <span class="location">📍 Antibes, 06600 (15.2km)</span>
+          </div>
+          <div class="badges">
+            <span class="badge">🇫🇷 Français</span>
+            <span class="badge">📦 Lot</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

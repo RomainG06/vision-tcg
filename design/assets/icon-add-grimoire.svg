@@ -1,0 +1,60 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grimoireGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B2323;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#5A1F1F;stop-opacity:1" />
+    </linearGradient>
+    <filter id="grimoireGlow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Book spine (left) -->
+  <rect x="14" y="12" width="4" height="40" rx="1" fill="#3D0F0F"/>
+  
+  <!-- Book cover (main) -->
+  <rect x="18" y="12" width="28" height="40" rx="2" fill="url(#grimoireGradient)" filter="url(#grimoireGlow)" stroke="#FFB700" stroke-width="1.5"/>
+  
+  <!-- Ornamental runic border -->
+  <rect x="20" y="14" width="24" height="36" rx="1" fill="none" stroke="#D4AF37" stroke-width="1.5" opacity="0.6"/>
+  
+  <!-- Rune symbols (magical) -->
+  <g fill="#FFD700" opacity="0.7">
+    <rect x="24" y="18" width="2" height="2"/>
+    <rect x="38" y="18" width="2" height="2"/>
+    <line x1="28" y1="20" x2="34" y2="20" stroke="#D4AF37" stroke-width="1"/>
+  </g>
+  
+  <!-- Glowing symbol center -->
+  <circle cx="32" cy="32" r="6" fill="none" stroke="#FFD700" stroke-width="1.5" opacity="0.8" filter="url(#grimoireGlow)"/>
+  <circle cx="32" cy="32" r="4" fill="#FFB700" opacity="0.3"/>
+  
+  <!-- Plus symbol (add) inside circle -->
+  <g stroke="#FFD700" stroke-width="1.5" opacity="0.9">
+    <line x1="32" y1="28" x2="32" y2="36"/>
+    <line x1="28" y1="32" x2="36" y2="32"/>
+  </g>
+  
+  <!-- Decorative runes bottom -->
+  <g fill="#D4AF37" opacity="0.5">
+    <rect x="24" y="42" width="2" height="2"/>
+    <rect x="32" y="42" width="2" height="2"/>
+    <rect x="40" y="42" width="2" height="2"/>
+  </g>
+  
+  <!-- Page edges (layered effect) -->
+  <rect x="22" y="46" width="20" height="1" fill="#FFB700" opacity="0.4"/>
+  <rect x="24" y="48" width="16" height="1" fill="#FFB700" opacity="0.3"/>
+  
+  <!-- Magical aura sparkles -->
+  <g fill="#FFD700" opacity="0.6">
+    <circle cx="12" cy="22" r="1"/>
+    <circle cx="50" cy="26" r="1"/>
+    <circle cx="14" cy="42" r="1"/>
+    <circle cx="48" cy="40" r="1"/>
+  </g>
+</svg>

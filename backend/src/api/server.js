@@ -62,10 +62,19 @@ export async function start() {
     
     // Start server
     const port = config.port;
-    app.listen(port, () => {
+    const server = app.listen(port, () => {
       logger.info(`Server running on http://localhost:${port}`);
       logger.info(`Environment: ${config.nodeEnv}`);
       logger.info(`API docs: http://localhost:${port}/api/docs`);
+    });
+    
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        logger.error(`Port ${port} is already in use. Try: PORT=3001 npm run dev`);
+        process.exit(1);
+      } else {
+        throw err;
+      }
     });
   } catch (error) {
     logger.error('Failed to start server:', error);

@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DB_PATH = path.resolve(__dirname, '../../data/dev.db');
+const DB_DIR = path.dirname(DB_PATH);
 
 let db = null;
 let SQL = null;
@@ -12,6 +13,13 @@ let SQL = null;
 export async function initDatabase() {
   // Initialiser sql.js
   SQL = await initSqlJs();
+  
+  // Créer le dossier data/ s'il n'existe pas
+  try {
+    await fs.mkdir(DB_DIR, { recursive: true });
+  } catch (err) {
+    // Ignore si déjà existe
+  }
   
   // Charger la DB depuis le disque si elle existe
   try {

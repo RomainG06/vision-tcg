@@ -105,33 +105,44 @@ async function saveToDatabase(listings, source) {
   
   // Insert listings
   for (const listing of listings) {
-    run(`
-      INSERT INTO listings (
-        scrape_run_id, source, external_id, url, title, description,
-        price, location, lat, lon, distance_km, image_url, posted_at,
-        is_wizards, is_french, is_lot, card_count_estimate, score, status
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `, [
-      scrapeRunId,
-      listing.source,
-      listing.external_id,
-      listing.url,
-      listing.title,
-      listing.description,
-      listing.price,
-      listing.location,
-      listing.lat,
-      listing.lon,
-      listing.distance_km,
-      listing.image_url,
-      listing.posted_at,
-      listing.is_wizards ? 1 : 0,
-      listing.is_french ? 1 : 0,
-      listing.is_lot ? 1 : 0,
-      listing.card_count_estimate,
-      listing.score,
-      'new'
-    ]);
+    try {
+      // Calculate score if not already done
+      if (listing.score === undefined || listing.score === null) {
+        const scored = scoreListing(listing);
+        Object.assign(listing, scored);
+      }
+      
+      run(`
+        INSERT INTO listings (
+          scrape_run_id, source, external_id, url, title, description,
+          price, location, lat, lon, distance_km, image_url, posted_at,
+          is_wizards, is_french, is_lot, card_count_estimate, score, status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `, [
+        scrapeRunId,
+        listing.source,
+        listing.external_id || '',
+        listing.url,
+        listing.title,
+        listing.description || '',
+        listing.price || 0,
+        listing.location || '',
+        listing.lat || null,
+        listing.lon || null,
+        listing.distance_km || null,
+        listing.image_url || null,
+        listing.posted_at || new Date().toISOString(),
+        listing.is_wizards ? 1 : 0,
+        listing.is_french ? 1 : 0,
+        listing.is_lot ? 1 : 0,
+        listing.card_count_estimate || null,
+        listing.score || 0,
+        'new'
+      ]);
+    } catch (error) {
+      logger.error(`Failed to save listing ${listing.url}: ${error.message}`);
+      throw error; // Re-throw to see the actual error
+    }
   }
   
   logger.info('✅ Listings saved to database');

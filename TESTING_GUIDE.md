@@ -35,7 +35,28 @@ rateLimit: {
 
 ## 🚀 Instructions de test
 
-### 1. Mise à jour du code
+### Option A : Script automatique (RECOMMANDÉ pour Windows)
+
+```powershell
+cd D:\Developpement\vision-tcg
+git pull origin feature/mvp-step1
+.\start-dev.bat
+```
+
+Le script fait automatiquement :
+1. ✅ Installation des dépendances
+2. ✅ Génération des données seed
+3. ✅ Création du .env frontend
+4. ✅ Démarrage backend (port 3001) dans une fenêtre
+5. ✅ Démarrage frontend (port 5173) dans une autre fenêtre
+
+**Puis ouvre http://localhost:5173** 🎯
+
+---
+
+### Option B : Manuel (étape par étape)
+
+#### 1. Mise à jour du code
 
 ```powershell
 cd D:\Developpement\vision-tcg
@@ -165,6 +186,30 @@ curl http://localhost:3001/api/listings/1
 ---
 
 ## 🐛 Si ça ne fonctionne pas
+
+### Backend affiche "Completed running" et s'arrête
+
+**Symptôme :**
+```
+> cross-env PORT=3001 node --watch src/api/server.js
+Completed running 'src/api/server.js'
+```
+
+**Solution :** Fix appliqué dans commit `592c8d9`
+```powershell
+git pull origin feature/mvp-step1
+cd backend
+npm run dev
+```
+
+Tu dois maintenant voir :
+```
+[INFO] Initializing database...
+[INFO] Database initialized
+[INFO] Server running on http://localhost:3001
+```
+
+---
 
 ### Backend ne démarre pas
 

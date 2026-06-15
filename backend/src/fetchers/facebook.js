@@ -14,12 +14,11 @@ export class FacebookFetcher extends BaseFetcher {
    * Build search URL
    */
   buildSearchUrl(query, location = 'Nice, France', radius = 50) {
-    // Facebook Marketplace search URL structure
+    // Facebook Marketplace simple search URL
     const searchQuery = encodeURIComponent(query);
-    const locationQuery = encodeURIComponent(location);
     
-    // Radius in km (Facebook uses radius parameter)
-    return `${this.baseUrl}/marketplace/category/search/?query=${searchQuery}&minPrice=0&maxPrice=100&deliveryMethod=local_pick_up&exact=false&sortBy=creation_time_descend&location=${locationQuery}&radiusKM=${radius}`;
+    // Simplified URL structure that works
+    return `${this.baseUrl}/marketplace/search/?query=${searchQuery}&maxPrice=100&minPrice=1&sortBy=creation_time_descend&exact=false`;
   }
   
   /**

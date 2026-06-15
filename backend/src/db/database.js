@@ -83,4 +83,77 @@ export function getDatabase() {
   return db;
 }
 
+/**
+ * Execute a query and return all results
+ */
+export function all(query, params = []) {
+  if (!db) {
+    throw new Error('Database not initialized. Call initDatabase() first.');
+  }
+  
+  const stmt = db.prepare(query);
+  stmt.bind(params);
+  
+  const results = [];
+  while (stmt.step()) {
+    results.push(stmt.getAsObject());
+  }
+  stmt.free();
+  
+  return results;
+}
+
+/**
+ * Execute a query and return first result
+ */
+export function get(query, params = []) {
+  if (!db) {
+    throw new Error('Database not initialized. Call initDatabase() first.');
+  }
+  
+  const stmt = db.prepare(query);
+  stmt.bind(params);
+  
+  let result = null;
+  if (stmt.step()) {
+    result = stmt.getAsObject();
+  }
+  stmt.free();
+  
+  return result;
+}
+
+/**
+ * Execute a query (INSERT, UPDATE, DELETE)
+ * Returns lastInsertRowid for INSERT statements
+ */
+export function run(query, params = []) {
+  if (!db) {
+    throw new Error('Database not initialized. Call initDatabase() first.');
+  }
+  
+  db.run(query, params);
+  
+  // If INSERT, return the last inserted ID
+  if (query.trim().toUpperCase().startsWith('INSERT')) {
+    const result = db.exec('SELECT last_insert_rowid()');
+    if (result && result[0] && result[0].values && result[0].values[0]) {
+      return result[0].values[0][0];
+    }
+  }
+  
+  return null;
+}
+
+/**
+ * Close database connection
+ */
+export function close() {
+  if (db) {
+    saveDatabase();
+    db.close();
+    db = null;
+  }
+}
+
 export { saveDatabase };

@@ -83,6 +83,6 @@ export async function start() {
 }
 
 // Start if running directly
-if (import.meta.url === `file://${process.argv[1]}`) {
-  start();
-}
+// Note: Always start the server when this file is imported as the main module
+// The original condition doesn't work reliably on Windows
+start();

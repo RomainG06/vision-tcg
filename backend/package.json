@@ -11,7 +11,11 @@
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
     "lint": "eslint src/",
     "db:migrate": "node src/db/migrate-cli.js",
-    "db:seed": "node src/db/seed-cli.js"
+    "db:seed": "node src/db/seed-cli.js",
+    "scrape:test": "node test-scraping.js leboncoin",
+    "scrape:lbc": "node test-scraping.js leboncoin --save",
+    "scrape:vinted": "node test-scraping.js vinted --save",
+    "scrape:all": "node test-scraping.js all --save"
   },
   "keywords": ["pokemon", "tcg", "scraper", "api"],
   "author": "",

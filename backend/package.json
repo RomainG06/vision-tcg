@@ -7,8 +7,8 @@
     "dev": "cross-env PORT=3001 node --watch src/api/server.js",
     "start": "node src/api/server.js",
     "db:seed": "node src/db/seed.js",
-    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
-    "test:coverage": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:coverage": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "db:migrate": "node src/db/migrations.js",
     "db:seed": "node src/db/seed.js"
   },

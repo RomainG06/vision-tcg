@@ -1,7 +1,7 @@
 import puppeteer from 'puppeteer';
 import { config } from '../utils/config.js';
 import { logger } from '../utils/logger.js';
-import { writeFileSync } from 'fs';
+import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
 
 /**
@@ -80,8 +80,16 @@ export class BaseFetcher {
    */
   async saveDebugInfo(reason = 'debug') {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const screenshotPath = join('screenshots', `${this.source}_${reason}_${timestamp}.png`);
-    const htmlPath = join('screenshots', `${this.source}_${reason}_${timestamp}.html`);
+    const screenshotsDir = 'screenshots';
+    
+    // Create screenshots directory if it doesn't exist
+    if (!existsSync(screenshotsDir)) {
+      mkdirSync(screenshotsDir, { recursive: true });
+      logger.debug(`Created ${screenshotsDir} directory`);
+    }
+    
+    const screenshotPath = join(screenshotsDir, `${this.source}_${reason}_${timestamp}.png`);
+    const htmlPath = join(screenshotsDir, `${this.source}_${reason}_${timestamp}.html`);
     
     try {
       await this.page.screenshot({ path: screenshotPath, fullPage: true });

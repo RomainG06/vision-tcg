@@ -1,5 +1,4 @@
 import { BaseFetcher } from './base.js';
-import { parseVintedListing } from '../parsers/parser-vinted.js';
 import { logger } from '../utils/logger.js';
 
 /**
@@ -142,11 +141,72 @@ export class VintedFetcher extends BaseFetcher {
           await this.page.goto(url, { waitUntil: 'networkidle2', timeout: 20000 });
           await this.randomDelay(500, 1500);
           
-          const html = await this.page.content();
-          const listing = await parseVintedListing(html, url);
+          // Extract data directly from the page instead of parsing HTML
+          const listing = await this.page.evaluate((url) => {
+            // Extract ID from URL
+            const urlMatch = url.match(/items\/(\d+)/);
+            const externalId = urlMatch ? urlMatch[1] : null;
+            
+            // Title - try multiple selectors
+            const title = document.querySelector('h1[itemprop="name"]')?.textContent?.trim()
+              || document.querySelector('h1.details-list__item-title')?.textContent?.trim()
+              || document.querySelector('h1')?.textContent?.trim()
+              || 'No title';
+            
+            // Price - try multiple selectors
+            const priceEl = document.querySelector('[data-testid="item-price"]')
+              || document.querySelector('.details-list__item-price')
+              || document.querySelector('[itemprop="price"]')
+              || document.querySelector('h3');
+            const priceText = priceEl?.textContent?.trim() || '0';
+            const price = parseFloat(priceText.replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+            
+            // Description
+            const description = document.querySelector('[itemprop="description"]')?.textContent?.trim()
+              || document.querySelector('.details-list__item-description')?.textContent?.trim()
+              || '';
+            
+            // Location
+            const location = document.querySelector('.details-list__item-location')?.textContent?.trim()
+              || document.querySelector('[data-testid="item-location"]')?.textContent?.trim()
+              || '';
+            
+            // Image
+            const imageEl = document.querySelector('.details-list__item-photo img')
+              || document.querySelector('[itemprop="image"]')
+              || document.querySelector('img[alt*="photo"]');
+            const imageUrl = imageEl?.src || imageEl?.getAttribute('src') || null;
+            
+            // Posted date
+            const dateEl = document.querySelector('time');
+            const postedAt = dateEl?.getAttribute('datetime') || new Date().toISOString();
+            
+            return {
+              source: 'vinted',
+              external_id: externalId,
+              url,
+              title,
+              description,
+              price,
+              location,
+              lat: null,
+              lon: null,
+              distance_km: null,
+              image_url: imageUrl,
+              posted_at: postedAt,
+              is_wizards: false,
+              is_french: false,
+              is_lot: false,
+              card_count_estimate: null,
+              score: null
+            };
+          }, url);
           
-          if (listing) {
+          if (listing && listing.title !== 'No title') {
             listings.push(listing);
+            logger.info(`✅ Parsed: ${listing.title} - ${listing.price}€`);
+          } else {
+            logger.warn(`⚠️  Failed to parse listing properly: ${url}`);
           }
         } catch (error) {
           logger.error(`Failed to fetch listing ${url}:`, error.message);

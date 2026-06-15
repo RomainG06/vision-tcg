@@ -37,11 +37,17 @@ export class LeboncoinFetcher extends BaseFetcher {
     try {
       await this.init();
       
+      // Step 1: Visit homepage first (more human-like)
+      logger.info('Visiting Leboncoin homepage first...');
+      await this.page.goto(this.baseUrl, { waitUntil: 'networkidle2', timeout: 30000 });
+      await this.randomDelay(2000, 4000);
+      
+      // Step 2: Navigate to search
       const searchUrl = this.buildSearchUrl(query, options);
       logger.info(`Navigating to: ${searchUrl}`);
       
       await this.page.goto(searchUrl, { waitUntil: 'networkidle2', timeout: 30000 });
-      await this.randomDelay();
+      await this.randomDelay(2000, 3000);
       
       // Check for CAPTCHA
       if (await this.detectCaptcha()) {

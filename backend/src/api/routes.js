@@ -1,11 +1,23 @@
-import { Router } from 'express';
-import { all, get as getOne, run } from '../db/database.js';
+import express from 'express';
+import { all, get, run } from '../db/database.js';
 import { logger } from '../utils/logger.js';
 
-export const router = Router();
+const router = express.Router();
 
 /**
- * GET /api/docs - API documentation
+ * Map database listing to frontend format
+ */
+function mapListing(listing) {
+  if (!listing) return null;
+  
+  return {
+    ...listing,
+    image_url: listing.images, // Map 'images' to 'image_url' for frontend
+  };
+}
+
+/**
+ * GET /api/health
  */
 router.get('/docs', (req, res) => {
   res.json({
@@ -72,10 +84,10 @@ router.get('/listings', (req, res) => {
     
     const listings = all(query, params);
     
-    const totalResult = getOne('SELECT COUNT(*) as count FROM listings WHERE 1=1');
+    const totalResult = get('SELECT COUNT(*) as count FROM listings WHERE 1=1');
     
     res.json({
-      listings,
+      listings: listings.map(mapListing),
       pagination: {
         limit: parseInt(limit),
         offset: parseInt(offset),
@@ -94,13 +106,13 @@ router.get('/listings', (req, res) => {
  */
 router.get('/listings/:id', (req, res) => {
   try {
-    const listing = getOne('SELECT * FROM listings WHERE id = ?', [req.params.id]);
+    const listing = get('SELECT * FROM listings WHERE id = ?', [req.params.id]);
     
     if (!listing) {
       return res.status(404).json({ error: 'Listing not found' });
     }
     
-    res.json(listing);
+    res.json(mapListing(listing));
   } catch (error) {
     logger.error('Error fetching listing:', error);
     res.status(500).json({ error: error.message });
@@ -137,7 +149,7 @@ router.patch('/listings/:id', (req, res) => {
     
     run(`UPDATE listings SET ${updates.join(', ')} WHERE id = ?`, params);
     
-    const updated = getOne('SELECT * FROM listings WHERE id = ?', [req.params.id]);
+    const updated = get('SELECT * FROM listings WHERE id = ?', [req.params.id]);
     
     res.json(updated);
   } catch (error) {
@@ -172,10 +184,10 @@ router.get('/scrape-runs', (req, res) => {
  */
 router.get('/stats', (req, res) => {
   try {
-    const total = getOne('SELECT COUNT(*) as count FROM listings');
-    const highScore = getOne('SELECT COUNT(*) as count FROM listings WHERE score >= 70');
-    const avgScore = getOne('SELECT AVG(score) as avg FROM listings');
-    const avgPrice = getOne('SELECT AVG(price) as avg FROM listings WHERE price > 0');
+    const total = get('SELECT COUNT(*) as count FROM listings');
+    const highScore = get('SELECT COUNT(*) as count FROM listings WHERE score >= 70');
+    const avgScore = get('SELECT AVG(score) as avg FROM listings');
+    const avgPrice = get('SELECT AVG(price) as avg FROM listings WHERE price > 0');
     
     const byStatus = all(`
       SELECT status, COUNT(*) as count 

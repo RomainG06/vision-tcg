@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { config } from '../utils/config.js';
 import { logger } from '../utils/logger.js';
-import { router } from './routes.js';
+import router from './routes.js';
 import { initDatabase } from '../db/database.js';
 
 export const app = express();

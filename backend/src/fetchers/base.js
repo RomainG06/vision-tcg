@@ -4,6 +4,7 @@ import { config } from '../utils/config.js';
 import { logger } from '../utils/logger.js';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
+import { loadCookies, saveCookies } from '../utils/cookie-manager.js';
 
 // Add stealth plugin to hide automation signals
 puppeteer.use(StealthPlugin());
@@ -38,6 +39,9 @@ export class BaseFetcher {
     });
     
     this.page = await this.browser.newPage();
+    
+    // Try to load saved cookies first
+    await loadCookies(this.page);
     
     // Set realistic user agent (recent Windows Chrome)
     await this.page.setUserAgent(
@@ -124,6 +128,13 @@ export class BaseFetcher {
   async randomDelay(min = 1000, max = 3000) {
     const delay = Math.random() * (max - min) + min;
     await new Promise(resolve => setTimeout(resolve, delay));
+  }
+  
+  /**
+   * Save cookies after manual CAPTCHA resolution
+   */
+  async saveCookiesAfterCaptcha() {
+    return await saveCookies(this.page);
   }
   
   /**

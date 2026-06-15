@@ -22,6 +22,7 @@ logs/
 # Results & Screenshots
 results/
 screenshots/
+cookies/
 
 # OS
 .DS_Store

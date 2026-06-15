@@ -12,6 +12,7 @@
     "lint": "eslint src/",
     "db:migrate": "node src/db/migrate-cli.js",
     "db:seed": "node src/db/seed-cli.js",
+    "resolve:captcha": "node resolve-captcha.js",
     "scrape:test": "node test-scraping.js leboncoin",
     "scrape:lbc": "node test-scraping.js leboncoin --save",
     "scrape:vinted": "node test-scraping.js vinted --save",

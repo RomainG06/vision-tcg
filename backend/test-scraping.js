@@ -7,7 +7,7 @@
 import { LeboncoinFetcher } from './src/fetchers/leboncoin.js';
 import { VintedFetcher } from './src/fetchers/vinted.js';
 import { logger } from './src/utils/logger.js';
-import { initDatabase, run, all, closeDatabase } from './src/db/database.js';
+import { initDatabase, run, all, close } from './src/db/database.js';
 import { scoreListing } from './src/scoring/scorer.js';
 
 process.env.LOG_LEVEL = 'debug';
@@ -136,7 +136,7 @@ async function saveToDatabase(listings, source) {
   
   logger.info('✅ Listings saved to database');
   
-  closeDatabase();
+  close();
 }
 
 /**

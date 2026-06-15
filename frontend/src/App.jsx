@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import FilterBar from './components/FilterBar';
 import LotList from './components/LotList';
-import api from './services/api';
+import { fetchListings, fetchStats, updateListing } from './services/api';
 import theme from './theme';
 
 function App() {
@@ -31,8 +31,8 @@ function App() {
     try {
       setLoading(true);
       const [listingsData, statsData] = await Promise.all([
-        api.getListings(),
-        api.getStats(),
+        fetchListings(),
+        fetchStats(),
       ]);
       setListings(listingsData);
       setStats(statsData);
@@ -65,7 +65,7 @@ function App() {
 
   const handleListingUpdate = async (id, updates) => {
     try {
-      await api.updateListing(id, updates);
+      await updateListing(id, updates);
       await loadData();
     } catch (err) {
       console.error('Failed to update listing:', err);

@@ -106,11 +106,11 @@ function App() {
       <header style={styles.header}>
         <div style={styles.headerContent}>
           <h1 style={styles.title}>
-            <span style={styles.titleIcon}>🃏</span> Vision TCG
+            <span style={styles.titleIcon}>🎯</span> Hunting Dashboard
           </h1>
           <p style={styles.subtitle}>
-            Détection et priorisation de lots de cartes{' '}
-            <span style={styles.subtitleHighlight}>Pokémon Wizards</span>
+            Radar d'opportunités pour collectionneurs{' '}
+            <span style={styles.subtitleHighlight}>Pokémon Wizards FR</span>
           </p>
         </div>
       </header>
@@ -157,29 +157,29 @@ function App() {
 const styles = {
   app: {
     minHeight: '100vh',
-    background: `linear-gradient(135deg, ${theme.colors.neutral.bgDark} 0%, ${theme.colors.neutral.bgCard} 100%)`,
+    background: theme.colors.primary.obsidian,
     fontFamily: theme.typography.fonts.primary,
-    color: theme.colors.neutral.textPrimary,
+    color: theme.colors.text.primary,
     padding: theme.spacing.xl,
   },
   header: {
     textAlign: 'center',
     marginBottom: theme.spacing.xxxl,
     paddingBottom: theme.spacing.xl,
-    borderBottom: `${theme.borders.widthMedium} solid ${theme.colors.primary.arcanePurpleLight}`,
-    boxShadow: `0 4px 12px rgba(124, 58, 237, 0.2)`,
+    borderBottom: `${theme.borders.widthMedium} solid ${theme.accents.hunterGold}`,
+    boxShadow: `0 4px 12px ${theme.accents.hunterGold}30`,
   },
   headerContent: {
     maxWidth: '1400px',
     margin: '0 auto',
   },
   title: {
-    fontFamily: theme.typography.fonts.fantasy,
+    fontFamily: theme.typography.fonts.heading,
     fontSize: theme.typography.sizes.display,
     fontWeight: theme.typography.weights.bold,
     marginBottom: theme.spacing.sm,
-    color: theme.colors.neutral.textPrimary,
-    textShadow: theme.shadows.glowMagic,
+    color: theme.colors.text.primary,
+    textShadow: `0 0 24px ${theme.accents.hunterGold}60`,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -187,15 +187,15 @@ const styles = {
   },
   titleIcon: {
     fontSize: '48px',
-    filter: 'drop-shadow(0 0 12px rgba(255, 215, 0, 0.6))',
+    filter: `drop-shadow(0 0 12px ${theme.accents.hunterGold})`,
   },
   subtitle: {
     fontSize: theme.typography.sizes.bodyLg,
-    color: theme.colors.neutral.textSecondary,
+    color: theme.colors.text.secondary,
     marginTop: theme.spacing.sm,
   },
   subtitleHighlight: {
-    color: theme.colors.accent.manaBlue,
+    color: theme.accents.manaCyan,
     fontWeight: theme.typography.weights.semibold,
   },
   container: {
@@ -209,8 +209,8 @@ const styles = {
     marginBottom: theme.spacing.xxxl,
   },
   statCard: {
-    background: theme.colors.neutral.bgCard,
-    border: `${theme.borders.widthMedium} solid ${theme.colors.primary.arcanePurpleLight}`,
+    background: theme.colors.primary.deepDark,
+    border: `${theme.borders.widthMedium} solid ${theme.colors.primary.slate}`,
     borderRadius: theme.borders.radiusLg,
     padding: theme.spacing.xl,
     textAlign: 'center',
@@ -219,7 +219,7 @@ const styles = {
   },
   statLabel: {
     fontSize: theme.typography.sizes.bodySm,
-    color: theme.colors.neutral.textSecondary,
+    color: theme.colors.text.tertiary,
     fontWeight: theme.typography.weights.semibold,
     marginBottom: theme.spacing.sm,
     textTransform: 'uppercase',
@@ -228,8 +228,8 @@ const styles = {
   statValue: {
     fontSize: theme.typography.sizes.headingLg,
     fontWeight: theme.typography.weights.bold,
-    color: theme.colors.accent.enchantGold,
-    textShadow: theme.shadows.glowRune,
+    color: theme.accents.hunterGold,
+    textShadow: `0 0 16px ${theme.accents.hunterGold}80`,
   },
   loading: {
     display: 'flex',
@@ -237,21 +237,21 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: '100vh',
-    background: `linear-gradient(135deg, ${theme.colors.neutral.bgDark} 0%, ${theme.colors.neutral.bgCard} 100%)`,
-    color: theme.colors.neutral.textPrimary,
+    background: theme.colors.primary.obsidian,
+    color: theme.colors.text.primary,
     gap: theme.spacing.xl,
   },
   loadingSpinner: {
     width: '64px',
     height: '64px',
-    border: `4px solid ${theme.colors.neutral.border}`,
-    borderTop: `4px solid ${theme.colors.accent.manaBlue}`,
+    border: `4px solid ${theme.colors.primary.slate}`,
+    borderTop: `4px solid ${theme.accents.manaCyan}`,
     borderRadius: '50%',
     animation: 'spin 1s linear infinite',
   },
   loadingText: {
     fontSize: theme.typography.sizes.bodyLg,
-    color: theme.colors.neutral.textSecondary,
+    color: theme.colors.text.secondary,
   },
   error: {
     display: 'flex',
@@ -259,8 +259,8 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: '100vh',
-    background: `linear-gradient(135deg, ${theme.colors.neutral.bgDark} 0%, ${theme.colors.neutral.bgCard} 100%)`,
-    color: theme.colors.neutral.textPrimary,
+    background: theme.colors.primary.obsidian,
+    color: theme.colors.text.primary,
     gap: theme.spacing.lg,
     padding: theme.spacing.xl,
   },
@@ -270,7 +270,7 @@ const styles = {
   },
   errorText: {
     fontSize: theme.typography.sizes.bodyLg,
-    color: theme.colors.status.error,
+    color: theme.accents.preyRed,
     textAlign: 'center',
   },
   errorButton: {

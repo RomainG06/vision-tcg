@@ -132,8 +132,7 @@ router.patch('/listings/:id', (req, res) => {
       return res.status(400).json({ error: 'No updates provided' });
     }
     
-    updates.push('updated_at = ?');
-    params.push(new Date().toISOString());
+    // Add ID parameter for WHERE clause
     params.push(req.params.id);
     
     run(`UPDATE listings SET ${updates.join(', ')} WHERE id = ?`, params);

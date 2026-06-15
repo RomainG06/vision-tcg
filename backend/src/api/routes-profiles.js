@@ -74,14 +74,19 @@ router.post('/scrape', async (req, res) => {
     const activeSources = sources || profile.scraping?.sources || ['leboncoin', 'vinted'];
     const resultsLimit = maxResults || profile.scraping?.max_results_per_source || 50;
     
-    // Create scrape run
-    const scrapeRun = scrapeRunRepo.create({
-      profile: profileName,
-      sources: activeSources.join(','),
-      status: 'running'
+    // Create scrape run (store profile in metadata)
+    const scrapeRunId = scrapeRunRepo.create({
+      source: activeSources.join(','),
+      query: profile.search.keywords.join(' OR '),
+      status: 'running',
+      metadata: JSON.stringify({
+        profile: profileName,
+        sources: activeSources,
+        maxResults: resultsLimit
+      })
     });
     
-    logger.info(`Starting scrape run ${scrapeRun.id} for profile ${profileName}`);
+    logger.info(`Starting scrape run ${scrapeRunId} for profile ${profileName}`);
     
     // Collect all raw listings
     const allRawListings = [];
@@ -124,9 +129,9 @@ router.post('/scrape', async (req, res) => {
           
           // If CAPTCHA detected, mark as captcha_required
           if (error.message?.includes('CAPTCHA')) {
-            scrapeRunRepo.update(scrapeRun.id, { status: 'captcha_required' });
+            scrapeRunRepo.update(scrapeRunId, { status: 'captcha_required' });
             return res.status(503).json({
-              scrapeRunId: scrapeRun.id,
+              scrapeRunId: scrapeRunId,
               status: 'captcha_required',
               message: 'CAPTCHA detected. Manual intervention required.',
               error: error.message
@@ -168,14 +173,14 @@ router.post('/scrape', async (req, res) => {
     }
     
     // Complete scrape run
-    scrapeRunRepo.complete(scrapeRun.id, {
+    scrapeRunRepo.complete(scrapeRunId, {
       results_count: filtered.length,
       errors_count: errors.length
     });
     
     // Return results
     res.json({
-      scrapeRunId: scrapeRun.id,
+      scrapeRunId: scrapeRunId,
       status: 'completed',
       profile: profileName,
       sources: activeSources,
@@ -196,14 +201,12 @@ router.post('/scrape', async (req, res) => {
     logger.error('Scrape error:', error);
     
     // Try to fail the scrape run if it was created
-    try {
-      const runs = scrapeRunRepo.findAll();
-      const lastRun = runs.find(r => r.profile === profileName && r.status === 'running');
-      if (lastRun) {
-        scrapeRunRepo.fail(lastRun.id, error.message);
+    if (typeof scrapeRunId !== 'undefined') {
+      try {
+        scrapeRunRepo.fail(scrapeRunId, error.message);
+      } catch (failError) {
+        logger.error('Error failing scrape run:', failError);
       }
-    } catch (failError) {
-      logger.error('Error failing scrape run:', failError);
     }
     
     res.status(500).json({

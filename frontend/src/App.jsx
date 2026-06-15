@@ -274,8 +274,8 @@ const styles = {
     textAlign: 'center',
   },
   errorButton: {
-    background: theme.colors.primary.arcanePurpleLight,
-    color: theme.colors.neutral.textPrimary,
+    background: theme.accents.hunterGold,
+    color: theme.colors.primary.obsidian,
     border: 'none',
     padding: `${theme.spacing.md} ${theme.spacing.xl}`,
     borderRadius: theme.borders.radiusMd,

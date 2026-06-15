@@ -1,15 +1,12 @@
 import { updateListing } from '../services/api';
-import theme from '../theme';
+import theme, { getRarityLevel, rarityLabels } from '../theme';
+import Badge from './Badge';
 
 function LotDetail({ listing, onClose, onUpdate }) {
-  console.log('[LotDetail] Received listing:', { 
-    id: listing.id, 
-    title: listing.title?.substring(0, 30),
-    hasId: !!listing.id 
-  });
-  
+  const rarity = getRarityLevel(listing.score);
+  const rarityStyle = getRarityStyle(rarity);
+
   const handleStatusChange = async (newStatus) => {
-    console.log('[LotDetail] Button clicked, listing.id:', listing.id);
     try {
       await updateListing(listing.id, { status: newStatus });
       onUpdate(listing.id, { status: newStatus });
@@ -20,133 +17,290 @@ function LotDetail({ listing, onClose, onUpdate }) {
     }
   };
 
+  const handleOpenListing = () => {
+    window.open(listing.url, '_blank');
+  };
+
   return (
     <div style={styles.overlay} onClick={onClose}>
-      <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div 
+        style={{
+          ...styles.modal,
+          border: rarityStyle.border,
+          boxShadow: rarityStyle.shadow,
+        }} 
+        onClick={(e) => e.stopPropagation()}
+      >
         <button style={styles.closeBtn} onClick={onClose}>✕</button>
         
+        {/* Header: Rarity + Score */}
         <div style={styles.header}>
-          <h2 style={styles.title}>{listing.title}</h2>
+          <div style={{
+            ...styles.rarityLabel,
+            color: rarityStyle.color,
+          }}>
+            {rarityLabels[rarity]}
+          </div>
           <span style={{
             ...styles.score,
-            background: getScoreGradient(listing.score),
-            boxShadow: getScoreShadow(listing.score),
+            background: rarityStyle.scoreGradient,
+            boxShadow: rarityStyle.scoreGlow,
           }}>
             {listing.score}
           </span>
         </div>
 
-        {listing.image_url && (
+        {/* Title */}
+        <h2 style={styles.title}>{listing.title}</h2>
+
+        {/* Image */}
+        {listing.images && listing.images.length > 0 ? (
           <img
-            src={listing.image_url}
+            src={listing.images.split(',')[0]}
             alt={listing.title}
             style={styles.image}
           />
-        )}
-        {!listing.image_url && (
+        ) : (
           <div style={styles.imagePlaceholder}>
             <span style={styles.imagePlaceholderIcon}>🎴</span>
           </div>
         )}
 
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>Détails</h3>
-          <div style={styles.details}>
-            <div style={styles.detailRow}>
-              <span style={styles.detailLabel}>Prix:</span>
-              <span style={styles.detailValue}>{listing.price}€</span>
-            </div>
-            <div style={styles.detailRow}>
-              <span style={styles.detailLabel}>Localisation:</span>
-              <span style={styles.detailValue}>{listing.location} ({listing.distance_km}km)</span>
-            </div>
-            <div style={styles.detailRow}>
-              <span style={styles.detailLabel}>Source:</span>
-              <span style={styles.detailValue}>{listing.source}</span>
-            </div>
-            {listing.card_count_estimate && (
-              <div style={styles.detailRow}>
-                <span style={styles.detailLabel}>Cartes estimées:</span>
-                <span style={styles.detailValue}>{listing.card_count_estimate}</span>
-              </div>
-            )}
-            <div style={styles.detailRow}>
-              <span style={styles.detailLabel}>Posté:</span>
-              <span style={styles.detailValue}>
-                {listing.posted_at ? new Date(listing.posted_at).toLocaleDateString('fr-FR') : 'N/A'}
-              </span>
-            </div>
+        {/* Price + Value Estimation */}
+        <div style={styles.priceSection}>
+          <div style={styles.priceRow}>
+            <span style={styles.priceLabel}>Prix demandé:</span>
+            <span style={styles.price}>{listing.price}€</span>
           </div>
+          {listing.value_estimate_low && listing.value_estimate_high && (
+            <>
+              <div style={styles.estimateRow}>
+                <span style={styles.estimateLabel}>Valeur estimée:</span>
+                <span style={styles.estimate}>
+                  {listing.value_estimate_low}€ - {listing.value_estimate_high}€
+                </span>
+              </div>
+              {listing.confidence && (
+                <div style={styles.confidenceRow}>
+                  <span style={styles.confidenceLabel}>Confiance:</span>
+                  <span style={styles.confidence}>{listing.confidence}</span>
+                </div>
+              )}
+              {listing.gain_potential !== undefined && (
+                <div style={styles.gainRow}>
+                  <span style={styles.gainLabel}>Gain potentiel:</span>
+                  <span style={{
+                    ...styles.gainValue,
+                    color: listing.gain_potential > 0 
+                      ? theme.accents.successGreen 
+                      : theme.accents.preyRed,
+                  }}>
+                    {listing.gain_potential > 0 ? '+' : ''}{listing.gain_potential}€ 
+                    ({listing.gain_percentage > 0 ? '+' : ''}{listing.gain_percentage}%)
+                  </span>
+                </div>
+              )}
+            </>
+          )}
         </div>
 
+        {/* Location */}
+        {listing.location && (
+          <div style={styles.locationSection}>
+            <span style={styles.locationIcon}>📍</span>
+            <span style={styles.location}>{listing.location}</span>
+            {listing.distance_km !== null && (
+              <span style={styles.distance}> · {listing.distance_km} km</span>
+            )}
+          </div>
+        )}
+
+        {/* Opportunity Signals */}
+        {listing.opportunity_signals && listing.opportunity_signals.length > 0 && (
+          <div style={styles.section}>
+            <h3 style={styles.sectionTitle}>✨ Pourquoi c'est intéressant</h3>
+            <div style={styles.badges}>
+              {listing.opportunity_signals.map((signal) => (
+                <Badge key={signal} signal={signal} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Risk Signals */}
+        {listing.risk_signals && listing.risk_signals.length > 0 && (
+          <div style={styles.section}>
+            <h3 style={styles.sectionTitle}>⚠️ Points d'attention</h3>
+            <div style={styles.badges}>
+              {listing.risk_signals.map((signal) => (
+                <Badge 
+                  key={signal} 
+                  customText={formatRiskSignal(signal)}
+                  emoji="⚠️"
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Explanation (markdown) */}
+        {listing.explanation && (
+          <div style={styles.section}>
+            <h3 style={styles.sectionTitle}>📊 Analyse détaillée</h3>
+            <div style={styles.explanation}>
+              {listing.explanation}
+            </div>
+          </div>
+        )}
+
+        {/* Description */}
         {listing.description && (
           <div style={styles.section}>
-            <h3 style={styles.sectionTitle}>Description</h3>
+            <h3 style={styles.sectionTitle}>Description du vendeur</h3>
             <p style={styles.description}>{listing.description}</p>
           </div>
         )}
 
+        {/* Metadata */}
         <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>Indicateurs</h3>
-          <div style={styles.badges}>
-            <span style={listing.is_wizards ? styles.badgeWizards : styles.badgeInactive}>
-              {listing.is_wizards ? '⭐' : '✗'} Wizards
-            </span>
-            <span style={listing.is_french ? styles.badgeFrench : styles.badgeInactive}>
-              {listing.is_french ? '🇫🇷' : '✗'} Français
-            </span>
-            <span style={listing.is_lot ? styles.badgeLot : styles.badgeInactive}>
-              {listing.is_lot ? '📦' : '✗'} Lot
-            </span>
+          <h3 style={styles.sectionTitle}>Informations</h3>
+          <div style={styles.metadata}>
+            <div style={styles.metadataRow}>
+              <span style={styles.metadataLabel}>Source:</span>
+              <span style={styles.metadataValue}>{listing.source}</span>
+            </div>
+            {listing.card_count_estimate && (
+              <div style={styles.metadataRow}>
+                <span style={styles.metadataLabel}>Cartes estimées:</span>
+                <span style={styles.metadataValue}>{listing.card_count_estimate}</span>
+              </div>
+            )}
+            <div style={styles.metadataRow}>
+              <span style={styles.metadataLabel}>Publié:</span>
+              <span style={styles.metadataValue}>
+                {formatTimeAgo(listing.posted_at)}
+              </span>
+            </div>
+            <div style={styles.metadataRow}>
+              <span style={styles.metadataLabel}>Statut:</span>
+              <span style={styles.metadataValue}>{formatStatus(listing.status)}</span>
+            </div>
           </div>
         </div>
 
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>Actions</h3>
-          <div style={styles.actions}>
-            <a
-              href={listing.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={styles.btnPrimary}
-            >
-              🔗 Voir l'annonce
-            </a>
-            <button
-              style={styles.btnInterested}
-              onClick={() => handleStatusChange('interested')}
-            >
-              ⭐ Marquer intéressant
-            </button>
-            <button
-              style={styles.btnReviewed}
-              onClick={() => handleStatusChange('reviewed')}
-            >
-              👁 Marquer vu
-            </button>
-            <button
-              style={styles.btnPassed}
-              onClick={() => handleStatusChange('passed')}
-            >
-              ✗ Passer
-            </button>
-          </div>
+        {/* Action Buttons */}
+        <div style={styles.actions}>
+          <button 
+            style={styles.primaryButton}
+            onClick={handleOpenListing}
+          >
+            🔗 Voir l'annonce
+          </button>
+          <button 
+            style={styles.successButton}
+            onClick={() => handleStatusChange('interested')}
+          >
+            ⭐ Watchlist
+          </button>
+          <button 
+            style={styles.dangerButton}
+            onClick={() => handleStatusChange('passed')}
+          >
+            ❌ Ignorer
+          </button>
         </div>
       </div>
     </div>
   );
 }
 
-function getScoreGradient(score) {
-  if (score >= 80) return `linear-gradient(135deg, ${theme.colors.status.legendary}, ${theme.colors.accent.goldLight})`;
-  if (score >= 60) return `linear-gradient(135deg, ${theme.colors.primary.arcanePurpleLight}, ${theme.colors.accent.manaPurple})`;
-  return `linear-gradient(135deg, ${theme.colors.neutral.border}, ${theme.colors.neutral.borderLight})`;
+/**
+ * Get rarity-specific styling
+ */
+function getRarityStyle(rarity) {
+  const styles = {
+    common: {
+      color: theme.colors.status.common,
+      border: `${theme.borders.widthThin} solid ${theme.colors.status.common}`,
+      shadow: theme.shadows.sm,
+      scoreGradient: `linear-gradient(135deg, ${theme.colors.status.common}, #3F4556)`,
+      scoreGlow: 'none',
+    },
+    rare: {
+      color: theme.colors.status.rare,
+      border: `${theme.borders.widthMedium} solid ${theme.colors.status.rare}`,
+      shadow: `${theme.shadows.md}, ${theme.shadows.glowRare}`,
+      scoreGradient: `linear-gradient(135deg, ${theme.colors.status.rare}, #5B21B6)`,
+      scoreGlow: theme.shadows.glowRare,
+    },
+    epic: {
+      color: theme.colors.status.epic,
+      border: `${theme.borders.widthMedium} solid ${theme.colors.status.epic}`,
+      shadow: `${theme.shadows.md}, ${theme.shadows.glowEpic}`,
+      scoreGradient: `linear-gradient(135deg, ${theme.colors.status.epic}, #0369A1)`,
+      scoreGlow: theme.shadows.glowEpic,
+    },
+    legendary: {
+      color: theme.colors.status.legendary,
+      border: `${theme.borders.widthThick} solid ${theme.colors.status.legendary}`,
+      shadow: `${theme.shadows.lg}, ${theme.shadows.glowLegendary}`,
+      scoreGradient: `linear-gradient(135deg, ${theme.colors.status.legendary}, #F59E0B)`,
+      scoreGlow: theme.shadows.glowLegendary,
+    },
+    mythique: {
+      color: theme.colors.status.mythique,
+      border: `${theme.borders.widthThick} solid ${theme.colors.status.mythique}`,
+      shadow: `${theme.shadows.xl}, ${theme.shadows.glowMythique}`,
+      scoreGradient: `linear-gradient(135deg, ${theme.colors.status.mythique}, #D32F2F)`,
+      scoreGlow: theme.shadows.glowMythique,
+    },
+  };
+  return styles[rarity] || styles.common;
 }
 
-function getScoreShadow(score) {
-  if (score >= 80) return theme.shadows.glowRune;
-  if (score >= 60) return theme.shadows.glowMagic;
-  return theme.shadows.sm;
+/**
+ * Format risk signal to display label
+ */
+function formatRiskSignal(signal) {
+  const labels = {
+    condition_unclear: 'État non précisé',
+    incomplete_photos: 'Peu de photos',
+    old_listing: 'Annonce ancienne',
+    high_price: 'Prix élevé',
+    far_location: 'Loin',
+  };
+  return labels[signal] || signal.replace(/_/g, ' ');
+}
+
+/**
+ * Format time ago from ISO date string
+ */
+function formatTimeAgo(isoDate) {
+  const now = new Date();
+  const posted = new Date(isoDate);
+  const diffMs = now - posted;
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) return 'à l\'instant';
+  if (diffMins < 60) return `il y a ${diffMins} min`;
+  if (diffHours < 24) return `il y a ${diffHours}h`;
+  if (diffDays === 1) return 'hier';
+  return `il y a ${diffDays} jours`;
+}
+
+/**
+ * Format status label
+ */
+function formatStatus(status) {
+  const labels = {
+    new: 'Nouveau',
+    interested: 'Intéressant',
+    passed: 'Passé',
+    contacted: 'Contacté',
+  };
+  return labels[status] || status;
 }
 
 const styles = {
@@ -156,223 +310,267 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'rgba(10, 14, 39, 0.85)',
-    backdropFilter: 'blur(8px)',
+    background: 'rgba(0, 0, 0, 0.85)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000,
     padding: theme.spacing.xl,
+    backdropFilter: 'blur(4px)',
   },
   modal: {
-    background: theme.colors.neutral.bgCard,
-    border: `${theme.borders.widthMedium} solid ${theme.colors.primary.arcanePurpleLight}`,
+    background: theme.colors.primary.deepDark,
     borderRadius: theme.borders.radiusLg,
     maxWidth: '800px',
-    width: '100%',
     maxHeight: '90vh',
+    width: '100%',
     overflow: 'auto',
     position: 'relative',
-    boxShadow: `${theme.shadows.xl}, ${theme.shadows.glowMagic}`,
+    padding: theme.spacing.xxl,
   },
   closeBtn: {
     position: 'absolute',
     top: theme.spacing.lg,
     right: theme.spacing.lg,
-    width: '40px',
-    height: '40px',
-    background: theme.colors.neutral.bgHover,
-    border: `${theme.borders.widthThin} solid ${theme.colors.neutral.border}`,
-    borderRadius: theme.borders.radiusMd,
-    color: theme.colors.neutral.textSecondary,
-    fontSize: theme.typography.sizes.headingMd,
+    background: theme.colors.primary.slate,
+    color: theme.colors.text.primary,
+    border: 'none',
+    borderRadius: '50%',
+    width: '32px',
+    height: '32px',
+    fontSize: '20px',
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     transition: `all ${theme.effects.transitionNormal}`,
-    fontFamily: theme.typography.fonts.primary,
-    zIndex: 10,
   },
   header: {
-    padding: theme.spacing.xl,
-    borderBottom: `${theme.borders.widthThin} solid ${theme.colors.neutral.border}`,
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    gap: theme.spacing.lg,
-    background: theme.colors.magic.voidEdge,
+    marginBottom: theme.spacing.lg,
   },
-  title: {
-    fontSize: theme.typography.sizes.headingMd,
-    fontWeight: theme.typography.weights.bold,
-    color: theme.colors.neutral.textPrimary,
-    margin: 0,
-    flex: 1,
+  rarityLabel: {
+    fontSize: theme.typography.sizes.bodyMd,
+    fontWeight: theme.typography.weights.semibold,
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
   },
   score: {
-    color: theme.colors.neutral.textPrimary,
     padding: `${theme.spacing.sm} ${theme.spacing.lg}`,
-    borderRadius: '20px',
+    borderRadius: '24px',
     fontWeight: theme.typography.weights.bold,
     fontSize: theme.typography.sizes.headingMd,
-    minWidth: '60px',
+    minWidth: '64px',
     textAlign: 'center',
+    color: theme.colors.text.primary,
+  },
+  title: {
+    fontSize: theme.typography.sizes.headingLg,
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.xl,
+    lineHeight: '1.3',
   },
   image: {
     width: '100%',
     maxHeight: '400px',
     objectFit: 'cover',
+    borderRadius: theme.borders.radiusMd,
+    marginBottom: theme.spacing.xl,
   },
   imagePlaceholder: {
     width: '100%',
     height: '300px',
-    background: `linear-gradient(135deg, ${theme.colors.magic.voidDark}, ${theme.colors.magic.voidEdge})`,
+    background: `linear-gradient(135deg, ${theme.colors.primary.obsidian}, ${theme.colors.primary.midnight})`,
+    borderRadius: theme.borders.radiusMd,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: theme.spacing.xl,
   },
   imagePlaceholderIcon: {
-    fontSize: '96px',
-    filter: 'drop-shadow(0 0 16px rgba(124, 58, 237, 0.6))',
+    fontSize: '80px',
+    filter: `drop-shadow(0 0 16px ${theme.accents.hunterGold}50)`,
+  },
+  priceSection: {
+    background: theme.colors.primary.midnight,
+    padding: theme.spacing.lg,
+    borderRadius: theme.borders.radiusMd,
+    marginBottom: theme.spacing.xl,
+  },
+  priceRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    marginBottom: theme.spacing.md,
+    paddingBottom: theme.spacing.md,
+    borderBottom: `${theme.borders.widthThin} solid ${theme.colors.primary.slate}`,
+  },
+  priceLabel: {
+    fontSize: theme.typography.sizes.bodyMd,
+    color: theme.colors.text.tertiary,
+  },
+  price: {
+    fontSize: theme.typography.sizes.headingLg,
+    fontWeight: theme.typography.weights.bold,
+    color: theme.accents.hunterGold,
+    textShadow: `0 0 16px ${theme.accents.hunterGold}80`,
+  },
+  estimateRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    marginBottom: theme.spacing.sm,
+  },
+  estimateLabel: {
+    fontSize: theme.typography.sizes.bodySm,
+    color: theme.colors.text.tertiary,
+  },
+  estimate: {
+    fontSize: theme.typography.sizes.bodyLg,
+    fontWeight: theme.typography.weights.semibold,
+    color: theme.colors.text.primary,
+  },
+  confidenceRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    marginBottom: theme.spacing.sm,
+  },
+  confidenceLabel: {
+    fontSize: theme.typography.sizes.bodySm,
+    color: theme.colors.text.tertiary,
+  },
+  confidence: {
+    fontSize: theme.typography.sizes.bodySm,
+    fontWeight: theme.typography.weights.medium,
+    color: theme.colors.text.secondary,
+  },
+  gainRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    marginTop: theme.spacing.md,
+    paddingTop: theme.spacing.md,
+    borderTop: `${theme.borders.widthThin} solid ${theme.colors.primary.slate}`,
+  },
+  gainLabel: {
+    fontSize: theme.typography.sizes.bodyMd,
+    color: theme.colors.text.tertiary,
+  },
+  gainValue: {
+    fontSize: theme.typography.sizes.headingMd,
+    fontWeight: theme.typography.weights.bold,
+  },
+  locationSection: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
+    marginBottom: theme.spacing.xl,
+    padding: theme.spacing.md,
+    background: theme.colors.primary.midnight,
+    borderRadius: theme.borders.radiusMd,
+  },
+  locationIcon: {
+    fontSize: '20px',
+  },
+  location: {
+    fontSize: theme.typography.sizes.bodyMd,
+    color: theme.colors.text.secondary,
+  },
+  distance: {
+    fontSize: theme.typography.sizes.bodyMd,
+    color: theme.accents.manaCyan,
+    fontWeight: theme.typography.weights.medium,
   },
   section: {
-    padding: theme.spacing.xl,
-    borderBottom: `${theme.borders.widthThin} solid ${theme.colors.neutral.border}`,
+    marginBottom: theme.spacing.xl,
   },
   sectionTitle: {
     fontSize: theme.typography.sizes.headingSm,
     fontWeight: theme.typography.weights.semibold,
-    color: theme.colors.accent.enchantGold,
-    marginBottom: theme.spacing.lg,
-    textTransform: 'uppercase',
-    letterSpacing: '0.5px',
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.md,
   },
-  details: {
+  badges: {
+    display: 'flex',
+    gap: theme.spacing.sm,
+    flexWrap: 'wrap',
+  },
+  explanation: {
+    fontSize: theme.typography.sizes.bodyMd,
+    color: theme.colors.text.secondary,
+    lineHeight: '1.6',
+    whiteSpace: 'pre-wrap',
+  },
+  description: {
+    fontSize: theme.typography.sizes.bodyMd,
+    color: theme.colors.text.secondary,
+    lineHeight: '1.6',
+  },
+  metadata: {
     display: 'flex',
     flexDirection: 'column',
-    gap: theme.spacing.md,
+    gap: theme.spacing.sm,
   },
-  detailRow: {
+  metadataRow: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: theme.spacing.sm,
-    background: theme.colors.neutral.bgHover,
-    borderRadius: theme.borders.radiusMd,
+    background: theme.colors.primary.midnight,
+    borderRadius: theme.borders.radiusSm,
   },
-  detailLabel: {
-    fontSize: theme.typography.sizes.bodyMd,
-    color: theme.colors.neutral.textSecondary,
-    fontWeight: theme.typography.weights.semibold,
+  metadataLabel: {
+    fontSize: theme.typography.sizes.bodySm,
+    color: theme.colors.text.tertiary,
   },
-  detailValue: {
-    fontSize: theme.typography.sizes.bodyMd,
-    color: theme.colors.neutral.textPrimary,
-    fontWeight: theme.typography.weights.semibold,
-  },
-  description: {
-    fontSize: theme.typography.sizes.bodyMd,
-    color: theme.colors.neutral.textSecondary,
-    lineHeight: '1.6',
-    margin: 0,
-    whiteSpace: 'pre-wrap',
-  },
-  badges: {
-    display: 'flex',
-    gap: theme.spacing.md,
-    flexWrap: 'wrap',
-  },
-  badgeWizards: {
-    background: `linear-gradient(135deg, ${theme.colors.status.legendary}, ${theme.colors.accent.goldLight})`,
-    color: theme.colors.magic.voidDark,
-    padding: `${theme.spacing.sm} ${theme.spacing.lg}`,
-    borderRadius: theme.borders.radiusMd,
-    fontSize: theme.typography.sizes.bodyMd,
-    fontWeight: theme.typography.weights.semibold,
-    boxShadow: theme.shadows.glowRune,
-  },
-  badgeFrench: {
-    background: theme.colors.primary.arcanePurpleLight,
-    color: theme.colors.neutral.textPrimary,
-    padding: `${theme.spacing.sm} ${theme.spacing.lg}`,
-    borderRadius: theme.borders.radiusMd,
-    fontSize: theme.typography.sizes.bodyMd,
-    fontWeight: theme.typography.weights.semibold,
-    boxShadow: theme.shadows.glowMagic,
-  },
-  badgeLot: {
-    background: theme.colors.accent.manaBlue,
-    color: theme.colors.magic.voidDark,
-    padding: `${theme.spacing.sm} ${theme.spacing.lg}`,
-    borderRadius: theme.borders.radiusMd,
-    fontSize: theme.typography.sizes.bodyMd,
-    fontWeight: theme.typography.weights.semibold,
-    boxShadow: theme.shadows.glowMana,
-  },
-  badgeInactive: {
-    background: theme.colors.neutral.bgHover,
-    color: theme.colors.neutral.textSecondary,
-    padding: `${theme.spacing.sm} ${theme.spacing.lg}`,
-    borderRadius: theme.borders.radiusMd,
-    fontSize: theme.typography.sizes.bodyMd,
-    fontWeight: theme.typography.weights.normal,
-    border: `${theme.borders.widthThin} solid ${theme.colors.neutral.border}`,
+  metadataValue: {
+    fontSize: theme.typography.sizes.bodySm,
+    color: theme.colors.text.primary,
+    fontWeight: theme.typography.weights.medium,
   },
   actions: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+    gridTemplateColumns: 'repeat(3, 1fr)',
     gap: theme.spacing.md,
+    marginTop: theme.spacing.xl,
   },
-  btnPrimary: {
-    padding: `${theme.spacing.md} ${theme.spacing.lg}`,
-    background: theme.colors.accent.manaBlue,
-    color: theme.colors.magic.voidDark,
+  primaryButton: {
+    padding: theme.spacing.lg,
+    background: theme.accents.manaCyan,
+    color: theme.colors.primary.obsidian,
     border: 'none',
     borderRadius: theme.borders.radiusMd,
     fontSize: theme.typography.sizes.bodyMd,
     fontWeight: theme.typography.weights.semibold,
+    fontFamily: theme.typography.fonts.primary,
     cursor: 'pointer',
     transition: `all ${theme.effects.transitionNormal}`,
-    textAlign: 'center',
-    textDecoration: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: theme.shadows.glowMana,
   },
-  btnInterested: {
-    padding: `${theme.spacing.md} ${theme.spacing.lg}`,
-    background: `linear-gradient(135deg, ${theme.colors.status.legendary}, ${theme.colors.accent.goldLight})`,
-    color: theme.colors.magic.voidDark,
+  successButton: {
+    padding: theme.spacing.lg,
+    background: theme.accents.successGreen,
+    color: theme.colors.primary.obsidian,
     border: 'none',
     borderRadius: theme.borders.radiusMd,
     fontSize: theme.typography.sizes.bodyMd,
     fontWeight: theme.typography.weights.semibold,
+    fontFamily: theme.typography.fonts.primary,
     cursor: 'pointer',
     transition: `all ${theme.effects.transitionNormal}`,
-    boxShadow: theme.shadows.glowRune,
   },
-  btnReviewed: {
-    padding: `${theme.spacing.md} ${theme.spacing.lg}`,
-    background: theme.colors.primary.arcanePurpleLight,
-    color: theme.colors.neutral.textPrimary,
-    border: 'none',
+  dangerButton: {
+    padding: theme.spacing.lg,
+    background: theme.colors.primary.slate,
+    color: theme.colors.text.secondary,
+    border: `${theme.borders.widthThin} solid ${theme.colors.primary.slate}`,
     borderRadius: theme.borders.radiusMd,
     fontSize: theme.typography.sizes.bodyMd,
     fontWeight: theme.typography.weights.semibold,
-    cursor: 'pointer',
-    transition: `all ${theme.effects.transitionNormal}`,
-    boxShadow: theme.shadows.glowMagic,
-  },
-  btnPassed: {
-    padding: `${theme.spacing.md} ${theme.spacing.lg}`,
-    background: theme.colors.neutral.bgHover,
-    color: theme.colors.neutral.textSecondary,
-    border: `${theme.borders.widthThin} solid ${theme.colors.neutral.border}`,
-    borderRadius: theme.borders.radiusMd,
-    fontSize: theme.typography.sizes.bodyMd,
-    fontWeight: theme.typography.weights.semibold,
+    fontFamily: theme.typography.fonts.primary,
     cursor: 'pointer',
     transition: `all ${theme.effects.transitionNormal}`,
   },
@@ -381,9 +579,9 @@ const styles = {
 // Add hover styles via CSS
 const styleSheet = document.createElement('style');
 styleSheet.textContent = `
-  button:hover, a:hover {
+  button:hover {
     transform: translateY(-2px);
-    filter: brightness(1.1);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
   }
 `;
 document.head.appendChild(styleSheet);

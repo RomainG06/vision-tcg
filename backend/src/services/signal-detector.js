@@ -203,7 +203,11 @@ export function generateExplanation(listing, scoreBreakdown) {
   }
   
   if (opportunitySignals.includes('below_market')) {
-    lines.push('- 💰 Prix potentiellement sous le marché');
+    if (listing.gain_potential && listing.gain_percentage) {
+      lines.push(`- 💰 Prix sous le marché (gain potentiel : ${listing.gain_potential}€ / +${listing.gain_percentage}%)`);
+    } else {
+      lines.push('- 💰 Prix potentiellement sous le marché');
+    }
   }
   
   if (opportunitySignals.includes('rare_cards')) {
@@ -236,6 +240,21 @@ export function generateExplanation(listing, scoreBreakdown) {
   
   if (scoreBreakdown.is_lot !== undefined) {
     lines.push(`- Type lot : ${scoreBreakdown.is_lot.toFixed(0)}/100`);
+  }
+  
+  // Estimation de valeur
+  if (listing.value_estimate_low && listing.value_estimate_high) {
+    lines.push('');
+    lines.push('**Estimation de valeur :**');
+    lines.push(`- Fourchette : ${listing.value_estimate_low}€ - ${listing.value_estimate_high}€`);
+    lines.push(`- Confiance : ${listing.confidence}`);
+    if (listing.gain_potential !== null) {
+      const gainSign = listing.gain_potential >= 0 ? '+' : '';
+      lines.push(`- Gain potentiel : ${gainSign}${listing.gain_potential}€ (${gainSign}${listing.gain_percentage}%)`);
+    }
+    if (listing.methodology) {
+      lines.push(`- Méthode : ${listing.methodology}`);
+    }
   }
   
   // Signaux de risque
@@ -306,7 +325,11 @@ export function generateBadges(listing) {
   }
   
   if (opportunitySignals.includes('below_market')) {
-    badges.push('💸 SOUS-COTÉ');
+    if (listing.gain_percentage && listing.gain_percentage > 50) {
+      badges.push(`💎 -${listing.gain_percentage}%`);
+    } else {
+      badges.push('💸 SOUS-COTÉ');
+    }
   }
   
   if (opportunitySignals.includes('rare_cards')) {
@@ -337,17 +360,33 @@ export function generateBadges(listing) {
  * Enrichit un listing avec tous les signaux et explications
  * @param {Object} listing - Listing normalisé avec score
  * @param {Object} profile - Profile de chasse
+ * @param {Object} estimation - Optional value estimation (if not provided, will be calculated)
  * @returns {Object} Listing enrichi
  */
-export function enrichListing(listing, profile) {
+export function enrichListing(listing, profile, estimation = null) {
   const opportunitySignals = detectOpportunitySignals(listing, profile);
   const riskSignals = detectRiskSignals(listing);
   
-  const enriched = {
+  let enriched = {
     ...listing,
     opportunity_signals: opportunitySignals,
     risk_signals: riskSignals
   };
+  
+  // Ajouter l'estimation si fournie
+  if (estimation) {
+    enriched = {
+      ...enriched,
+      ...estimation
+    };
+    
+    // Mettre à jour le signal below_market si gain significatif
+    if (estimation.gain_percentage > 30 && estimation.confidence !== 'low') {
+      if (!enriched.opportunity_signals.includes('below_market')) {
+        enriched.opportunity_signals = [...enriched.opportunity_signals, 'below_market'];
+      }
+    }
+  }
   
   const explanation = generateExplanation(enriched, listing.score_breakdown || {});
   const badges = generateBadges(enriched);

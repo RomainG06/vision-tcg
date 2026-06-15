@@ -3,7 +3,8 @@
  * Replaces scorer-simple.js with profile-based scoring
  */
 
-import { enrichListing } from './signal-detector.js';
+import { enrichListing, detectOpportunitySignals } from './signal-detector.js';
+import { estimateValue } from './value-estimator.js';
 
 /**
  * Calculate distance between two coordinates (Haversine formula)
@@ -139,7 +140,7 @@ export function scoreListing(listing, profile) {
  * Score multiple listings and enrich with signals
  * @param {Array<Object>} listings - Array of listings
  * @param {Object} profile - Profile configuration
- * @returns {Array<Object>} Listings with scores, signals, badges, and explanation
+ * @returns {Array<Object>} Listings with scores, signals, badges, estimation, and explanation
  */
 export function scoreListings(listings, profile) {
   return listings.map(listing => {
@@ -150,8 +151,14 @@ export function scoreListings(listings, profile) {
       score_breakdown: breakdown
     };
     
-    // Enrich with opportunity/risk signals, badges, and explanation
-    return enrichListing(withScore, profile);
+    // Pre-detect opportunity signals for value estimation
+    withScore.opportunity_signals = detectOpportunitySignals(withScore, profile);
+    
+    // Estimate value (uses opportunity_signals)
+    const estimation = estimateValue(withScore);
+    
+    // Enrich with full signals, badges, and explanation (including estimation)
+    return enrichListing(withScore, profile, estimation);
   }).sort((a, b) => b.score - a.score);
 }
 

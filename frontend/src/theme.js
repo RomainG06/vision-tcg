@@ -117,15 +117,16 @@ export const rarityLabels = {
 
 /**
  * Badge Label Mapping (opportunity_signals → UI badge text)
+ * Using direct color values to avoid circular reference
  */
 export const badgeLabels = {
-  wizards_detected: { text: 'WIZARDS', color: theme.accents.hunterGold, emoji: '🔥' },
-  french_edition: { text: 'FR', color: theme.status.rare, emoji: '🇫🇷' },
-  lot_detected: { text: 'LOT', color: theme.status.epic, emoji: '📦' },
-  near_location: { text: 'PROCHE', color: theme.accents.successGreen, emoji: '📍' },
-  rare_cards: { text: 'RARES', color: theme.accents.warningOrange, emoji: '✨' },
-  holographic: { text: 'HOLO', color: theme.accents.manaCyan, emoji: '🌟' },
-  below_market: { text: 'SOUS-COTÉ', color: theme.accents.warningOrange, emoji: '💸' },
+  wizards_detected: { text: 'WIZARDS', color: '#E6B85C', emoji: '🔥' },
+  french_edition: { text: 'FR', color: '#7C3AED', emoji: '🇫🇷' },
+  lot_detected: { text: 'LOT', color: '#0EA5E9', emoji: '📦' },
+  near_location: { text: 'PROCHE', color: '#10B981', emoji: '📍' },
+  rare_cards: { text: 'RARES', color: '#F59E0B', emoji: '✨' },
+  holographic: { text: 'HOLO', color: '#00D9FF', emoji: '🌟' },
+  below_market: { text: 'SOUS-COTÉ', color: '#F59E0B', emoji: '💸' },
 };
 
 export default theme;

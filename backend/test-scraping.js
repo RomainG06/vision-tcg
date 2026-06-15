@@ -95,9 +95,9 @@ async function testVinted() {
 async function saveToDatabase(listings, source) {
   await initDatabase();
   
-  // Create scrape run
+  // Insert scrape run
   const scrapeRunId = run(`
-    INSERT INTO scrape_runs (source, query, results_count, status, started_at, completed_at)
+    INSERT INTO scrape_runs (source, query, total_found, status, started_at, completed_at)
     VALUES (?, ?, ?, ?, ?, ?)
   `, [source, 'pokemon cartes wizards', listings.length, 'completed', new Date().toISOString(), new Date().toISOString()]);
   

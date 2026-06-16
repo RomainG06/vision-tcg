@@ -77,7 +77,8 @@ async function seedDatabase() {
     logger.info(`💾 Saving ${allListings.length} total listings to database...`);
     
     // Create a scrape_run entry
-    await run(`
+    logger.info('Creating scrape_run entry...');
+    const scrapeRunResult = await run(`
       INSERT INTO scrape_runs (started_at, completed_at, source, query, status, results_count, errors_count)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `, [
@@ -89,41 +90,58 @@ async function seedDatabase() {
       allListings.length,
       0
     ]);
+    logger.info(`✅ Scrape run created (ID: ${scrapeRunResult})`);
     
+    let savedCount = 0;
     for (const listing of allListings) {
-      // Adapter au schéma existant (old MVP schema)
-      await run(`
-        INSERT OR REPLACE INTO listings (
-          scrape_run_id, source, external_id, url, title, description, 
-          price, location, lat, lon, distance_km, images, posted_at, 
-          scraped_at, status, score, score_breakdown, notes
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `, [
-        1, // scrape_run_id (fake ID for seed)
-        listing.platform,
-        listing.id,
-        listing.url,
-        listing.title,
-        listing.description || '',
-        listing.price,
-        listing.location,
-        null, // lat (not used yet)
-        null, // lon (not used yet)
-        listing.distance_km || null,
-        JSON.stringify(listing.images || [listing.image_url].filter(Boolean)),
-        listing.published_at || new Date().toISOString(),
-        new Date().toISOString(),
-        'new',
-        listing.score || 0,
-        JSON.stringify({
-          signals: listing.opportunity_signals || [],
-          risks: listing.risk_signals || [],
-          confidence: listing.confidence,
-          estimated_value_min: listing.estimated_value_min,
-          estimated_value_max: listing.estimated_value_max
-        }),
-        listing.explanation || null
-      ]);
+      try {
+        // Adapter au schéma existant (old MVP schema)
+        await run(`
+          INSERT OR REPLACE INTO listings (
+            scrape_run_id, source, external_id, url, title, description, 
+            price, location, lat, lon, distance_km, images, posted_at, 
+            scraped_at, status, score, score_breakdown, notes
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [
+          1, // scrape_run_id (fake ID for seed)
+          listing.platform,
+          listing.id,
+          listing.url,
+          listing.title,
+          listing.description || '',
+          listing.price,
+          listing.location,
+          null, // lat (not used yet)
+          null, // lon (not used yet)
+          listing.distance_km || null,
+          JSON.stringify(listing.images || [listing.image_url].filter(Boolean)),
+          listing.published_at || new Date().toISOString(),
+          new Date().toISOString(),
+          'new',
+          listing.score || 0,
+          JSON.stringify({
+            signals: listing.opportunity_signals || [],
+            risks: listing.risk_signals || [],
+            confidence: listing.confidence,
+            estimated_value_min: listing.estimated_value_min,
+            estimated_value_max: listing.estimated_value_max
+          }),
+          listing.explanation || null
+        ]);
+        savedCount++;
+        if (savedCount % 5 === 0) {
+          logger.info(`   Progress: ${savedCount}/${allListings.length} saved...`);
+        }
+      } catch (insertError) {
+        logger.error(`❌ Failed to insert listing "${listing.title}":`, insertError.message);
+        logger.error('Listing data:', JSON.stringify({
+          id: listing.id,
+          platform: listing.platform,
+          title: listing.title,
+          price: listing.price
+        }, null, 2));
+        throw insertError;
+      }
     }
     
     logger.info(`✅ Saved ${allListings.length} listings to database\n`);
@@ -142,8 +160,13 @@ async function seedDatabase() {
     process.exit(0);
     
   } catch (error) {
-    logger.error('❌ Seed failed:', error.message);
-    logger.error(error.stack);
+    logger.error('❌ Seed failed:', error?.message || error);
+    if (error?.stack) {
+      logger.error('Stack trace:', error.stack);
+    }
+    if (error?.code) {
+      logger.error('Error code:', error.code);
+    }
     await close();
     process.exit(1);
   }

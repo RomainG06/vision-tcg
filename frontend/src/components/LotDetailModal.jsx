@@ -8,7 +8,7 @@ import TcgIcon from './TcgIcon';
  * Modal full-screen pour afficher les détails complets d'une opportunité
  * Basé sur MODAL_DETAIL_SPEC.md (1167 lignes)
  */
-function LotDetailModal({ isOpen, onClose, listing }) {
+function LotDetailModal({ isOpen, onClose, listing, onUpdate, onDelete }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const modalRef = useRef(null);
 
@@ -78,11 +78,7 @@ function LotDetailModal({ isOpen, onClose, listing }) {
 
   const handleAddToWatchlist = async () => {
     try {
-      await fetch(`/api/listings/${listing.id}/watchlist`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'interesting' }),
-      });
+      await onUpdate?.(listing.id, { status: 'interested' });
       alert('Ajouté à la watchlist');
     } catch (err) {
       alert('Erreur : ' + err.message);
@@ -91,11 +87,7 @@ function LotDetailModal({ isOpen, onClose, listing }) {
 
   const handleIgnore = async () => {
     try {
-      await fetch(`/api/listings/${listing.id}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'ignored' }),
-      });
+      await onUpdate?.(listing.id, { status: 'ignored' });
       onClose();
       alert('Annonce ignorée');
     } catch (err) {
@@ -105,13 +97,19 @@ function LotDetailModal({ isOpen, onClose, listing }) {
 
   const handleMarkContacted = async () => {
     try {
-      await fetch(`/api/listings/${listing.id}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'contacted' }),
-      });
+      await onUpdate?.(listing.id, { status: 'contacted' });
       onClose();
       alert('Marqué comme contacté');
+    } catch (err) {
+      alert('Erreur : ' + err.message);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      if (!window.confirm('Supprimer définitivement cette annonce de la liste ?')) return;
+      await onDelete?.(listing.id);
+      alert('Annonce supprimée');
     } catch (err) {
       alert('Erreur : ' + err.message);
     }
@@ -130,6 +128,8 @@ function LotDetailModal({ isOpen, onClose, listing }) {
   const distance = listing.distance ?? listing.distance_km ?? null;
   const platform = listing.source ?? listing.platform ?? '—';
   const confidence = listing.confidence ?? 70;
+  const opportunitySignals = (listing.opportunity_signals || [])
+    .filter((signal) => shouldDisplayOpportunitySignal(listing, signal));
 
   // Calculate potential gain only when estimation exists
   const potentialMin = estimatedLow !== null ? estimatedLow - price : null;
@@ -242,8 +242,8 @@ function LotDetailModal({ isOpen, onClose, listing }) {
 
               {/* Badges */}
               <div style={badgesContainerStyle}>
-                {listing.opportunity_signals?.slice(0, 6).map((signal, idx) => (
-                  <Badge key={idx} type={signal} />
+                {opportunitySignals.slice(0, 6).map((signal, idx) => (
+                  <Badge key={idx} signal={signal} />
                 ))}
               </div>
             </div>
@@ -341,10 +341,29 @@ function LotDetailModal({ isOpen, onClose, listing }) {
           <button className="lot-modal-action" onClick={handleMarkContacted} style={successButtonStyle}>
             <TcgIcon name="contacted" size={16} /> Contacté
           </button>
+          <button className="lot-modal-action" onClick={handleDelete} style={dangerButtonStyle}>
+            <TcgIcon name="risk" size={16} /> Supprimer
+          </button>
         </div>
       </div>
     </div>
   );
+}
+
+function shouldDisplayOpportunitySignal(listing, signal) {
+  if (!isLotSignal(signal)) return true;
+  return isLotListing(listing);
+}
+
+function isLotSignal(signal) {
+  return ['lot_detected', 'LOT', 'lot'].includes(signal);
+}
+
+function isLotListing(listing) {
+  const text = `${listing.title || ''} ${listing.description || ''}`;
+  if (/\b(carte seule|carte unique|à l'unité|a l'unite|unitaire|single card)\b/i.test(text)) return false;
+  return /\b(lot|collection|vrac|classeur|set complet|complete set)\b/i.test(text)
+    || /\b([2-9]|[1-9]\d+)\s*(cartes?|cards?)\b/i.test(text);
 }
 
 // ==================== EVALUATION ROW COMPONENT ====================
@@ -754,7 +773,7 @@ const actionValueStyle = {
 // Footer Actions
 const footerStyle = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(4, 1fr)',
+  gridTemplateColumns: 'repeat(5, 1fr)',
   gap: theme.spacing.md,
   padding: theme.spacing.lg,
   background: theme.colors.primary.midnight,
@@ -815,6 +834,12 @@ const successButtonStyle = {
   ...secondaryButtonStyle,
   borderColor: theme.accents.successGreen,
   color: theme.accents.successGreen,
+};
+
+const dangerButtonStyle = {
+  ...secondaryButtonStyle,
+  borderColor: theme.accents.preyRed,
+  color: theme.accents.preyRed,
 };
 
 export default LotDetailModal;

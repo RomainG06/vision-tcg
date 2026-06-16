@@ -1,6 +1,7 @@
 const WIZARDS_PATTERN = /\b(wizards|wotc|base set|set de base|jungle|fossile|fossil|team rocket|gym|neo genesis|neo|wizard)\b/i;
 const FRENCH_PATTERN = /\b(fr|vf|français|francais|française|francaise|édition française|edition francaise)\b/i;
-const LOT_PATTERN = /\b(lot|collection|cartes|vrac|classeur|set complet|complete set)\b/i;
+const LOT_PATTERN = /\b(lot|collection|vrac|classeur|set complet|complete set)\b/i;
+const SINGLE_CARD_PATTERN = /\b(carte seule|carte unique|à l'unité|a l'unite|unitaire|single card|dracaufeu|tortank|florizarre|mewtwo|pikachu)\b/i;
 
 const NOISE_PATTERNS = [
   { code: 'modern_detected', pattern: /\b(écarlate|ecarlate|violet|epee|épée|bouclier|sword|shield|scarlet|sun|moon|soleil|lune|moderne|display moderne|booster moderne)\b/i },
@@ -24,7 +25,7 @@ export function evaluateListingQuality(listing, options = {}) {
 
   if (WIZARDS_PATTERN.test(text)) signals.push('wizards_detected');
   if (FRENCH_PATTERN.test(text)) signals.push('french_edition');
-  if (LOT_PATTERN.test(text)) signals.push('lot_detected');
+  if (isLotListingText(text)) signals.push('lot_detected');
   if (/\b(holo|holographique|brillante|rare|dracaufeu|tortank|florizarre|mewtwo|ronflex)\b/i.test(text)) signals.push('premium_card_detected');
 
   for (const rule of NOISE_PATTERNS) {
@@ -65,6 +66,19 @@ export function annotateListingQuality(listing, options = {}) {
       quality,
     },
   };
+}
+
+export function isLotListingText(text = '') {
+  if (!text) return false;
+  const normalized = String(text);
+  const hasExplicitCount = /\b([2-9]|[1-9]\d+)\s*(cartes?|cards?)\b/i.test(normalized);
+  const hasLotSignal = LOT_PATTERN.test(normalized);
+
+  if (SINGLE_CARD_PATTERN.test(normalized) && !hasExplicitCount && !hasLotSignal) {
+    return false;
+  }
+
+  return hasLotSignal || hasExplicitCount;
 }
 
 export function filterQualityListings(listings, options = {}) {

@@ -205,19 +205,25 @@ export function run(query, params = []) {
   
   db.run(query, params);
   
-  // CRITICAL: Save to disk immediately after write operations
   const upperQuery = query.trim().toUpperCase();
+  let lastInsertRowid = null;
+
+  // Read last_insert_rowid before exporting sql.js to disk: export can reset the value.
+  if (upperQuery.startsWith('INSERT')) {
+    const result = db.exec('SELECT last_insert_rowid()');
+    if (result && result[0] && result[0].values && result[0].values[0]) {
+      lastInsertRowid = result[0].values[0][0];
+    }
+  }
+
+  // CRITICAL: Save to disk immediately after write operations
   if (upperQuery.startsWith('INSERT') || upperQuery.startsWith('UPDATE') || upperQuery.startsWith('DELETE')) {
     dbDirty = true;
     saveDatabaseSync(true);
   }
   
-  // If INSERT, return the last inserted ID
-  if (upperQuery.startsWith('INSERT')) {
-    const result = db.exec('SELECT last_insert_rowid()');
-    if (result && result[0] && result[0].values && result[0].values[0]) {
-      return result[0].values[0][0];
-    }
+  if (lastInsertRowid !== null) {
+    return lastInsertRowid;
   }
   
   return null;

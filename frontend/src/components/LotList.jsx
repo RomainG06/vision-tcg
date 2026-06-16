@@ -4,7 +4,7 @@ import Badge from './Badge';
 import TcgIcon from './TcgIcon';
 import theme, { getRarityLevel, rarityLabels } from '../theme';
 
-function LotList({ listings, onUpdate, highlightedIds = [] }) {
+function LotList({ listings, onUpdate, onDelete, highlightedIds = [] }) {
   const [selectedLot, setSelectedLot] = useState(null);
 
   if (listings.length === 0) {
@@ -24,6 +24,8 @@ function LotList({ listings, onUpdate, highlightedIds = [] }) {
           const rarity = getRarityLevel(listing.score);
           const rarityStyle = getRarityStyle(rarity);
           const isHighlighted = highlightedIds.includes(listing.id);
+          const opportunitySignals = (listing.opportunity_signals || [])
+            .filter((signal) => shouldDisplayOpportunitySignal(listing, signal));
 
           return (
             <div
@@ -49,6 +51,19 @@ function LotList({ listings, onUpdate, highlightedIds = [] }) {
                   <TcgIcon name="spark" size={13} /> Dernier scan
                 </div>
               )}
+
+              <button
+                type="button"
+                style={styles.deleteButton}
+                aria-label="Supprimer l'annonce"
+                onClick={async (event) => {
+                  event.stopPropagation();
+                  if (!window.confirm('Supprimer cette annonce de la liste ?')) return;
+                  await onDelete?.(listing.id);
+                }}
+              >
+                ✕
+              </button>
 
               {/* Image or placeholder */}
               {listing.images && listing.images.length > 0 ? (
@@ -123,11 +138,11 @@ function LotList({ listings, onUpdate, highlightedIds = [] }) {
                 )}
                 
                 {/* Opportunity Badges */}
-                {listing.opportunity_signals && listing.opportunity_signals.length > 0 && (
+                {opportunitySignals.length > 0 && (
                   <div style={styles.badgesSection}>
                     <div style={styles.badgesLabel}><TcgIcon name="spark" size={14} /> Opportunité:</div>
                     <div style={styles.badges}>
-                      {listing.opportunity_signals.map((signal) => (
+                      {opportunitySignals.map((signal) => (
                         <Badge key={signal} signal={signal} />
                       ))}
                     </div>
@@ -165,10 +180,35 @@ function LotList({ listings, onUpdate, highlightedIds = [] }) {
           isOpen={true}
           listing={selectedLot}
           onClose={() => setSelectedLot(null)}
+          onUpdate={async (id, updates) => {
+            const updated = await onUpdate?.(id, updates);
+            if (updated) setSelectedLot(updated);
+            return updated;
+          }}
+          onDelete={async (id) => {
+            await onDelete?.(id);
+            setSelectedLot(null);
+          }}
         />
       )}
     </div>
   );
+}
+
+function shouldDisplayOpportunitySignal(listing, signal) {
+  if (!isLotSignal(signal)) return true;
+  return isLotListing(listing);
+}
+
+function isLotSignal(signal) {
+  return ['lot_detected', 'LOT', 'lot'].includes(signal);
+}
+
+function isLotListing(listing) {
+  const text = `${listing.title || ''} ${listing.description || ''}`;
+  if (/\b(carte seule|carte unique|à l'unité|a l'unite|unitaire|single card)\b/i.test(text)) return false;
+  return /\b(lot|collection|vrac|classeur|set complet|complete set)\b/i.test(text)
+    || /\b([2-9]|[1-9]\d+)\s*(cartes?|cards?)\b/i.test(text);
 }
 
 /**
@@ -284,6 +324,20 @@ const styles = {
     fontWeight: theme.typography.weights.bold,
     textTransform: 'uppercase',
     letterSpacing: '.4px',
+  },
+  deleteButton: {
+    position: 'absolute',
+    top: theme.spacing.md,
+    left: theme.spacing.md,
+    zIndex: 3,
+    width: '30px',
+    height: '30px',
+    borderRadius: '999px',
+    border: `1px solid ${theme.accents.preyRed}88`,
+    background: `${theme.colors.primary.obsidian}E6`,
+    color: theme.accents.preyRed,
+    cursor: 'pointer',
+    fontWeight: theme.typography.weights.bold,
   },
   image: {
     width: '100%',

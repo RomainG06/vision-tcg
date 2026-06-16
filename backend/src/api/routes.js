@@ -34,6 +34,7 @@ function mapListing(listing) {
   
   return {
     id: listing.id,
+    scrape_run_id: listing.scrape_run_id,
     title: listing.title,
     description: listing.description,
     price: listing.price,
@@ -41,6 +42,7 @@ function mapListing(listing) {
     location: listing.location,
     distance_km: listing.distance_km,
     platform: listing.source, // Map 'source' to 'platform'
+    source: listing.source,
     published_at: listing.posted_at,
     score: listing.score,
     status: listing.status,
@@ -76,6 +78,9 @@ router.get('/docs', (req, res) => {
       { method: 'GET', path: '/api/listings', description: 'List all listings with filters' },
       { method: 'GET', path: '/api/listings/:id', description: 'Get single listing' },
       { method: 'PATCH', path: '/api/listings/:id', description: 'Update listing' },
+      { method: 'PATCH', path: '/api/listings/:id/status', description: 'Update listing status' },
+      { method: 'POST', path: '/api/listings/:id/watchlist', description: 'Mark listing as interesting' },
+      { method: 'DELETE', path: '/api/listings/:id', description: 'Delete listing' },
       { method: 'POST', path: '/api/scrape/start', description: 'Start a marketplace scrape and save results' },
       { method: 'GET', path: '/api/scrape-runs', description: 'Get scrape runs history' },
       { method: 'GET', path: '/api/stats', description: 'Get statistics' },
@@ -203,6 +208,77 @@ router.patch('/listings/:id', (req, res) => {
     res.json(mapListing(updated));
   } catch (error) {
     logger.error(`Error updating listing ${req.params.id}:`, error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * PATCH /api/listings/:id/status
+ * Compatibility endpoint used by the detail modal.
+ */
+router.patch('/listings/:id/status', (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const status = req.body.status;
+
+    if (!status) {
+      return res.status(400).json({ error: 'Missing status' });
+    }
+
+    listingRepo.update(id, { status });
+    const updated = listingRepo.findById(id);
+
+    if (!updated) {
+      return res.status(404).json({ error: 'Listing not found' });
+    }
+
+    res.json(mapListing(updated));
+  } catch (error) {
+    logger.error(`Error updating listing status ${req.params.id}:`, error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * POST /api/listings/:id/watchlist
+ * Compatibility endpoint used by the detail modal.
+ */
+router.post('/listings/:id/watchlist', (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const status = req.body.status || 'interested';
+
+    listingRepo.update(id, { status });
+    const updated = listingRepo.findById(id);
+
+    if (!updated) {
+      return res.status(404).json({ error: 'Listing not found' });
+    }
+
+    res.json(mapListing(updated));
+  } catch (error) {
+    logger.error(`Error adding listing ${req.params.id} to watchlist:`, error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * DELETE /api/listings/:id
+ * Delete a listing from the local dashboard backlog.
+ */
+router.delete('/listings/:id', (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const existing = listingRepo.findById(id);
+
+    if (!existing) {
+      return res.status(404).json({ error: 'Listing not found' });
+    }
+
+    listingRepo.delete(id);
+    res.status(204).send();
+  } catch (error) {
+    logger.error(`Error deleting listing ${req.params.id}:`, error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

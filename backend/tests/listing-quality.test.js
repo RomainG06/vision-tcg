@@ -1,5 +1,5 @@
 import { describe, test, expect } from '@jest/globals';
-import { evaluateListingQuality, filterQualityListings } from '../src/services/listing-quality.js';
+import { evaluateListingQuality, filterQualityListings, isLotListingText } from '../src/services/listing-quality.js';
 
 describe('Listing quality filter', () => {
   test('keeps a strong Wizards French lot', () => {
@@ -43,6 +43,20 @@ describe('Listing quality filter', () => {
 
     expect(quality.keep).toBe(false);
     expect(quality.noise).toEqual(expect.arrayContaining(['foreign_language_detected']));
+  });
+
+  test('does not tag obvious single-card listings as lots', () => {
+    expect(isLotListingText('Dracaufeu set de base holo FR carte seule')).toBe(false);
+    expect(isLotListingText('Carte unique Mewtwo Wizards français')).toBe(false);
+
+    const quality = evaluateListingQuality({
+      title: 'Dracaufeu set de base holo FR carte seule',
+      description: 'Wizards français, vendu à l’unité',
+      price: 250,
+      score: 82,
+    });
+
+    expect(quality.signals).not.toContain('lot_detected');
   });
 
   test('filterQualityListings keeps only actionable candidates and annotates score_breakdown', () => {

@@ -52,6 +52,15 @@ export async function updateListing(id, updates) {
   return response.json();
 }
 
+export async function deleteListing(id) {
+  const response = await fetch(`${API_URL}/api/listings/${id}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) throw new Error('Failed to delete listing');
+  return true;
+}
+
 /**
  * Fetch statistics
  */

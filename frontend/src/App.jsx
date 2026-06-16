@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import FilterBar from './components/FilterBar';
 import LotList from './components/LotList';
 import HuntLaunchPanel from './components/HuntLaunchPanel';
-import { fetchListings, fetchStats, updateListing } from './services/api';
+import { fetchListings, fetchStats, updateListing, deleteListing } from './services/api';
 import theme from './theme';
 import TcgIcon from './components/TcgIcon';
 
@@ -29,7 +29,7 @@ function App() {
   // Apply filters
   useEffect(() => {
     applyFilters();
-  }, [listings, filters]);
+  }, [listings, filters, lastHunt]);
 
   const loadData = async ({ showLoading = true } = {}) => {
     try {
@@ -60,6 +60,14 @@ function App() {
       l.price <= filters.maxPrice &&
       l.distance_km <= filters.maxDistance
     );
+
+    filtered.sort((a, b) => {
+      const lastScanDelta = Number((lastHunt?.highlightedIds || []).includes(b.id)) - Number((lastHunt?.highlightedIds || []).includes(a.id));
+      if (lastScanDelta !== 0) return lastScanDelta;
+      const runDelta = Number(b.scrape_run_id || 0) - Number(a.scrape_run_id || 0);
+      if (runDelta !== 0) return runDelta;
+      return new Date(b.scraped_at || b.published_at || 0) - new Date(a.scraped_at || a.published_at || 0);
+    });
 
     setFilteredListings(filtered);
   };
@@ -106,8 +114,26 @@ function App() {
       // Reload stats to reflect new counts
       const statsData = await fetchStats();
       setStats(statsData);
+      return updated;
     } catch (err) {
       console.error('Failed to update listing:', err);
+      throw err;
+    }
+  };
+
+  const handleListingDelete = async (id) => {
+    try {
+      await deleteListing(id);
+      setListings(prevListings => prevListings.filter(l => l.id !== id));
+      setLastHunt(prev => prev ? {
+        ...prev,
+        highlightedIds: prev.highlightedIds.filter(highlightedId => highlightedId !== id),
+      } : prev);
+      const statsData = await fetchStats();
+      setStats(statsData);
+    } catch (err) {
+      console.error('Failed to delete listing:', err);
+      throw err;
     }
   };
 
@@ -195,6 +221,7 @@ function App() {
         <LotList
           listings={filteredListings}
           onUpdate={handleListingUpdate}
+          onDelete={handleListingDelete}
           highlightedIds={lastHunt?.highlightedIds || []}
         />
       </div>

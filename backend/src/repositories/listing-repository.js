@@ -47,8 +47,8 @@ export class ListingRepository {
       params.push(filters.maxDistance);
     }
     
-    // Order by score DESC by default
-    query += ' ORDER BY score DESC';
+    // Newest scan first so the dashboard shows fresh opportunities before old backlog.
+    query += ' ORDER BY scrape_run_id DESC, datetime(COALESCE(scraped_at, posted_at)) DESC, score DESC';
     
     // Pagination
     const limit = filters.limit || 50;
@@ -135,7 +135,7 @@ export class ListingRepository {
       posted_at, scraped_at, raw_html, status || 'new', score, score_breakdown, notes
     ]);
     
-    return result.lastInsertRowid;
+    return result;
   }
   
   /**

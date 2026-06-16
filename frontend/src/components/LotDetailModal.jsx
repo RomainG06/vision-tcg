@@ -337,7 +337,7 @@ function EvaluationRow({ label, level, value, dots }) {
             <span key={`empty-${i}`} style={{ color: theme.colors.primary.slate, fontSize: '20px' }}>○</span>
           ))}
         </div>
-        <span style={{ color: dotColor, fontWeight: theme.typography.weight.medium }}>{value}</span>
+        <span style={{ color: dotColor, fontWeight: theme.typography.weights.medium }}>{value}</span>
       </div>
     </div>
   );
@@ -406,7 +406,7 @@ const closeButtonStyle = {
 
 const titleStyle = {
   fontSize: theme.typography.sizes.headingLg,
-  fontWeight: theme.typography.weight.bold,
+  fontWeight: theme.typography.weights.bold,
   color: theme.colors.text.primary,
   textTransform: 'uppercase',
   letterSpacing: '1.5px',
@@ -420,7 +420,7 @@ const scoreBadgeStyle = {
   borderRadius: theme.borders.radiusMedium,
   color: theme.colors.primary.obsidian,
   fontSize: theme.typography.sizes.headingMd,
-  fontWeight: theme.typography.weight.bold,
+  fontWeight: theme.typography.weights.bold,
   boxShadow: `0 0 20px ${theme.accents.hunterGold}80`,
 };
 
@@ -495,7 +495,7 @@ const carouselIndicatorStyle = {
   borderRadius: theme.borders.radiusSmall,
   color: theme.colors.text.secondary,
   fontSize: theme.typography.sizes.bodyMd,
-  fontWeight: theme.typography.weight.medium,
+  fontWeight: theme.typography.weights.medium,
 };
 
 const thumbnailsContainerStyle = {
@@ -523,7 +523,7 @@ const priceBlockContainerStyle = {
 
 const listingTitleStyle = {
   fontSize: theme.typography.sizes.headingMd,
-  fontWeight: theme.typography.weight.bold,
+  fontWeight: theme.typography.weights.bold,
   color: theme.accents.hunterGold,
   margin: 0,
   textShadow: `0 0 12px ${theme.accents.hunterGold}60`,
@@ -545,14 +545,14 @@ const labelSmallStyle = {
 
 const priceValueStyle = {
   fontSize: theme.typography.sizes.display,
-  fontWeight: theme.typography.weight.bold,
+  fontWeight: theme.typography.weights.bold,
   color: theme.accents.hunterGold,
   textShadow: `0 0 16px ${theme.accents.hunterGold}80`,
 };
 
 const estimationValueStyle = {
   fontSize: theme.typography.sizes.headingLg,
-  fontWeight: theme.typography.weight.bold,
+  fontWeight: theme.typography.weights.bold,
   color: theme.accents.manaCyan,
   textShadow: `0 0 12px ${theme.accents.manaCyan}60`,
 };
@@ -566,7 +566,7 @@ const potentialBlockStyle = {
 
 const potentialValueStyle = (min, max) => ({
   fontSize: theme.typography.sizes.headingMd,
-  fontWeight: theme.typography.weight.bold,
+  fontWeight: theme.typography.weights.bold,
   color: min > 0 ? theme.accents.successGreen : theme.accents.preyRed,
   textShadow: min > 0 ? `0 0 12px ${theme.accents.successGreen}60` : 'none',
 });
@@ -594,7 +594,7 @@ const explanationSectionStyle = {
 
 const sectionTitleStyle = {
   fontSize: theme.typography.sizes.bodyLg,
-  fontWeight: theme.typography.weight.bold,
+  fontWeight: theme.typography.weights.bold,
   color: theme.accents.hunterGold,
   textTransform: 'uppercase',
   letterSpacing: '1px',
@@ -628,19 +628,19 @@ const detailRowStyle = {
 const detailLabelStyle = {
   fontSize: theme.typography.sizes.bodyMd,
   color: theme.colors.text.tertiary,
-  fontWeight: theme.typography.weight.medium,
+  fontWeight: theme.typography.weights.medium,
 };
 
 const detailValueStyle = {
   fontSize: theme.typography.sizes.bodyLg,
   color: theme.colors.text.secondary,
-  fontWeight: theme.typography.weight.medium,
+  fontWeight: theme.typography.weights.medium,
 };
 
 const distanceStyle = (distance) => ({
   ...detailValueStyle,
   color: distance && distance < 20 ? theme.accents.successGreen : theme.colors.text.secondary,
-  fontWeight: distance && distance < 20 ? theme.typography.weight.bold : theme.typography.weight.medium,
+  fontWeight: distance && distance < 20 ? theme.typography.weights.bold : theme.typography.weights.medium,
 });
 
 // Markdown
@@ -657,7 +657,7 @@ const markdownParagraphStyle = {
 
 const markdownStrongStyle = {
   color: theme.accents.hunterGold,
-  fontWeight: theme.typography.weight.bold,
+  fontWeight: theme.typography.weights.bold,
 };
 
 const markdownListStyle = {
@@ -698,7 +698,7 @@ const actionSuggestedStyle = {
 const actionValueStyle = {
   ...detailValueStyle,
   color: theme.accents.hunterGold,
-  fontWeight: theme.typography.weight.bold,
+  fontWeight: theme.typography.weights.bold,
   textShadow: `0 0 12px ${theme.accents.hunterGold}60`,
 };
 
@@ -720,7 +720,7 @@ const primaryButtonStyle = {
   borderRadius: theme.borders.radiusMedium,
   color: theme.colors.primary.obsidian,
   fontSize: theme.typography.sizes.bodyLg,
-  fontWeight: theme.typography.weight.bold,
+  fontWeight: theme.typography.weights.bold,
   cursor: 'pointer',
   transition: 'all 0.2s ease',
   boxShadow: `0 4px 12px ${theme.accents.hunterGold}40`,
@@ -733,7 +733,7 @@ const secondaryButtonStyle = {
   borderRadius: theme.borders.radiusMedium,
   color: theme.accents.manaCyan,
   fontSize: theme.typography.sizes.bodyLg,
-  fontWeight: theme.typography.weight.bold,
+  fontWeight: theme.typography.weights.bold,
   cursor: 'pointer',
   transition: 'all 0.2s ease',
 };
@@ -745,7 +745,7 @@ const tertiaryButtonStyle = {
   borderRadius: theme.borders.radiusMedium,
   color: theme.colors.text.muted,
   fontSize: theme.typography.sizes.bodyLg,
-  fontWeight: theme.typography.weight.medium,
+  fontWeight: theme.typography.weights.medium,
   cursor: 'pointer',
   transition: 'all 0.2s ease',
 };

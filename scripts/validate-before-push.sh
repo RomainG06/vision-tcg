@@ -9,7 +9,7 @@ cd "$(dirname "$0")/.."
 
 ERRORS=0
 
-# Check 1: Références theme incorrectes
+# Check 1: Références theme incorrectes (sizes)
 echo ""
 echo "✓ Check 1: Theme references (typography.size vs sizes)"
 if grep -r "theme\.typography\.size\." frontend/src/components/*.jsx 2>/dev/null; then
@@ -19,6 +19,18 @@ if grep -r "theme\.typography\.size\." frontend/src/components/*.jsx 2>/dev/null
     ERRORS=$((ERRORS + 1))
 else
     echo "   ✅ Pas de theme.typography.size trouvé"
+fi
+
+# Check 1b: Références theme incorrectes (weights)
+echo ""
+echo "✓ Check 1b: Theme references (typography.weight vs weights)"
+if grep -r "theme\.typography\.weight\." frontend/src/components/*.jsx 2>/dev/null; then
+    echo "❌ ERREUR: Utilisez 'theme.typography.weights' (avec un s)"
+    echo "   Trouvé: theme.typography.weight.*"
+    echo "   Correct: theme.typography.weights.bold, .medium, etc."
+    ERRORS=$((ERRORS + 1))
+else
+    echo "   ✅ Pas de theme.typography.weight trouvé"
 fi
 
 # Check 2: Références colors.accents vs accents direct

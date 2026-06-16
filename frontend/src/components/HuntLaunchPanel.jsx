@@ -39,7 +39,7 @@ const statusCopy = {
   },
 };
 
-function HuntLaunchPanel({ onHuntComplete }) {
+function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
   const [series, setSeries] = useState('all');
   const [budget, setBudget] = useState(1500);
   const [sensitivity, setSensitivity] = useState('balanced');
@@ -86,7 +86,7 @@ function HuntLaunchPanel({ onHuntComplete }) {
       });
       setStatus('success');
       setStep('Dernier scan : à l’instant');
-      await onHuntComplete?.();
+      await onHuntComplete?.(data);
     } catch (err) {
       setError(err.message);
       setStatus('error');
@@ -190,13 +190,18 @@ function HuntLaunchPanel({ onHuntComplete }) {
           <div className="hunt-actions" style={styles.actions}>
             <button
               type="button"
-              onClick={status === 'success' ? reset : startHunt}
+              onClick={startHunt}
               disabled={isRunning}
               style={{ ...styles.primaryButton, ...(isRunning ? styles.buttonDisabled : {}) }}
             >
-              <TcgIcon name={isRunning ? 'radar' : status === 'success' ? 'bolt' : 'radar'} size={17} />
+              <TcgIcon name={isRunning ? 'radar' : 'radar'} size={17} />
               {isRunning ? 'Chasse en cours…' : status === 'success' ? 'Relancer la chasse' : 'Lancer la chasse'}
             </button>
+            {(status === 'success' || hasResults) && (
+              <button type="button" onClick={onViewResults} style={styles.secondaryButton}>
+                <TcgIcon name="spark" size={16} /> Voir les pistes
+              </button>
+            )}
             {status === 'error' && (
               <button type="button" onClick={reset} style={styles.secondaryButton}>Modifier les critères</button>
             )}
@@ -390,6 +395,10 @@ const styles = {
     boxShadow: `0 0 18px ${theme.accents.hunterGold}33`,
   },
   secondaryButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: theme.spacing.sm,
     padding: `${theme.spacing.md} ${theme.spacing.xl}`,
     border: `1px solid ${theme.colors.primary.slate}`,
     borderRadius: theme.borders.radiusMd,

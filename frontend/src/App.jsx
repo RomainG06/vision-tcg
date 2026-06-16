@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import FilterBar from './components/FilterBar';
 import LotList from './components/LotList';
 import HuntLaunchPanel from './components/HuntLaunchPanel';
@@ -18,6 +18,8 @@ function App() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [lastHunt, setLastHunt] = useState(null);
+  const resultsRef = useRef(null);
 
   // Load initial data
   useEffect(() => {
@@ -38,6 +40,7 @@ function App() {
       ]);
       setListings(listingsData);
       setStats(statsData);
+      return listingsData;
     } catch (err) {
       setError(err.message);
     } finally {
@@ -63,6 +66,32 @@ function App() {
 
   const handleFilterChange = (newFilters) => {
     setFilters({ ...filters, ...newFilters });
+  };
+
+  const scrollToResults = () => {
+    resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const handleHuntComplete = async (scanResult = {}) => {
+    const refreshedListings = await loadData({ showLoading: false });
+    const idsFromScan = (scanResult.listings || scanResult.results || [])
+      .map((listing) => listing.id)
+      .filter(Boolean);
+
+    const highlightedIds = idsFromScan.length > 0
+      ? idsFromScan
+      : [...(refreshedListings || [])]
+          .sort((a, b) => (b.score || 0) - (a.score || 0))
+          .slice(0, 5)
+          .map((listing) => listing.id);
+
+    setLastHunt({
+      at: new Date(),
+      count: scanResult.stats?.filtered ?? scanResult.listings?.length ?? highlightedIds.length,
+      highlightedIds,
+    });
+
+    setTimeout(scrollToResults, 120);
   };
 
   const handleListingUpdate = async (id, updates) => {
@@ -118,7 +147,21 @@ function App() {
       </header>
 
       <div style={styles.container}>
-        <HuntLaunchPanel onHuntComplete={() => loadData({ showLoading: false })} />
+        <HuntLaunchPanel
+          onHuntComplete={handleHuntComplete}
+          onViewResults={scrollToResults}
+          hasResults={Boolean(lastHunt)}
+        />
+
+        <div ref={resultsRef} style={styles.resultsAnchor} />
+
+        {lastHunt && (
+          <div style={styles.scanBanner}>
+            <span style={styles.scanBannerIcon}><TcgIcon name="spark" size={16} /></span>
+            <span>Dernière chasse : {lastHunt.count} pistes mises en avant.</span>
+            <button type="button" onClick={() => setLastHunt(null)} style={styles.scanBannerButton}>Tout afficher normalement</button>
+          </div>
+        )}
 
         <FilterBar filters={filters} onChange={handleFilterChange} />
 
@@ -152,6 +195,7 @@ function App() {
         <LotList
           listings={filteredListings}
           onUpdate={handleListingUpdate}
+          highlightedIds={lastHunt?.highlightedIds || []}
         />
       </div>
     </div>
@@ -206,6 +250,34 @@ const styles = {
   container: {
     maxWidth: '1400px',
     margin: '0 auto',
+  },
+  resultsAnchor: {
+    height: '1px',
+    scrollMarginTop: theme.spacing.xl,
+  },
+  scanBanner: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: theme.spacing.md,
+    padding: `${theme.spacing.md} ${theme.spacing.lg}`,
+    marginBottom: theme.spacing.xl,
+    border: `1px solid ${theme.accents.hunterGold}55`,
+    borderRadius: theme.borders.radiusLg,
+    background: `${theme.accents.hunterGold}12`,
+    color: theme.colors.text.secondary,
+    flexWrap: 'wrap',
+  },
+  scanBannerIcon: {
+    display: 'inline-flex',
+    color: theme.accents.hunterGold,
+  },
+  scanBannerButton: {
+    border: 'none',
+    background: 'transparent',
+    color: theme.accents.manaCyan,
+    cursor: 'pointer',
+    fontWeight: theme.typography.weights.semibold,
   },
   stats: {
     display: 'grid',

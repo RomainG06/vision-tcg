@@ -4,7 +4,7 @@ import Badge from './Badge';
 import TcgIcon from './TcgIcon';
 import theme, { getRarityLevel, rarityLabels } from '../theme';
 
-function LotList({ listings, onUpdate }) {
+function LotList({ listings, onUpdate, highlightedIds = [] }) {
   const [selectedLot, setSelectedLot] = useState(null);
 
   if (listings.length === 0) {
@@ -23,6 +23,7 @@ function LotList({ listings, onUpdate }) {
         {listings.map((listing) => {
           const rarity = getRarityLevel(listing.score);
           const rarityStyle = getRarityStyle(rarity);
+          const isHighlighted = highlightedIds.includes(listing.id);
 
           return (
             <div
@@ -30,7 +31,8 @@ function LotList({ listings, onUpdate }) {
               style={{
                 ...styles.card,
                 border: rarityStyle.border,
-                boxShadow: rarityStyle.shadow,
+                boxShadow: isHighlighted ? `${rarityStyle.shadow}, 0 0 0 2px ${theme.accents.hunterGold}, 0 0 28px ${theme.accents.hunterGold}55` : rarityStyle.shadow,
+                transform: isHighlighted ? 'translateY(-4px)' : 'none',
               }}
               onClick={() => setSelectedLot(listing)}
               onMouseEnter={(e) => {
@@ -42,6 +44,12 @@ function LotList({ listings, onUpdate }) {
                 e.currentTarget.style.boxShadow = rarityStyle.shadow;
               }}
             >
+              {isHighlighted && (
+                <div style={styles.scanBadge}>
+                  <TcgIcon name="spark" size={13} /> Dernier scan
+                </div>
+              )}
+
               {/* Image or placeholder */}
               {listing.images && listing.images.length > 0 ? (
                 <img
@@ -252,11 +260,30 @@ const styles = {
     gap: theme.spacing.xl,
   },
   card: {
+    position: 'relative',
     background: theme.colors.primary.deepDark,
     borderRadius: theme.borders.radiusLg,
     overflow: 'hidden',
     cursor: 'pointer',
     transition: `all ${theme.effects.transitionSmooth}`,
+  },
+  scanBadge: {
+    position: 'absolute',
+    top: theme.spacing.md,
+    right: theme.spacing.md,
+    zIndex: 2,
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: theme.spacing.xs,
+    padding: `${theme.spacing.xs} ${theme.spacing.sm}`,
+    borderRadius: theme.borders.radiusMd,
+    background: `${theme.colors.primary.obsidian}E6`,
+    border: `1px solid ${theme.accents.hunterGold}99`,
+    color: theme.accents.hunterGold,
+    fontSize: theme.typography.sizes.tiny,
+    fontWeight: theme.typography.weights.bold,
+    textTransform: 'uppercase',
+    letterSpacing: '.4px',
   },
   image: {
     width: '100%',

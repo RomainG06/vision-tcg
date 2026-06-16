@@ -86,6 +86,18 @@ else
 fi
 cd ..
 
+# Check 5b: Runtime validation
+echo ""
+echo "✓ Check 5b: Runtime validation (theme keys)"
+./scripts/validate-runtime.sh > /tmp/runtime.log 2>&1
+if [ $? -eq 0 ]; then
+    echo "   ✅ Runtime checks passed"
+else
+    echo "   ❌ ERREUR: Runtime validation failed"
+    cat /tmp/runtime.log
+    ERRORS=$((ERRORS + 1))
+fi
+
 # Check 6: ESLint errors (si disponible)
 echo ""
 echo "✓ Check 6: ESLint (optional)"

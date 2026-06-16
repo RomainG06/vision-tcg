@@ -6,6 +6,7 @@ import { ListingRepository } from '../repositories/listing-repository.js';
 import { ScrapeRunRepository } from '../repositories/scrape-run-repository.js';
 import { logger } from '../utils/logger.js';
 import { filterQualityListings } from './listing-quality.js';
+import { filterByBudget } from './hunt-filters.js';
 
 const listingRepo = new ListingRepository();
 const scrapeRunRepo = new ScrapeRunRepository();
@@ -64,6 +65,13 @@ function scoreRawListing(rawListing) {
   };
 }
 
+function getBudgetMax(filters = {}) {
+  if (typeof filters.budget === 'object' && filters.budget !== null) {
+    return filters.budget.max;
+  }
+  return filters.budget ?? filters.maxBudget ?? filters.max_price ?? filters.maxPrice;
+}
+
 export async function startScrape(options = {}) {
   const {
     profile = 'wizards-fr',
@@ -94,20 +102,33 @@ export async function startScrape(options = {}) {
   let updated = 0;
   let rawFound = 0;
   let qualityFiltered = 0;
+  let budgetFiltered = 0;
+  let knownBeforeScan = 0;
 
   try {
     for (const source of enabledSources) {
       try {
         logger.info(`Starting scrape: ${source} query="${query}" maxResults=${maxResults}`);
+        const excludeExternalIds = saveToDb ? listingRepo.findExternalIdsBySource(source) : [];
+        knownBeforeScan += excludeExternalIds.length;
         const rawListings = await FETCHERS[source](query, {
           maxResults,
+          scanDepth: Math.max(maxResults * 8, 80),
+          excludeExternalIds,
           waitForCaptcha,
           location: 'nice',
           radius: 50,
         });
 
         rawFound += rawListings.length;
-        const scored = rawListings.map(scoreRawListing);
+        const budgetMax = getBudgetMax(filters);
+        const budgetResult = filterByBudget(rawListings, budgetMax);
+        if (budgetResult.rejected.length > 0) {
+          budgetFiltered += budgetResult.rejected.length;
+          errors.push({ source, type: 'budget_filtered', count: budgetResult.rejected.length, budget: Number(budgetMax) });
+        }
+
+        const scored = budgetResult.kept.map(scoreRawListing);
         const minScore = filters.minScore ?? filters.min_score ?? (filters.sensitivity === 'aggressive' ? 40 : filters.sensitivity === 'prudent' ? 60 : 50);
         const qualityListings = filterQualityListings(scored, { minScore });
         const rejectedCount = scored.length - qualityListings.length;
@@ -141,7 +162,7 @@ export async function startScrape(options = {}) {
       status,
       results_count: allListings.length,
       errors_count: errors.length,
-      metadata: JSON.stringify({ profile, filters, maxResults, saved, updated, errors }),
+      metadata: JSON.stringify({ profile, filters, maxResults, saved, updated, budgetFiltered, qualityFiltered, knownBeforeScan, errors }),
     });
 
     return {
@@ -157,6 +178,8 @@ export async function startScrape(options = {}) {
         found: allListings.length,
         filtered: allListings.length,
         quality_filtered: qualityFiltered,
+        budget_filtered: budgetFiltered,
+        known_before_scan: knownBeforeScan,
         saved,
         updated,
         errors: errors.length,

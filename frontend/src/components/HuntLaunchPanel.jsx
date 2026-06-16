@@ -101,6 +101,9 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
         saved: data.stats?.saved ?? latestRun.results_count ?? found,
         updated: data.stats?.updated ?? 0,
         qualityFiltered: data.stats?.quality_filtered ?? 0,
+        budgetFiltered: data.stats?.budget_filtered ?? 0,
+        knownBeforeScan: data.stats?.known_before_scan ?? 0,
+        rawFound: data.stats?.raw_found ?? 0,
         sources: latestRun.source || 'historique',
       });
       setStatus('success');
@@ -210,8 +213,17 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
             <div style={styles.summary}>
               <span>{summary.found} pistes détectées</span>
               <span>{summary.saved} nouvelles, {summary.updated} mises à jour</span>
+              {summary.rawFound > 0 && (
+                <span>{summary.rawFound} annonces analysées après exclusion des déjà vues</span>
+              )}
+              {summary.budgetFiltered > 0 && (
+                <span>{summary.budgetFiltered} annonces hors budget</span>
+              )}
               {summary.qualityFiltered > 0 && (
                 <span>{summary.qualityFiltered} annonces écartées par qualité</span>
+              )}
+              {summary.knownBeforeScan > 0 && (
+                <span>{summary.knownBeforeScan} annonces déjà connues en mémoire anti-doublon</span>
               )}
             </div>
           )}

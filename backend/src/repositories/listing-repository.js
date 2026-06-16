@@ -80,6 +80,12 @@ export class ListingRepository {
       [source, externalId]
     );
   }
+
+  findExternalIdsBySource(source) {
+    return all('SELECT external_id FROM listings WHERE source = ?', [source])
+      .map(row => String(row.external_id))
+      .filter(Boolean);
+  }
   
   /**
    * Create or update a listing (UPSERT)

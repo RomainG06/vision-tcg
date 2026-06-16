@@ -1,6 +1,34 @@
 import { BaseFetcher } from './base.js';
 import { logger } from '../utils/logger.js';
 
+export function extractVintedExternalId(url) {
+  const match = String(url || '').match(/\/items\/(\d+)/);
+  return match ? match[1] : null;
+}
+
+export function selectUnseenVintedUrls(urls, options = {}) {
+  const {
+    excludeExternalIds = new Set(),
+    maxResults = 50,
+  } = options;
+
+  const seen = excludeExternalIds instanceof Set
+    ? excludeExternalIds
+    : new Set(Array.from(excludeExternalIds || []).map(String));
+  const selected = [];
+  const deduped = new Set();
+
+  for (const url of urls) {
+    const externalId = extractVintedExternalId(url);
+    if (!externalId || seen.has(String(externalId)) || deduped.has(String(externalId))) continue;
+    deduped.add(String(externalId));
+    selected.push(url);
+    if (selected.length >= maxResults) break;
+  }
+
+  return selected;
+}
+
 /**
  * Vinted fetcher
  * Fetches Pokemon card listings from Vinted
@@ -24,7 +52,7 @@ export class VintedFetcher extends BaseFetcher {
    * Fetch listings from Vinted
    */
   async fetch(query, options = {}) {
-    const { maxResults = 50, waitForCaptcha = 60 } = options;
+    const { maxResults = 50, waitForCaptcha = 60, excludeExternalIds = [], scanDepth = Math.max(maxResults * 5, 50) } = options;
     
     try {
       await this.init();
@@ -92,8 +120,17 @@ export class VintedFetcher extends BaseFetcher {
         return [];
       }
       
+      // Scroll a bit before extracting URLs so repeated scans can move beyond the first visible cards.
+      await this.page.evaluate(async () => {
+        for (let i = 0; i < 4; i++) {
+          window.scrollBy(0, Math.round(window.innerHeight * 0.85));
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      });
+      await this.randomDelay(800, 1400);
+
       // Extract listing URLs - try multiple strategies
-      const listingUrls = await this.page.evaluate(() => {
+      const listingUrls = await this.page.evaluate((limit) => {
         // Strategy 1: article links
         let items = Array.from(document.querySelectorAll('article a[href*="/items/"]'));
         console.log(`Strategy 1 (article a): Found ${items.length} links`);
@@ -121,10 +158,11 @@ export class VintedFetcher extends BaseFetcher {
           console.log(`First URL sample: ${urls[0]}`);
         }
         
-        return urls.slice(0, 50);
-      });
+        return urls.slice(0, limit);
+      }, scanDepth);
+      const selectedUrls = selectUnseenVintedUrls(listingUrls, { excludeExternalIds, maxResults });
       
-      logger.info(`Found ${listingUrls.length} listing URLs on Vinted`);
+      logger.info(`Found ${listingUrls.length} listing URLs on Vinted, ${selectedUrls.length} new after already-seen filter`);
       if (listingUrls.length > 0) {
         logger.debug(`First URL: ${listingUrls[0]}`);
       } else {
@@ -132,10 +170,15 @@ export class VintedFetcher extends BaseFetcher {
         await this.saveDebugInfo('no_urls_extracted');
         return [];
       }
+
+      if (selectedUrls.length === 0) {
+        logger.info('No unseen Vinted URLs selected from current result window');
+        return [];
+      }
       
-      // Fetch details for each listing
+      // Fetch details for each unseen listing
       const listings = [];
-      for (const url of listingUrls.slice(0, maxResults)) {
+      for (const url of selectedUrls) {
         try {
           logger.debug(`Fetching listing: ${url}`);
           await this.page.goto(url, { waitUntil: 'networkidle2', timeout: 20000 });

@@ -43,8 +43,16 @@ function LotDetailModal({ isOpen, onClose, listing }) {
 
   if (!isOpen || !listing) return null;
 
-  // Carousel navigation
-  const images = listing.images || [listing.image_url || 'https://via.placeholder.com/400'];
+  // Carousel navigation - handle both array and string formats
+  let images;
+  if (Array.isArray(listing.images)) {
+    images = listing.images.length > 0 ? listing.images : [listing.image_url || 'https://via.placeholder.com/400'];
+  } else if (typeof listing.images === 'string' && listing.images) {
+    images = listing.images.split(',').map(url => url.trim());
+  } else {
+    images = [listing.image_url || 'https://via.placeholder.com/400'];
+  }
+  
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % images.length);
   };

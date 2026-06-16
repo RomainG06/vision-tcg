@@ -44,7 +44,7 @@ function LotList({ listings, onUpdate }) {
               {/* Image or placeholder */}
               {listing.images && listing.images.length > 0 ? (
                 <img
-                  src={listing.images.split(',')[0]}
+                  src={Array.isArray(listing.images) ? listing.images[0] : listing.images}
                   alt={listing.title}
                   style={styles.image}
                 />

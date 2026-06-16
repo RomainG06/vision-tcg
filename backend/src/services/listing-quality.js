@@ -18,6 +18,8 @@ function textOf(listing) {
 
 export function evaluateListingQuality(listing, options = {}) {
   const minScore = options.minScore ?? 50;
+  const candidateScoreFloor = options.candidateScoreFloor ?? 20;
+  const allowBorderlineTargets = Boolean(options.allowBorderlineTargets);
   const text = textOf(listing);
   const signals = [];
   const noise = [];
@@ -33,12 +35,14 @@ export function evaluateListingQuality(listing, options = {}) {
   }
 
   const hasTargetSignal = signals.includes('wizards_detected') || signals.includes('french_edition');
-  const keep = score >= minScore && hasTargetSignal && noise.length === 0;
+  const isBorderlineTarget = allowBorderlineTargets && hasTargetSignal && score >= candidateScoreFloor;
+  const keep = hasTargetSignal && noise.length === 0 && (score >= minScore || isBorderlineTarget);
 
   let reason = 'candidate_ok';
-  if (score < minScore) reason = 'score_below_threshold';
+  if (noise.length > 0) reason = 'noise_detected';
   else if (!hasTargetSignal) reason = 'missing_wizards_or_french_signal';
-  else if (noise.length > 0) reason = 'noise_detected';
+  else if (score < minScore && isBorderlineTarget) reason = 'borderline_target_candidate';
+  else if (score < minScore) reason = 'score_below_threshold';
 
   return {
     keep,

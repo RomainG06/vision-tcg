@@ -130,7 +130,11 @@ export async function startScrape(options = {}) {
 
         const scored = budgetResult.kept.map(scoreRawListing);
         const minScore = filters.minScore ?? filters.min_score ?? (filters.sensitivity === 'aggressive' ? 40 : filters.sensitivity === 'prudent' ? 60 : 50);
-        const qualityListings = filterQualityListings(scored, { minScore });
+        const qualityListings = filterQualityListings(scored, {
+          minScore,
+          allowBorderlineTargets: true,
+          candidateScoreFloor: filters.sensitivity === 'prudent' ? 30 : 20,
+        });
         const rejectedCount = scored.length - qualityListings.length;
         if (rejectedCount > 0) {
           qualityFiltered += rejectedCount;

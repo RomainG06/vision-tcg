@@ -59,6 +59,25 @@ describe('Listing quality filter', () => {
     expect(quality.signals).not.toContain('lot_detected');
   });
 
+  test('keeps target-era budget candidates even when Vinted text is sparse', () => {
+    const listing = {
+      title: 'Carte Pokémon Jungle holo',
+      description: 'Bon état',
+      price: 20,
+      score: 20,
+    };
+
+    const quality = evaluateListingQuality(listing, {
+      minScore: 50,
+      allowBorderlineTargets: true,
+      candidateScoreFloor: 20,
+    });
+
+    expect(quality.keep).toBe(true);
+    expect(quality.reason).toBe('borderline_target_candidate');
+    expect(quality.signals).toContain('wizards_detected');
+  });
+
   test('filterQualityListings keeps only actionable candidates and annotates score_breakdown', () => {
     const listings = [
       { title: 'Lot Wizards FR Jungle', description: '50 cartes françaises', price: 90, score: 75, score_breakdown: { signals: [] } },

@@ -98,8 +98,9 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
       const found = data.stats?.filtered ?? data.stats?.total_results ?? data.stats?.found ?? latestRun.results_count ?? 0;
       setSummary({
         found,
-        saved: latestRun.results_count ?? found,
-        updated: 0,
+        saved: data.stats?.saved ?? latestRun.results_count ?? found,
+        updated: data.stats?.updated ?? 0,
+        qualityFiltered: data.stats?.quality_filtered ?? 0,
         sources: latestRun.source || 'historique',
       });
       setStatus('success');
@@ -209,6 +210,9 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
             <div style={styles.summary}>
               <span>{summary.found} pistes détectées</span>
               <span>{summary.saved} nouvelles, {summary.updated} mises à jour</span>
+              {summary.qualityFiltered > 0 && (
+                <span>{summary.qualityFiltered} annonces écartées par qualité</span>
+              )}
             </div>
           )}
 

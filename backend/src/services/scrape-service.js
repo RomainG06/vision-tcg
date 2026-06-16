@@ -5,6 +5,7 @@ import { scoreListing } from '../scoring/scorer-simple.js';
 import { ListingRepository } from '../repositories/listing-repository.js';
 import { ScrapeRunRepository } from '../repositories/scrape-run-repository.js';
 import { logger } from '../utils/logger.js';
+import { filterQualityListings } from './listing-quality.js';
 
 const listingRepo = new ListingRepository();
 const scrapeRunRepo = new ScrapeRunRepository();
@@ -91,6 +92,8 @@ export async function startScrape(options = {}) {
   const errors = [];
   let saved = 0;
   let updated = 0;
+  let rawFound = 0;
+  let qualityFiltered = 0;
 
   try {
     for (const source of enabledSources) {
@@ -103,8 +106,17 @@ export async function startScrape(options = {}) {
           radius: 50,
         });
 
+        rawFound += rawListings.length;
         const scored = rawListings.map(scoreRawListing);
-        const { normalized, invalid } = normalizeListings(scored, source, runId);
+        const minScore = filters.minScore ?? filters.min_score ?? (filters.sensitivity === 'aggressive' ? 40 : filters.sensitivity === 'prudent' ? 60 : 50);
+        const qualityListings = filterQualityListings(scored, { minScore });
+        const rejectedCount = scored.length - qualityListings.length;
+        if (rejectedCount > 0) {
+          qualityFiltered += rejectedCount;
+          errors.push({ source, type: 'quality_filtered', count: rejectedCount });
+        }
+
+        const { normalized, invalid } = normalizeListings(qualityListings, source, runId);
 
         if (invalid.length > 0) {
           errors.push(...invalid.map(item => ({ source, type: 'invalid_listing', errors: item.errors })));
@@ -141,8 +153,10 @@ export async function startScrape(options = {}) {
       completed_at: new Date().toISOString(),
       listings: allListings,
       stats: {
+        raw_found: rawFound,
         found: allListings.length,
         filtered: allListings.length,
+        quality_filtered: qualityFiltered,
         saved,
         updated,
         errors: errors.length,

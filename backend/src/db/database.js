@@ -10,6 +10,37 @@ const DB_DIR = path.dirname(DB_PATH);
 
 let db = null;
 let SQL = null;
+let dbDirty = false;
+let lastLoadedMtimeMs = 0;
+let autosaveStarted = false;
+
+function getDbMtimeMs() {
+  try {
+    return fsSync.statSync(DB_PATH).mtimeMs;
+  } catch {
+    return 0;
+  }
+}
+
+function updateLoadedMtime() {
+  lastLoadedMtimeMs = getDbMtimeMs();
+}
+
+function reloadDatabaseIfChangedSync() {
+  if (!db || !SQL) return;
+
+  // Never discard in-memory writes that are not persisted yet.
+  if (dbDirty) return;
+
+  const diskMtime = getDbMtimeMs();
+  if (diskMtime > 0 && diskMtime > lastLoadedMtimeMs + 1) {
+    const data = fsSync.readFileSync(DB_PATH);
+    db.close();
+    db = new SQL.Database(data);
+    lastLoadedMtimeMs = diskMtime;
+    console.log('🔄 Database reloaded from disk');
+  }
+}
 
 export async function initDatabase() {
   // Initialiser sql.js
@@ -26,25 +57,33 @@ export async function initDatabase() {
   try {
     const data = await fs.readFile(DB_PATH);
     db = new SQL.Database(data);
-    console.log('📂 Database loaded from disk');
+    updateLoadedMtime();
+    dbDirty = false;
+    console.log(`📂 Database loaded from disk: ${DB_PATH}`);
   } catch (err) {
     // Créer une nouvelle DB en mémoire
     db = new SQL.Database();
-    console.log('✨ New database created in memory');
+    lastLoadedMtimeMs = 0;
+    dbDirty = true;
+    console.log(`✨ New database created in memory: ${DB_PATH}`);
   }
   
-  // Auto-save toutes les 30s
-  setInterval(() => saveDatabaseSync(), 30000);
-  
-  // Save on exit
-  process.on('exit', () => {
-    saveDatabaseSync();
-  });
-  
-  process.on('SIGINT', () => {
-    saveDatabaseSync();
-    process.exit(0);
-  });
+  // Auto-save toutes les 30s seulement s'il y a des écritures non persistées.
+  // Important: ne pas ré-écrire une vieille DB en mémoire par-dessus un seed externe.
+  if (!autosaveStarted) {
+    autosaveStarted = true;
+    setInterval(() => saveDatabaseSync(), 30000);
+    
+    // Save on exit
+    process.on('exit', () => {
+      saveDatabaseSync();
+    });
+    
+    process.on('SIGINT', () => {
+      saveDatabaseSync();
+      process.exit(0);
+    });
+  }
   
   // Auto-migration: vérifier si les tables existent
   await runMigrations();
@@ -63,8 +102,9 @@ async function runMigrations() {
       // Tables n'existent pas, charger le schema
       const schema = await fs.readFile(schemaPath, 'utf-8');
       db.exec(schema);
+      dbDirty = true;
       console.log('✅ Database schema created');
-      await saveDatabase();
+      await saveDatabase(true);
     } else {
       console.log('✅ Database schema already exists');
     }
@@ -74,23 +114,27 @@ async function runMigrations() {
   }
 }
 
-async function saveDatabase() {
-  if (!db) return;
+async function saveDatabase(force = false) {
+  if (!db || (!force && !dbDirty)) return;
   
   try {
     const data = db.export();
     await fs.writeFile(DB_PATH, data);
+    dbDirty = false;
+    updateLoadedMtime();
   } catch (err) {
     console.error('❌ Error saving database:', err);
   }
 }
 
-function saveDatabaseSync() {
-  if (!db) return;
+function saveDatabaseSync(force = false) {
+  if (!db || (!force && !dbDirty)) return;
   
   try {
     const data = db.export();
     fsSync.writeFileSync(DB_PATH, data);
+    dbDirty = false;
+    updateLoadedMtime();
   } catch (err) {
     console.error('❌ Error saving database:', err);
   }
@@ -100,6 +144,7 @@ export function getDatabase() {
   if (!db) {
     throw new Error('Database not initialized. Call initDatabase() first.');
   }
+  reloadDatabaseIfChangedSync();
   return db;
 }
 
@@ -110,6 +155,7 @@ export function all(query, params = []) {
   if (!db) {
     throw new Error('Database not initialized. Call initDatabase() first.');
   }
+  reloadDatabaseIfChangedSync();
   
   const stmt = db.prepare(query);
   stmt.bind(params);
@@ -130,6 +176,7 @@ export function get(query, params = []) {
   if (!db) {
     throw new Error('Database not initialized. Call initDatabase() first.');
   }
+  reloadDatabaseIfChangedSync();
   
   const stmt = db.prepare(query);
   stmt.bind(params);
@@ -151,13 +198,18 @@ export function run(query, params = []) {
   if (!db) {
     throw new Error('Database not initialized. Call initDatabase() first.');
   }
+
+  // If another process seeded the DB while this server was running,
+  // reload before applying writes to avoid overwriting fresh disk data.
+  reloadDatabaseIfChangedSync();
   
   db.run(query, params);
   
   // CRITICAL: Save to disk immediately after write operations
   const upperQuery = query.trim().toUpperCase();
   if (upperQuery.startsWith('INSERT') || upperQuery.startsWith('UPDATE') || upperQuery.startsWith('DELETE')) {
-    saveDatabaseSync();
+    dbDirty = true;
+    saveDatabaseSync(true);
   }
   
   // If INSERT, return the last inserted ID
@@ -169,6 +221,16 @@ export function run(query, params = []) {
   }
   
   return null;
+}
+
+export function getDatabaseInfo() {
+  return {
+    path: DB_PATH,
+    exists: fsSync.existsSync(DB_PATH),
+    diskMtimeMs: getDbMtimeMs(),
+    lastLoadedMtimeMs,
+    dirty: dbDirty,
+  };
 }
 
 /**

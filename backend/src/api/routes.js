@@ -2,6 +2,7 @@ import express from 'express';
 import { logger } from '../utils/logger.js';
 import { ListingRepository } from '../repositories/listing-repository.js';
 import { ScrapeRunRepository } from '../repositories/scrape-run-repository.js';
+import { getDatabaseInfo } from '../db/database.js';
 
 const router = express.Router();
 
@@ -64,9 +65,28 @@ router.get('/docs', (req, res) => {
       { method: 'GET', path: '/api/listings/:id', description: 'Get single listing' },
       { method: 'PATCH', path: '/api/listings/:id', description: 'Update listing' },
       { method: 'GET', path: '/api/scrape-runs', description: 'Get scrape runs history' },
-      { method: 'GET', path: '/api/stats', description: 'Get statistics' }
+      { method: 'GET', path: '/api/stats', description: 'Get statistics' },
+      { method: 'GET', path: '/api/debug/db', description: 'Debug database path/count (dev)' }
     ]
   });
+});
+
+router.get('/debug/db', (req, res) => {
+  try {
+    res.json({
+      ...getDatabaseInfo(),
+      listing_count: listingRepo.count(),
+      sample: listingRepo.findAll({ limit: 3, offset: 0, status: 'all' }).map((listing) => ({
+        id: listing.id,
+        title: listing.title,
+        status: listing.status,
+        source: listing.source,
+      })),
+    });
+  } catch (error) {
+    logger.error('Error fetching DB debug info:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 /**

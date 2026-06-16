@@ -154,8 +154,14 @@ export function run(query, params = []) {
   
   db.run(query, params);
   
+  // CRITICAL: Save to disk immediately after write operations
+  const upperQuery = query.trim().toUpperCase();
+  if (upperQuery.startsWith('INSERT') || upperQuery.startsWith('UPDATE') || upperQuery.startsWith('DELETE')) {
+    saveDatabaseSync();
+  }
+  
   // If INSERT, return the last inserted ID
-  if (query.trim().toUpperCase().startsWith('INSERT')) {
+  if (upperQuery.startsWith('INSERT')) {
     const result = db.exec('SELECT last_insert_rowid()');
     if (result && result[0] && result[0].values && result[0].values[0]) {
       return result[0].values[0][0];

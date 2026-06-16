@@ -1,6 +1,7 @@
 import { updateListing } from '../services/api';
 import theme, { getRarityLevel, rarityLabels } from '../theme';
 import Badge from './Badge';
+import TcgIcon from './TcgIcon';
 
 function LotDetail({ listing, onClose, onUpdate }) {
   const rarity = getRarityLevel(listing.score);
@@ -62,7 +63,7 @@ function LotDetail({ listing, onClose, onUpdate }) {
           />
         ) : (
           <div style={styles.imagePlaceholder}>
-            <span style={styles.imagePlaceholderIcon}>🎴</span>
+            <TcgIcon name="card" size={54} />
           </div>
         )}
 
@@ -107,7 +108,7 @@ function LotDetail({ listing, onClose, onUpdate }) {
         {/* Location */}
         {listing.location && (
           <div style={styles.locationSection}>
-            <span style={styles.locationIcon}>📍</span>
+            <TcgIcon name="pin" size={14} />
             <span style={styles.location}>{listing.location}</span>
             {listing.distance_km !== null && (
               <span style={styles.distance}> · {listing.distance_km} km</span>
@@ -118,7 +119,7 @@ function LotDetail({ listing, onClose, onUpdate }) {
         {/* Opportunity Signals */}
         {listing.opportunity_signals && listing.opportunity_signals.length > 0 && (
           <div style={styles.section}>
-            <h3 style={styles.sectionTitle}>✨ Pourquoi c'est intéressant</h3>
+            <h3 style={styles.sectionTitle}><TcgIcon name="spark" size={18} /> Pourquoi c'est intéressant</h3>
             <div style={styles.badges}>
               {listing.opportunity_signals.map((signal) => (
                 <Badge key={signal} signal={signal} />
@@ -130,13 +131,13 @@ function LotDetail({ listing, onClose, onUpdate }) {
         {/* Risk Signals */}
         {listing.risk_signals && listing.risk_signals.length > 0 && (
           <div style={styles.section}>
-            <h3 style={styles.sectionTitle}>⚠️ Points d'attention</h3>
+            <h3 style={styles.sectionTitle}><TcgIcon name="risk" size={18} /> Points d'attention</h3>
             <div style={styles.badges}>
               {listing.risk_signals.map((signal) => (
                 <Badge 
                   key={signal} 
                   customText={formatRiskSignal(signal)}
-                  emoji="⚠️"
+                  icon="risk"
                 />
               ))}
             </div>
@@ -146,7 +147,7 @@ function LotDetail({ listing, onClose, onUpdate }) {
         {/* Explanation (markdown) */}
         {listing.explanation && (
           <div style={styles.section}>
-            <h3 style={styles.sectionTitle}>📊 Analyse détaillée</h3>
+            <h3 style={styles.sectionTitle}><TcgIcon name="chart" size={18} /> Analyse détaillée</h3>
             <div style={styles.explanation}>
               {listing.explanation}
             </div>
@@ -194,19 +195,19 @@ function LotDetail({ listing, onClose, onUpdate }) {
             style={styles.primaryButton}
             onClick={handleOpenListing}
           >
-            🔗 Voir l'annonce
+            <TcgIcon name="link" size={16} /> Voir l'annonce
           </button>
           <button 
             style={styles.successButton}
             onClick={() => handleStatusChange('interested')}
           >
-            ⭐ Watchlist
+            <TcgIcon name="watch" size={16} /> Watchlist
           </button>
           <button 
             style={styles.dangerButton}
             onClick={() => handleStatusChange('passed')}
           >
-            ❌ Ignorer
+            <TcgIcon name="ignore" size={16} /> Ignorer
           </button>
         </div>
       </div>

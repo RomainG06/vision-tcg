@@ -4,13 +4,14 @@
  */
 
 import theme, { badgeLabels } from '../theme';
+import TcgIcon from './TcgIcon';
 
-const Badge = ({ signal, customText, emoji }) => {
+const Badge = ({ signal, customText, icon }) => {
   // Use predefined badge config or custom
   const config = badgeLabels[signal] || {
     text: customText || signal,
     color: theme.accents.hunterGold,
-    emoji: emoji || '',
+    icon: icon || 'spark',
   };
 
   const styles = {
@@ -33,7 +34,7 @@ const Badge = ({ signal, customText, emoji }) => {
 
   return (
     <span style={styles.badge}>
-      {config.emoji && <span>{config.emoji}</span>}
+      {config.icon && <TcgIcon name={config.icon} size={13} color={config.color} />}
       <span>{config.text}</span>
     </span>
   );

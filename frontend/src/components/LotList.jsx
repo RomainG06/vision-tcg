@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import LotDetailModal from './LotDetailModal';
 import Badge from './Badge';
+import TcgIcon from './TcgIcon';
 import theme, { getRarityLevel, rarityLabels } from '../theme';
 
 function LotList({ listings, onUpdate }) {
@@ -9,7 +10,7 @@ function LotList({ listings, onUpdate }) {
   if (listings.length === 0) {
     return (
       <div style={styles.empty}>
-        <div style={styles.emptyIcon}>🎯</div>
+        <div style={styles.emptyIcon}><TcgIcon name="radar" size={54} /></div>
         <div style={styles.emptyText}>Aucune opportunité détectée avec ces filtres.</div>
         <div style={styles.emptyHint}>Ajustez vos critères de chasse ou lancez un nouveau scraping</div>
       </div>
@@ -50,7 +51,7 @@ function LotList({ listings, onUpdate }) {
                 />
               ) : (
                 <div style={styles.imagePlaceholder}>
-                  <span style={styles.imagePlaceholderIcon}>🎴</span>
+                  <TcgIcon name="card" size={54} />
                 </div>
               )}
               
@@ -95,7 +96,7 @@ function LotList({ listings, onUpdate }) {
                   )}
                   {listing.gain_potential && listing.gain_potential > 0 && (
                     <div style={styles.gainRow}>
-                      <span style={styles.gainLabel}>💰 Gain potentiel:</span>
+                      <span style={styles.gainLabel}>Gain potentiel:</span>
                       <span style={styles.gainValue}>
                         +{listing.gain_potential}€ ({listing.gain_percentage > 0 ? '+' : ''}{listing.gain_percentage}%)
                       </span>
@@ -106,7 +107,7 @@ function LotList({ listings, onUpdate }) {
                 {/* Location + Distance */}
                 {listing.location && (
                   <div style={styles.location}>
-                    📍 {listing.location}
+                    <TcgIcon name="pin" size={14} /> {listing.location}
                     {listing.distance_km !== null && (
                       <span style={styles.distance}> · {listing.distance_km} km</span>
                     )}
@@ -116,7 +117,7 @@ function LotList({ listings, onUpdate }) {
                 {/* Opportunity Badges */}
                 {listing.opportunity_signals && listing.opportunity_signals.length > 0 && (
                   <div style={styles.badgesSection}>
-                    <div style={styles.badgesLabel}>✨ Opportunité:</div>
+                    <div style={styles.badgesLabel}><TcgIcon name="spark" size={14} /> Opportunité:</div>
                     <div style={styles.badges}>
                       {listing.opportunity_signals.map((signal) => (
                         <Badge key={signal} signal={signal} />
@@ -128,13 +129,13 @@ function LotList({ listings, onUpdate }) {
                 {/* Risk Badges */}
                 {listing.risk_signals && listing.risk_signals.length > 0 && (
                   <div style={styles.badgesSection}>
-                    <div style={styles.badgesLabel}>⚠️ Risques:</div>
+                    <div style={styles.badgesLabel}><TcgIcon name="risk" size={14} /> Risques:</div>
                     <div style={styles.badges}>
                       {listing.risk_signals.map((signal) => (
                         <Badge 
                           key={signal} 
                           customText={formatRiskSignal(signal)}
-                          emoji="⚠️"
+                          icon="risk"
                         />
                       ))}
                     </div>

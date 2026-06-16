@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import theme from '../theme';
 import Badge from './Badge';
+import TcgIcon from './TcgIcon';
 
 /**
  * Modal full-screen pour afficher les détails complets d'une opportunité
@@ -46,8 +47,9 @@ function LotDetailModal({ isOpen, onClose, listing }) {
   const imageFallback = `data:image/svg+xml;utf8,${encodeURIComponent(
     `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
       <rect width="400" height="400" fill="#121633"/>
-      <text x="200" y="185" text-anchor="middle" font-size="56">🎴</text>
-      <text x="200" y="235" text-anchor="middle" fill="#9CA3AF" font-family="Arial" font-size="22">Image indisponible</text>
+      <rect x="150" y="115" width="100" height="140" rx="14" fill="none" stroke="#E6B85C" stroke-width="8"/>
+      <circle cx="200" cy="190" r="22" fill="none" stroke="#00D9FF" stroke-width="7"/>
+      <text x="200" y="292" text-anchor="middle" fill="#9CA3AF" font-family="Arial" font-size="22">Image indisponible</text>
     </svg>`
   )}`;
 
@@ -81,9 +83,9 @@ function LotDetailModal({ isOpen, onClose, listing }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'interesting' }),
       });
-      alert('✅ Ajouté à la watchlist !');
+      alert('Ajouté à la watchlist');
     } catch (err) {
-      alert('❌ Erreur : ' + err.message);
+      alert('Erreur : ' + err.message);
     }
   };
 
@@ -97,7 +99,7 @@ function LotDetailModal({ isOpen, onClose, listing }) {
       onClose();
       alert('Annonce ignorée');
     } catch (err) {
-      alert('❌ Erreur : ' + err.message);
+      alert('Erreur : ' + err.message);
     }
   };
 
@@ -109,9 +111,9 @@ function LotDetailModal({ isOpen, onClose, listing }) {
         body: JSON.stringify({ status: 'contacted' }),
       });
       onClose();
-      alert('✅ Marqué comme contacté !');
+      alert('Marqué comme contacté');
     } catch (err) {
-      alert('❌ Erreur : ' + err.message);
+      alert('Erreur : ' + err.message);
     }
   };
 
@@ -155,7 +157,7 @@ function LotDetailModal({ isOpen, onClose, listing }) {
             ✕
           </button>
           <h2 id="modal-title" className="lot-modal-title" style={titleStyle}>
-            🎯 OPPORTUNITÉ DÉTECTÉE
+            <TcgIcon name="radar" size={22} /> OPPORTUNITÉ DÉTECTÉE
           </h2>
           <div className="lot-modal-score" style={scoreBadgeStyle}>
             Score: {listing.score}
@@ -249,7 +251,7 @@ function LotDetailModal({ isOpen, onClose, listing }) {
 
           {/* SECTION: Détails Annonce */}
           <div style={sectionContainerStyle}>
-            <h4 style={sectionTitleStyle}>📍 DÉTAILS ANNONCE</h4>
+            <h4 style={sectionTitleStyle}><TcgIcon name="pin" size={18} /> DÉTAILS ANNONCE</h4>
             <div style={detailsGridStyle}>
               <div style={detailRowStyle}>
                 <span style={detailLabelStyle}>Plateforme:</span>
@@ -279,7 +281,7 @@ function LotDetailModal({ isOpen, onClose, listing }) {
           {/* SECTION: Pourquoi c'est intéressant (Markdown) */}
           {listing.explanation && (
             <div style={explanationSectionStyle}>
-              <h4 style={sectionTitleHighlightedStyle}>✨ POURQUOI C'EST INTÉRESSANT</h4>
+              <h4 style={sectionTitleHighlightedStyle}><TcgIcon name="spark" size={18} /> POURQUOI C'EST INTÉRESSANT</h4>
               <div style={markdownContainerStyle}>
                 <ReactMarkdown
                   components={{
@@ -297,7 +299,7 @@ function LotDetailModal({ isOpen, onClose, listing }) {
 
           {/* SECTION: Évaluation */}
           <div style={sectionContainerStyle}>
-            <h4 style={sectionTitleStyle}>📊 ÉVALUATION</h4>
+            <h4 style={sectionTitleStyle}><TcgIcon name="chart" size={18} /> ÉVALUATION</h4>
             <div style={evaluationGridStyle}>
               <EvaluationRow
                 label="Risque"
@@ -319,7 +321,7 @@ function LotDetailModal({ isOpen, onClose, listing }) {
               />
               <div style={actionSuggestedStyle}>
                 <span style={detailLabelStyle}>Action suggérée:</span>
-                <span style={actionValueStyle}>⚡ Contacter rapidement</span>
+                <span style={actionValueStyle}><TcgIcon name="bolt" size={16} /> Contacter rapidement</span>
               </div>
             </div>
           </div>
@@ -328,16 +330,16 @@ function LotDetailModal({ isOpen, onClose, listing }) {
         {/* FOOTER ACTIONS */}
         <div className="lot-modal-footer" style={footerStyle}>
           <button className="lot-modal-action" onClick={handleViewListing} style={primaryButtonStyle}>
-            🔗 Voir l'annonce
+            <TcgIcon name="link" size={16} /> Voir l'annonce
           </button>
           <button className="lot-modal-action" onClick={handleAddToWatchlist} style={secondaryButtonStyle}>
-            ⭐ Watchlist
+            <TcgIcon name="watch" size={16} /> Watchlist
           </button>
           <button className="lot-modal-action" onClick={handleIgnore} style={tertiaryButtonStyle}>
-            ❌ Ignorer
+            <TcgIcon name="ignore" size={16} /> Ignorer
           </button>
           <button className="lot-modal-action" onClick={handleMarkContacted} style={successButtonStyle}>
-            ✅ Contacté
+            <TcgIcon name="contacted" size={16} /> Contacté
           </button>
         </div>
       </div>
@@ -770,6 +772,10 @@ const primaryButtonStyle = {
   cursor: 'pointer',
   transition: 'all 0.2s ease',
   boxShadow: `0 4px 12px ${theme.accents.hunterGold}40`,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: theme.spacing.sm,
 };
 
 const secondaryButtonStyle = {
@@ -782,6 +788,10 @@ const secondaryButtonStyle = {
   fontWeight: theme.typography.weights.bold,
   cursor: 'pointer',
   transition: 'all 0.2s ease',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: theme.spacing.sm,
 };
 
 const tertiaryButtonStyle = {
@@ -794,6 +804,10 @@ const tertiaryButtonStyle = {
   fontWeight: theme.typography.weights.medium,
   cursor: 'pointer',
   transition: 'all 0.2s ease',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: theme.spacing.sm,
 };
 
 const successButtonStyle = {

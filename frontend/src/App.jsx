@@ -3,6 +3,7 @@ import FilterBar from './components/FilterBar';
 import LotList from './components/LotList';
 import { fetchListings, fetchStats, updateListing } from './services/api';
 import theme from './theme';
+import TcgIcon from './components/TcgIcon';
 
 function App() {
   const [listings, setListings] = useState([]);
@@ -92,7 +93,7 @@ function App() {
   if (error) {
     return (
       <div style={styles.error}>
-        <div style={styles.errorIcon}>⚠️</div>
+        <div style={styles.errorIcon}><TcgIcon name="risk" size={54} /></div>
         <div style={styles.errorText}>Erreur: {error}</div>
         <button style={styles.errorButton} onClick={loadData}>
           Réessayer
@@ -106,7 +107,7 @@ function App() {
       <header style={styles.header}>
         <div style={styles.headerContent}>
           <h1 style={styles.title}>
-            <span style={styles.titleIcon}>🎯</span> Hunting Dashboard
+            <span style={styles.titleIcon}><TcgIcon name="radar" size={46} /></span> Hunting Dashboard
           </h1>
           <p style={styles.subtitle}>
             Radar d'opportunités pour collectionneurs{' '}
@@ -186,8 +187,9 @@ const styles = {
     gap: theme.spacing.lg,
   },
   titleIcon: {
-    fontSize: '48px',
-    filter: `drop-shadow(0 0 12px ${theme.accents.hunterGold})`,
+    display: 'inline-flex',
+    color: theme.accents.manaCyan,
+    filter: `drop-shadow(0 0 12px ${theme.accents.manaCyan})`,
   },
   subtitle: {
     fontSize: theme.typography.sizes.bodyLg,

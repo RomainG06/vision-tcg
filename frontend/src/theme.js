@@ -109,9 +109,9 @@ export const getRarityLevel = (score) => {
  * Rarity Display Labels (French)
  */
 export const rarityLabels = {
-  mythique: '💎 OPPORTUNITÉ EXCEPTIONNELLE',
-  legendary: '🔥 TRÈS INTÉRESSANT',
-  epic: '⭐️ INTÉRESSANT',
+  mythique: 'OPPORTUNITÉ EXCEPTIONNELLE',
+  legendary: 'TRÈS INTÉRESSANT',
+  epic: 'INTÉRESSANT',
   rare: '◆ À SURVEILLER',
   common: '○ STANDARD',
 };
@@ -121,13 +121,13 @@ export const rarityLabels = {
  * Using direct color values to avoid circular reference
  */
 export const badgeLabels = {
-  wizards_detected: { text: 'WIZARDS', color: '#E6B85C', emoji: '🔥' },
-  french_edition: { text: 'FR', color: '#7C3AED', emoji: '🇫🇷' },
-  lot_detected: { text: 'LOT', color: '#0EA5E9', emoji: '📦' },
-  near_location: { text: 'PROCHE', color: '#10B981', emoji: '📍' },
-  rare_cards: { text: 'RARES', color: '#F59E0B', emoji: '✨' },
-  holographic: { text: 'HOLO', color: '#00D9FF', emoji: '🌟' },
-  below_market: { text: 'SOUS-COTÉ', color: '#F59E0B', emoji: '💸' },
+  wizards_detected: { text: 'WIZARDS', color: '#E6B85C', icon: 'wizards' },
+  french_edition: { text: 'FR', color: '#7C3AED', icon: 'france' },
+  lot_detected: { text: 'LOT', color: '#0EA5E9', icon: 'lot' },
+  near_location: { text: 'PROCHE', color: '#10B981', icon: 'pin' },
+  rare_cards: { text: 'RARES', color: '#F59E0B', icon: 'spark' },
+  holographic: { text: 'HOLO', color: '#00D9FF', icon: 'spark' },
+  below_market: { text: 'SOUS-COTÉ', color: '#F59E0B', icon: 'chart' },
 };
 
 export default theme;

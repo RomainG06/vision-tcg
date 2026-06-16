@@ -113,18 +113,27 @@ function LotDetailModal({ isOpen, onClose, listing }) {
     }
   };
 
-  // Calculate potential gain
-  const potentialMin = (listing.estimated_value_low || 0) - listing.price;
-  const potentialMax = (listing.estimated_value_high || 0) - listing.price;
+  const price = Number(listing.price) || 0;
+  const estimatedLow = listing.estimated_value_low ?? listing.estimated_value_min ?? null;
+  const estimatedHigh = listing.estimated_value_high ?? listing.estimated_value_max ?? null;
+  const distance = listing.distance ?? listing.distance_km ?? null;
+  const platform = listing.source ?? listing.platform ?? '—';
+  const confidence = listing.confidence ?? 70;
+
+  // Calculate potential gain only when estimation exists
+  const potentialMin = estimatedLow !== null ? estimatedLow - price : null;
+  const potentialMax = estimatedHigh !== null ? estimatedHigh - price : null;
 
   // Risk level (based on confidence or signals)
-  const riskLevel = listing.confidence > 70 ? 'low' : listing.confidence > 50 ? 'medium' : 'high';
+  const riskLevel = confidence > 70 ? 'low' : confidence > 50 ? 'medium' : 'high';
   const riskDots = riskLevel === 'low' ? 1 : riskLevel === 'medium' ? 2 : 3;
 
   return (
-    <div style={overlayStyle} onClick={handleBackdropClick}>
+    <div className="lot-modal-overlay" style={overlayStyle} onClick={handleBackdropClick}>
+      <style>{responsiveCss}</style>
       <div
         ref={modalRef}
+        className="lot-modal"
         style={modalStyle}
         role="dialog"
         aria-modal="true"
@@ -132,25 +141,25 @@ function LotDetailModal({ isOpen, onClose, listing }) {
         tabIndex={-1}
       >
         {/* HEADER */}
-        <div style={headerStyle}>
+        <div className="lot-modal-header" style={headerStyle}>
           <button onClick={onClose} style={closeButtonStyle} aria-label="Fermer">
             ✕
           </button>
-          <h2 id="modal-title" style={titleStyle}>
+          <h2 id="modal-title" className="lot-modal-title" style={titleStyle}>
             🎯 OPPORTUNITÉ DÉTECTÉE
           </h2>
-          <div style={scoreBadgeStyle}>
+          <div className="lot-modal-score" style={scoreBadgeStyle}>
             Score: {listing.score}
           </div>
         </div>
 
         {/* BODY SCROLLABLE */}
-        <div style={bodyStyle}>
+        <div className="lot-modal-body" style={bodyStyle}>
           {/* SECTION: Image + Prix */}
-          <div style={mediaGridStyle}>
+          <div className="lot-modal-media-grid" style={mediaGridStyle}>
             {/* Image Carousel */}
             <div style={carouselContainerStyle}>
-              <div style={carouselMainImageStyle}>
+              <div className="lot-modal-carousel" style={carouselMainImageStyle}>
                 <img
                   src={images[currentImageIndex]}
                   alt={listing.title}
@@ -196,17 +205,17 @@ function LotDetailModal({ isOpen, onClose, listing }) {
 
             {/* Prix + Estimation Block */}
             <div style={priceBlockContainerStyle}>
-              <h3 style={listingTitleStyle}>{listing.title}</h3>
+              <h3 className="lot-modal-listing-title" style={listingTitleStyle}>{listing.title}</h3>
 
-              <div style={priceRowStyle}>
+              <div className="lot-modal-price-row" style={priceRowStyle}>
                 <div>
                   <div style={labelSmallStyle}>Prix annoncé</div>
-                  <div style={priceValueStyle}>{listing.price} €</div>
+                  <div className="lot-modal-price" style={priceValueStyle}>{price} €</div>
                 </div>
                 <div>
                   <div style={labelSmallStyle}>Estimation</div>
                   <div style={estimationValueStyle}>
-                    {listing.estimated_value_low || '?'}–{listing.estimated_value_high || '?'} €
+                    {estimatedLow ?? '?'}–{estimatedHigh ?? '?'} €
                   </div>
                 </div>
               </div>
@@ -214,7 +223,7 @@ function LotDetailModal({ isOpen, onClose, listing }) {
               <div style={potentialBlockStyle}>
                 <div style={labelSmallStyle}>Potentiel de gain</div>
                 <div style={potentialValueStyle(potentialMin, potentialMax)}>
-                  +{potentialMin} à +{potentialMax} €
+                  {potentialMin === null ? 'Estimation indisponible' : `${potentialMin > 0 ? '+' : ''}${potentialMin} à ${potentialMax > 0 ? '+' : ''}${potentialMax} €`}
                 </div>
               </div>
 
@@ -233,7 +242,7 @@ function LotDetailModal({ isOpen, onClose, listing }) {
             <div style={detailsGridStyle}>
               <div style={detailRowStyle}>
                 <span style={detailLabelStyle}>Plateforme:</span>
-                <span style={detailValueStyle}>{listing.source}</span>
+                <span style={detailValueStyle}>{platform}</span>
               </div>
               <div style={detailRowStyle}>
                 <span style={detailLabelStyle}>Publié:</span>
@@ -241,8 +250,8 @@ function LotDetailModal({ isOpen, onClose, listing }) {
               </div>
               <div style={detailRowStyle}>
                 <span style={detailLabelStyle}>Localisation:</span>
-                <span style={distanceStyle(listing.distance)}>
-                  {listing.location} • {listing.distance || '?'} km de vous
+                <span style={distanceStyle(distance)}>
+                  {listing.location || '—'}{distance !== null ? ` • ${distance} km de vous` : ''}
                 </span>
               </div>
               <div style={detailRowStyle}>
@@ -287,9 +296,9 @@ function LotDetailModal({ isOpen, onClose, listing }) {
               />
               <EvaluationRow
                 label="Confiance"
-                level={listing.confidence > 70 ? 'high' : 'medium'}
-                value={`${listing.confidence}%`}
-                dots={Math.round(listing.confidence / 20)}
+                level={confidence > 70 ? 'high' : 'medium'}
+                value={`${confidence}%`}
+                dots={Math.round(confidence / 20)}
               />
               <EvaluationRow
                 label="Compétition"
@@ -306,17 +315,17 @@ function LotDetailModal({ isOpen, onClose, listing }) {
         </div>
 
         {/* FOOTER ACTIONS */}
-        <div style={footerStyle}>
-          <button onClick={handleViewListing} style={primaryButtonStyle}>
+        <div className="lot-modal-footer" style={footerStyle}>
+          <button className="lot-modal-action" onClick={handleViewListing} style={primaryButtonStyle}>
             🔗 Voir l'annonce
           </button>
-          <button onClick={handleAddToWatchlist} style={secondaryButtonStyle}>
+          <button className="lot-modal-action" onClick={handleAddToWatchlist} style={secondaryButtonStyle}>
             ⭐ Watchlist
           </button>
-          <button onClick={handleIgnore} style={tertiaryButtonStyle}>
+          <button className="lot-modal-action" onClick={handleIgnore} style={tertiaryButtonStyle}>
             ❌ Ignorer
           </button>
-          <button onClick={handleMarkContacted} style={successButtonStyle}>
+          <button className="lot-modal-action" onClick={handleMarkContacted} style={successButtonStyle}>
             ✅ Contacté
           </button>
         </div>
@@ -350,6 +359,24 @@ function EvaluationRow({ label, level, value, dots }) {
     </div>
   );
 }
+
+const responsiveCss = `
+  @media (max-width: 700px) {
+    .lot-modal-overlay { padding: 0 !important; align-items: stretch !important; }
+    .lot-modal { width: 100vw !important; height: 100dvh !important; max-width: none !important; max-height: none !important; border-radius: 0 !important; border-left: 0 !important; border-right: 0 !important; }
+    .lot-modal-header { padding: 10px 12px !important; gap: 8px !important; }
+    .lot-modal-title { font-size: 14px !important; letter-spacing: .8px !important; text-align: center !important; }
+    .lot-modal-score { font-size: 13px !important; padding: 6px 8px !important; white-space: nowrap !important; }
+    .lot-modal-body { padding: 12px !important; }
+    .lot-modal-media-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+    .lot-modal-carousel { aspect-ratio: 4 / 3 !important; max-height: 38vh !important; }
+    .lot-modal-listing-title { font-size: 16px !important; line-height: 1.3 !important; }
+    .lot-modal-price-row { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+    .lot-modal-price { font-size: 32px !important; }
+    .lot-modal-footer { grid-template-columns: 1fr 1fr !important; gap: 8px !important; padding: 10px !important; }
+    .lot-modal-action { font-size: 13px !important; padding: 10px 8px !important; min-height: 42px !important; }
+  }
+`;
 
 // ==================== STYLES ====================
 

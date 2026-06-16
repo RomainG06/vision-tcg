@@ -47,7 +47,11 @@ async function seedDatabase() {
       }
     }
     
-    // Scrape Leboncoin
+    // Scrape Leboncoin (DISABLED - anti-bot too aggressive)
+    logger.info('⏭️  Skipping Leboncoin (anti-bot protection)...\n');
+    const lbcListings = [];
+    
+    /*
     logger.info('🔍 Scraping Leboncoin...');
     const lbcFetcher = new LeboncoinFetcher();
     const lbcListings = await lbcFetcher.fetch('pokemon cartes wizards', {
@@ -56,6 +60,7 @@ async function seedDatabase() {
       maxResults: 10
     });
     logger.info(`✅ Found ${lbcListings.length} listings on Leboncoin\n`);
+    */
     
     // Scrape Vinted
     logger.info('🔍 Scraping Vinted...');
@@ -63,7 +68,7 @@ async function seedDatabase() {
     const vintedListings = await vintedFetcher.fetch('pokemon cartes wizards', {
       location: 'nice',
       radius: 50,
-      maxResults: 10
+      maxResults: 20  // Increased since Leboncoin is disabled
     });
     logger.info(`✅ Found ${vintedListings.length} listings on Vinted\n`);
     

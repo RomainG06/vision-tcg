@@ -3,6 +3,7 @@ import { logger } from '../utils/logger.js';
 import { ListingRepository } from '../repositories/listing-repository.js';
 import { ScrapeRunRepository } from '../repositories/scrape-run-repository.js';
 import { getDatabaseInfo } from '../db/database.js';
+import { startScrape } from '../services/scrape-service.js';
 
 const router = express.Router();
 
@@ -13,12 +14,23 @@ const scrapeRunRepo = new ScrapeRunRepository();
 /**
  * Map database listing to frontend format
  */
+function parseJsonField(value, fallback) {
+  if (!value) return fallback;
+  if (typeof value !== 'string') return value;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+}
+
 function mapListing(listing) {
   if (!listing) return null;
   
-  // Parse JSON fields
-  const images = listing.images ? JSON.parse(listing.images) : [];
-  const scoreBreakdown = listing.score_breakdown ? JSON.parse(listing.score_breakdown) : {};
+  // Parse JSON fields. Scraped data can store images as a JSON array or a single URL string.
+  const parsedImages = parseJsonField(listing.images, null);
+  const images = Array.isArray(parsedImages) ? parsedImages : (listing.images ? [listing.images] : []);
+  const scoreBreakdown = parseJsonField(listing.score_breakdown, {});
   
   return {
     id: listing.id,
@@ -64,6 +76,7 @@ router.get('/docs', (req, res) => {
       { method: 'GET', path: '/api/listings', description: 'List all listings with filters' },
       { method: 'GET', path: '/api/listings/:id', description: 'Get single listing' },
       { method: 'PATCH', path: '/api/listings/:id', description: 'Update listing' },
+      { method: 'POST', path: '/api/scrape/start', description: 'Start a marketplace scrape and save results' },
       { method: 'GET', path: '/api/scrape-runs', description: 'Get scrape runs history' },
       { method: 'GET', path: '/api/stats', description: 'Get statistics' },
       { method: 'GET', path: '/api/debug/db', description: 'Debug database path/count (dev)' }
@@ -86,6 +99,23 @@ router.get('/debug/db', (req, res) => {
   } catch (error) {
     logger.error('Error fetching DB debug info:', error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * POST /api/scrape/start
+ * Start a marketplace scrape. MVP is synchronous so the UI can show immediate results.
+ */
+router.post('/scrape/start', async (req, res) => {
+  try {
+    const result = await startScrape(req.body || {});
+    res.json(result);
+  } catch (error) {
+    logger.error('Error starting scrape:', error);
+    res.status(500).json({
+      error: 'Scrape failed',
+      message: error.message,
+    });
   }
 });
 

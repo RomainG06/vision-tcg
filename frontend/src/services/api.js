@@ -71,3 +71,22 @@ export async function fetchScrapeRuns() {
 
   return response.json();
 }
+
+/**
+ * Start a real marketplace scrape.
+ * MVP endpoint is synchronous: it returns the scrape result once finished.
+ */
+export async function startScrape(options = {}) {
+  const response = await fetch(`${API_URL}/api/scrape/start`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(options),
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.message || data.error || 'Failed to start scrape');
+  }
+
+  return data;
+}

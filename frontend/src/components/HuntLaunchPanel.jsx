@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import theme from '../theme';
 import TcgIcon from './TcgIcon';
-import { fetchScrapeRuns } from '../services/api';
+import { fetchScrapeRuns, startScrape } from '../services/api';
 
 const SERIES_OPTIONS = [
   { value: 'all', label: 'Toutes Wizards FR' },
@@ -59,16 +59,31 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
     setStep('Lecture du dernier scan disponible');
 
     try {
-      // MVP mode: the backend currently exposes scan history via GET /api/scrape-runs.
-      // fetchScrapeRuns() already returns parsed JSON, so do NOT call response.json().
       const startedAt = Date.now();
-      const data = await fetchScrapeRuns({
+      const scrapeOptions = {
         profile: 'wizards-fr',
         sources: ['vinted'],
         maxResults: SENSITIVITY[sensitivity].maxResults,
         saveToDb: true,
         filters: { series, budget: Number(budget) || 1500, sensitivity },
-      });
+      };
+      let data;
+      try {
+        data = await startScrape(scrapeOptions);
+      } catch (scrapeError) {
+        // Keep the UI usable if the marketplace blocks the live scrape.
+        // The error is surfaced, but we also load the last successful run when available.
+        const history = await fetchScrapeRuns();
+        if (!history.runs?.length) throw scrapeError;
+        data = {
+          ...history,
+          warning: scrapeError.message,
+          stats: {
+            ...history.stats,
+            filtered: history.stats?.total_results ?? history.runs?.[0]?.results_count ?? 0,
+          },
+        };
+      }
 
       // Keep the radar visible long enough to feel intentional, without wasting API calls.
       const elapsed = Date.now() - startedAt;
@@ -78,12 +93,9 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
 
       setStep('Classement des meilleures pistes');
 
-      const latestRun = data.runs?.[0];
-      if (!latestRun) {
-        throw new Error('Aucun scan disponible. Lance d’abord un seed ou un scraping backend.');
-      }
+      const latestRun = data.runs?.[0] || { source: data.sources?.join(', ') || 'live-scrape', results_count: data.stats?.found ?? data.listings?.length ?? 0 };
 
-      const found = data.stats?.total_results ?? latestRun.results_count ?? 0;
+      const found = data.stats?.filtered ?? data.stats?.total_results ?? data.stats?.found ?? latestRun.results_count ?? 0;
       setSummary({
         found,
         saved: latestRun.results_count ?? found,
@@ -91,7 +103,8 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
         sources: latestRun.source || 'historique',
       });
       setStatus('success');
-      setStep(`Dernier scan : ${latestRun.source || 'source inconnue'} · ${found} résultat${found > 1 ? 's' : ''}`);
+      setStep(`${data.warning ? 'Dernier scan disponible' : 'Scan terminé'} : ${latestRun.source || 'source inconnue'} · ${found} résultat${found > 1 ? 's' : ''}`);
+      if (data.warning) setError(`Live scrape bloqué : ${data.warning}`);
       await onHuntComplete?.({
         ...data,
         stats: {

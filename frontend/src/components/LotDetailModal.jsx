@@ -63,7 +63,7 @@ function LotDetailModal({ isOpen, onClose, listing }) {
     images = [listing.image_url || imageFallback];
   }
   if (images.length === 0) images = [imageFallback];
-  
+
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % images.length);
   };
@@ -567,6 +567,7 @@ const priceBlockContainerStyle = {
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing.md,
+  alignItems: 'center',
 };
 
 const listingTitleStyle = {

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import theme from '../theme';
 import TcgIcon from './TcgIcon';
+import { fetchScrapeRuns } from '../services/api';
 
 const SERIES_OPTIONS = [
   { value: 'all', label: 'Toutes Wizards FR' },
@@ -56,18 +57,13 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
     setError(null);
     setSummary(null);
     setStep('Recherche des annonces récentes');
-
     try {
-      const response = await fetch('/api/scrape', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          profile: 'wizards-fr',
-          sources: ['vinted'],
-          maxResults: SENSITIVITY[sensitivity].maxResults,
-          saveToDb: true,
-          filters: { series, budget: Number(budget) || 1500, sensitivity },
-        }),
+      const response = await fetchScrapeRuns({
+        profile: 'wizards-fr',
+        sources: ['vinted'],
+        maxResults: SENSITIVITY[sensitivity].maxResults,
+        saveToDb: true,
+        filters: { series, budget: Number(budget) || 1500, sensitivity },
       });
 
       setStep('Classement des meilleures pistes');

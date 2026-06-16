@@ -390,7 +390,7 @@ const closeButtonStyle = {
   background: 'transparent',
   border: 'none',
   color: theme.colors.text.secondary,
-  fontSize: theme.typography.size.xlarge,
+  fontSize: theme.typography.sizes.headingLg,
   cursor: 'pointer',
   padding: theme.spacing.sm,
   display: 'flex',
@@ -405,7 +405,7 @@ const closeButtonStyle = {
 };
 
 const titleStyle = {
-  fontSize: theme.typography.size.xlarge,
+  fontSize: theme.typography.sizes.headingLg,
   fontWeight: theme.typography.weight.bold,
   color: theme.colors.text.primary,
   textTransform: 'uppercase',
@@ -419,7 +419,7 @@ const scoreBadgeStyle = {
   background: `linear-gradient(135deg, ${theme.accents.hunterGold}, ${theme.accents.manaCyan})`,
   borderRadius: theme.borders.radiusMedium,
   color: theme.colors.primary.obsidian,
-  fontSize: theme.typography.size.large,
+  fontSize: theme.typography.sizes.headingMd,
   fontWeight: theme.typography.weight.bold,
   boxShadow: `0 0 20px ${theme.accents.hunterGold}80`,
 };
@@ -468,7 +468,7 @@ const carouselButtonLeftStyle = {
   background: 'rgba(18, 22, 51, 0.8)',
   border: `2px solid ${theme.colors.primary.slate}`,
   color: theme.accents.hunterGold,
-  fontSize: theme.typography.size.large,
+  fontSize: theme.typography.sizes.headingMd,
   padding: theme.spacing.sm,
   borderRadius: theme.borders.radiusSmall,
   cursor: 'pointer',
@@ -494,7 +494,7 @@ const carouselIndicatorStyle = {
   padding: `${theme.spacing.xs} ${theme.spacing.md}`,
   borderRadius: theme.borders.radiusSmall,
   color: theme.colors.text.secondary,
-  fontSize: theme.typography.size.small,
+  fontSize: theme.typography.sizes.bodyMd,
   fontWeight: theme.typography.weight.medium,
 };
 
@@ -522,7 +522,7 @@ const priceBlockContainerStyle = {
 };
 
 const listingTitleStyle = {
-  fontSize: theme.typography.size.large,
+  fontSize: theme.typography.sizes.headingMd,
   fontWeight: theme.typography.weight.bold,
   color: theme.accents.hunterGold,
   margin: 0,
@@ -536,7 +536,7 @@ const priceRowStyle = {
 };
 
 const labelSmallStyle = {
-  fontSize: theme.typography.size.small,
+  fontSize: theme.typography.sizes.bodyMd,
   color: theme.colors.text.tertiary,
   textTransform: 'uppercase',
   letterSpacing: '0.5px',
@@ -544,14 +544,14 @@ const labelSmallStyle = {
 };
 
 const priceValueStyle = {
-  fontSize: theme.typography.size.xxlarge,
+  fontSize: theme.typography.sizes.display,
   fontWeight: theme.typography.weight.bold,
   color: theme.accents.hunterGold,
   textShadow: `0 0 16px ${theme.accents.hunterGold}80`,
 };
 
 const estimationValueStyle = {
-  fontSize: theme.typography.size.xlarge,
+  fontSize: theme.typography.sizes.headingLg,
   fontWeight: theme.typography.weight.bold,
   color: theme.accents.manaCyan,
   textShadow: `0 0 12px ${theme.accents.manaCyan}60`,
@@ -565,7 +565,7 @@ const potentialBlockStyle = {
 };
 
 const potentialValueStyle = (min, max) => ({
-  fontSize: theme.typography.size.large,
+  fontSize: theme.typography.sizes.headingMd,
   fontWeight: theme.typography.weight.bold,
   color: min > 0 ? theme.accents.successGreen : theme.accents.preyRed,
   textShadow: min > 0 ? `0 0 12px ${theme.accents.successGreen}60` : 'none',
@@ -593,7 +593,7 @@ const explanationSectionStyle = {
 };
 
 const sectionTitleStyle = {
-  fontSize: theme.typography.size.base,
+  fontSize: theme.typography.sizes.bodyLg,
   fontWeight: theme.typography.weight.bold,
   color: theme.accents.hunterGold,
   textTransform: 'uppercase',
@@ -626,13 +626,13 @@ const detailRowStyle = {
 };
 
 const detailLabelStyle = {
-  fontSize: theme.typography.size.small,
+  fontSize: theme.typography.sizes.bodyMd,
   color: theme.colors.text.tertiary,
   fontWeight: theme.typography.weight.medium,
 };
 
 const detailValueStyle = {
-  fontSize: theme.typography.size.base,
+  fontSize: theme.typography.sizes.bodyLg,
   color: theme.colors.text.secondary,
   fontWeight: theme.typography.weight.medium,
 };
@@ -645,7 +645,7 @@ const distanceStyle = (distance) => ({
 
 // Markdown
 const markdownContainerStyle = {
-  fontSize: theme.typography.size.base,
+  fontSize: theme.typography.sizes.bodyLg,
   lineHeight: 1.6,
   color: theme.colors.text.secondary,
 };
@@ -719,7 +719,7 @@ const primaryButtonStyle = {
   border: 'none',
   borderRadius: theme.borders.radiusMedium,
   color: theme.colors.primary.obsidian,
-  fontSize: theme.typography.size.base,
+  fontSize: theme.typography.sizes.bodyLg,
   fontWeight: theme.typography.weight.bold,
   cursor: 'pointer',
   transition: 'all 0.2s ease',
@@ -732,7 +732,7 @@ const secondaryButtonStyle = {
   border: `2px solid ${theme.accents.manaCyan}`,
   borderRadius: theme.borders.radiusMedium,
   color: theme.accents.manaCyan,
-  fontSize: theme.typography.size.base,
+  fontSize: theme.typography.sizes.bodyLg,
   fontWeight: theme.typography.weight.bold,
   cursor: 'pointer',
   transition: 'all 0.2s ease',
@@ -744,7 +744,7 @@ const tertiaryButtonStyle = {
   border: `2px solid ${theme.colors.primary.slate}`,
   borderRadius: theme.borders.radiusMedium,
   color: theme.colors.text.muted,
-  fontSize: theme.typography.size.base,
+  fontSize: theme.typography.sizes.bodyLg,
   fontWeight: theme.typography.weight.medium,
   cursor: 'pointer',
   transition: 'all 0.2s ease',

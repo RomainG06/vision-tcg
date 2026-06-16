@@ -43,15 +43,24 @@ function LotDetailModal({ isOpen, onClose, listing }) {
 
   if (!isOpen || !listing) return null;
 
+  const imageFallback = `data:image/svg+xml;utf8,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+      <rect width="400" height="400" fill="#121633"/>
+      <text x="200" y="185" text-anchor="middle" font-size="56">🎴</text>
+      <text x="200" y="235" text-anchor="middle" fill="#9CA3AF" font-family="Arial" font-size="22">Image indisponible</text>
+    </svg>`
+  )}`;
+
   // Carousel navigation - handle both array and string formats
   let images;
   if (Array.isArray(listing.images)) {
-    images = listing.images.length > 0 ? listing.images : [listing.image_url || 'https://via.placeholder.com/400'];
+    images = listing.images.length > 0 ? listing.images : [listing.image_url || imageFallback];
   } else if (typeof listing.images === 'string' && listing.images) {
-    images = listing.images.split(',').map(url => url.trim());
+    images = listing.images.split(',').map(url => url.trim()).filter(Boolean);
   } else {
-    images = [listing.image_url || 'https://via.placeholder.com/400'];
+    images = [listing.image_url || imageFallback];
   }
+  if (images.length === 0) images = [imageFallback];
   
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % images.length);
@@ -165,7 +174,9 @@ function LotDetailModal({ isOpen, onClose, listing }) {
                   alt={listing.title}
                   style={mainImageStyle}
                   onError={(e) => {
-                    e.target.src = 'https://via.placeholder.com/400?text=Image+non+disponible';
+                    // Prevent infinite retry loop if remote image fails.
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = imageFallback;
                   }}
                 />
                 {images.length > 1 && (

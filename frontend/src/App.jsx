@@ -87,7 +87,7 @@ function App() {
 
     setLastHunt({
       at: new Date(),
-      count: scanResult.stats?.filtered ?? scanResult.listings?.length ?? highlightedIds.length,
+      count: scanResult.stats?.filtered ?? scanResult.stats?.total_results ?? scanResult.listings?.length ?? highlightedIds.length,
       highlightedIds,
     });
 

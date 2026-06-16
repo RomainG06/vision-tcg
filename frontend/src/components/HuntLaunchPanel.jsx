@@ -56,9 +56,13 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
     setStatus('running');
     setError(null);
     setSummary(null);
-    setStep('Recherche des annonces récentes');
+    setStep('Lecture du dernier scan disponible');
+
     try {
-      const response = await fetchScrapeRuns({
+      // MVP mode: the backend currently exposes scan history via GET /api/scrape-runs.
+      // fetchScrapeRuns() already returns parsed JSON, so do NOT call response.json().
+      const startedAt = Date.now();
+      const data = await fetchScrapeRuns({
         profile: 'wizards-fr',
         sources: ['vinted'],
         maxResults: SENSITIVITY[sensitivity].maxResults,
@@ -66,27 +70,39 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
         filters: { series, budget: Number(budget) || 1500, sensitivity },
       });
 
-      setStep('Classement des meilleures pistes');
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || data.message || 'Scan impossible');
+      // Keep the radar visible long enough to feel intentional, without wasting API calls.
+      const elapsed = Date.now() - startedAt;
+      if (elapsed < 800) {
+        await new Promise(resolve => setTimeout(resolve, 800 - elapsed));
       }
 
-      const found = data.stats?.filtered ?? data.listings?.length ?? 0;
+      setStep('Classement des meilleures pistes');
+
+      const latestRun = data.runs?.[0];
+      if (!latestRun) {
+        throw new Error('Aucun scan disponible. Lance d’abord un seed ou un scraping backend.');
+      }
+
+      const found = data.stats?.total_results ?? latestRun.results_count ?? 0;
       setSummary({
         found,
-        saved: data.stats?.saved ?? 0,
-        updated: data.stats?.updated ?? 0,
-        sources: data.sources?.join(', ') || 'vinted',
+        saved: latestRun.results_count ?? found,
+        updated: 0,
+        sources: latestRun.source || 'historique',
       });
       setStatus('success');
-      setStep('Dernier scan : à l’instant');
-      await onHuntComplete?.(data);
+      setStep(`Dernier scan : ${latestRun.source || 'source inconnue'} · ${found} résultat${found > 1 ? 's' : ''}`);
+      await onHuntComplete?.({
+        ...data,
+        stats: {
+          ...data.stats,
+          filtered: found,
+        },
+      });
     } catch (err) {
       setError(err.message);
       setStatus('error');
-      setStep('Source indisponible ou limite temporaire atteinte');
+      setStep('Historique de scan indisponible');
     }
   };
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import FilterBar from './components/FilterBar';
 import LotList from './components/LotList';
+import HuntLaunchPanel from './components/HuntLaunchPanel';
 import { fetchListings, fetchStats, updateListing } from './services/api';
 import theme from './theme';
 import TcgIcon from './components/TcgIcon';
@@ -28,9 +29,9 @@ function App() {
     applyFilters();
   }, [listings, filters]);
 
-  const loadData = async () => {
+  const loadData = async ({ showLoading = true } = {}) => {
     try {
-      setLoading(true);
+      if (showLoading) setLoading(true);
       const [listingsData, statsData] = await Promise.all([
         fetchListings(),
         fetchStats(),
@@ -40,7 +41,7 @@ function App() {
     } catch (err) {
       setError(err.message);
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   };
 
@@ -117,30 +118,32 @@ function App() {
       </header>
 
       <div style={styles.container}>
+        <HuntLaunchPanel onHuntComplete={() => loadData({ showLoading: false })} />
+
         <FilterBar filters={filters} onChange={handleFilterChange} />
 
         {stats && (
           <div style={styles.stats}>
             <div style={styles.statCard}>
               <div style={styles.statLabel}>Total annonces</div>
-              <div style={styles.statValue}>{stats.total_listings || 0}</div>
+              <div style={styles.statValue}>{stats.total_listings ?? stats.total ?? 0}</div>
             </div>
             <div style={styles.statCard}>
               <div style={styles.statLabel}>Score moyen</div>
               <div style={styles.statValue}>
-                {stats.avg_score ? stats.avg_score.toFixed(1) : '0'}
+                {(stats.avg_score ?? stats.avgScore) ? (stats.avg_score ?? stats.avgScore).toFixed(1) : '0'}
               </div>
             </div>
             <div style={styles.statCard}>
               <div style={styles.statLabel}>Prix moyen</div>
               <div style={styles.statValue}>
-                {stats.avg_price ? Math.round(stats.avg_price) : '0'}€
+                {(stats.avg_price ?? stats.avgPrice) ? Math.round(stats.avg_price ?? stats.avgPrice) : '0'}€
               </div>
             </div>
             <div style={styles.statCard}>
               <div style={styles.statLabel}>Wizards FR</div>
               <div style={styles.statValue}>
-                {stats.wizards_count || 0}
+                {stats.wizards_count ?? stats.highScore ?? 0}
               </div>
             </div>
           </div>

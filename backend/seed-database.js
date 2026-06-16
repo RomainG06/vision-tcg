@@ -104,18 +104,18 @@ async function seedDatabase() {
           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `, [
           1, // scrape_run_id (fake ID for seed)
-          listing.platform,
-          listing.id,
+          listing.source || listing.platform || 'unknown', // source (was platform)
+          listing.external_id || listing.id || String(Date.now()), // external_id (was id)
           listing.url,
           listing.title,
           listing.description || '',
           listing.price,
           listing.location,
-          null, // lat (not used yet)
-          null, // lon (not used yet)
+          listing.lat || null,
+          listing.lon || null,
           listing.distance_km || null,
           JSON.stringify(listing.images || [listing.image_url].filter(Boolean)),
-          listing.published_at || new Date().toISOString(),
+          listing.posted_at || listing.published_at || new Date().toISOString(),
           new Date().toISOString(),
           'new',
           listing.score || 0,
@@ -126,7 +126,7 @@ async function seedDatabase() {
             estimated_value_min: listing.estimated_value_min,
             estimated_value_max: listing.estimated_value_max
           }),
-          listing.explanation || null
+          listing.opportunity_explanation || listing.explanation || null
         ]);
         savedCount++;
         if (savedCount % 5 === 0) {
@@ -135,10 +135,12 @@ async function seedDatabase() {
       } catch (insertError) {
         logger.error(`❌ Failed to insert listing "${listing.title}":`, insertError.message);
         logger.error('Listing data:', JSON.stringify({
-          id: listing.id,
-          platform: listing.platform,
+          source: listing.source || listing.platform,
+          external_id: listing.external_id || listing.id,
           title: listing.title,
-          price: listing.price
+          price: listing.price,
+          url: listing.url,
+          posted_at: listing.posted_at || listing.published_at
         }, null, 2));
         throw insertError;
       }

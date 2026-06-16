@@ -77,7 +77,7 @@ router.get('/listings', (req, res) => {
   try {
     const filters = {
       source: req.query.source,
-      status: req.query.status || 'new',
+      status: req.query.status || 'all', // Changed from 'new' to 'all' - show everything by default
       minScore: req.query.min_score ? parseFloat(req.query.min_score) : undefined,
       maxPrice: req.query.max_price ? parseFloat(req.query.max_price) : undefined,
       maxDistance: req.query.max_distance ? parseFloat(req.query.max_distance) : undefined,

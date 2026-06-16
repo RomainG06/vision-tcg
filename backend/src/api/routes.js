@@ -15,9 +15,37 @@ const scrapeRunRepo = new ScrapeRunRepository();
 function mapListing(listing) {
   if (!listing) return null;
   
+  // Parse JSON fields
+  const images = listing.images ? JSON.parse(listing.images) : [];
+  const scoreBreakdown = listing.score_breakdown ? JSON.parse(listing.score_breakdown) : {};
+  
   return {
-    ...listing,
-    image_url: listing.images, // Map 'images' to 'image_url' for frontend
+    id: listing.id,
+    title: listing.title,
+    description: listing.description,
+    price: listing.price,
+    url: listing.url,
+    location: listing.location,
+    distance_km: listing.distance_km,
+    platform: listing.source, // Map 'source' to 'platform'
+    published_at: listing.posted_at,
+    score: listing.score,
+    status: listing.status,
+    
+    // Images
+    image_url: images[0] || null,
+    images: images,
+    
+    // Scoring details (from score_breakdown JSON)
+    confidence: scoreBreakdown.confidence || null,
+    estimated_value_min: scoreBreakdown.estimated_value_min || null,
+    estimated_value_max: scoreBreakdown.estimated_value_max || null,
+    opportunity_signals: scoreBreakdown.signals || [],
+    risk_signals: scoreBreakdown.risks || [],
+    explanation: listing.notes || null, // Map 'notes' to 'explanation'
+    
+    // Metadata
+    scraped_at: listing.scraped_at
   };
 }
 

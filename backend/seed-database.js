@@ -76,35 +76,53 @@ async function seedDatabase() {
     const allListings = [...lbcListings, ...vintedListings];
     logger.info(`💾 Saving ${allListings.length} total listings to database...`);
     
+    // Create a scrape_run entry
+    await run(`
+      INSERT INTO scrape_runs (started_at, completed_at, source, query, status, results_count, errors_count)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `, [
+      new Date().toISOString(),
+      new Date().toISOString(),
+      'seed-script',
+      'pokemon cartes wizards',
+      'completed',
+      allListings.length,
+      0
+    ]);
+    
     for (const listing of allListings) {
+      // Adapter au schéma existant (old MVP schema)
       await run(`
         INSERT OR REPLACE INTO listings (
-          id, title, description, price, url, image_url, location, 
-          distance_km, platform, seller_type, published_at, card_count,
-          estimated_value_min, estimated_value_max, score, confidence,
-          opportunity_signals, risk_signals, explanation, raw_data
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          scrape_run_id, source, external_id, url, title, description, 
+          price, location, lat, lon, distance_km, images, posted_at, 
+          scraped_at, status, score, score_breakdown, notes
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `, [
+        1, // scrape_run_id (fake ID for seed)
+        listing.platform,
         listing.id,
+        listing.url,
         listing.title,
         listing.description || '',
         listing.price,
-        listing.url,
-        listing.image_url || listing.images?.[0] || null,
         listing.location,
+        null, // lat (not used yet)
+        null, // lon (not used yet)
         listing.distance_km || null,
-        listing.platform,
-        listing.seller_type || 'unknown',
+        JSON.stringify(listing.images || [listing.image_url].filter(Boolean)),
         listing.published_at || new Date().toISOString(),
-        listing.card_count || null,
-        listing.estimated_value_min || null,
-        listing.estimated_value_max || null,
+        new Date().toISOString(),
+        'new',
         listing.score || 0,
-        listing.confidence || null,
-        JSON.stringify(listing.opportunity_signals || []),
-        JSON.stringify(listing.risk_signals || []),
-        listing.explanation || null,
-        JSON.stringify(listing)
+        JSON.stringify({
+          signals: listing.opportunity_signals || [],
+          risks: listing.risk_signals || [],
+          confidence: listing.confidence,
+          estimated_value_min: listing.estimated_value_min,
+          estimated_value_max: listing.estimated_value_max
+        }),
+        listing.explanation || null
       ]);
     }
     

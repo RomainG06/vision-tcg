@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import LotDetail from './LotDetail';
+import LotDetailModal from './LotDetailModal';
 import Badge from './Badge';
 import theme, { getRarityLevel, rarityLabels } from '../theme';
 
@@ -152,10 +152,10 @@ function LotList({ listings, onUpdate }) {
       </div>
 
       {selectedLot && (
-        <LotDetail
+        <LotDetailModal
+          isOpen={true}
           listing={selectedLot}
           onClose={() => setSelectedLot(null)}
-          onUpdate={onUpdate}
         />
       )}
     </div>

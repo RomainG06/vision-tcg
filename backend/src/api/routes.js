@@ -57,6 +57,11 @@ function mapListing(listing) {
     estimated_value_max: scoreBreakdown.estimated_value_max || null,
     opportunity_signals: scoreBreakdown.signals || [],
     risk_signals: scoreBreakdown.risks || [],
+    quality: scoreBreakdown.quality || null,
+    quality_tier: scoreBreakdown.quality?.quality_tier || null,
+    action_suggestion: scoreBreakdown.quality?.action_suggestion || null,
+    positive_reasons: scoreBreakdown.quality?.positive_reasons || [],
+    risk_reasons: scoreBreakdown.quality?.risk_reasons || [],
     explanation: listing.notes || null, // Map 'notes' to 'explanation'
     
     // Metadata

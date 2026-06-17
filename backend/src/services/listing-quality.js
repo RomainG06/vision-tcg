@@ -34,6 +34,109 @@ function shouldIgnoreNoise(code, text, signals) {
   return false;
 }
 
+const POSITIVE_REASON_LABELS = {
+  wizards_detected: 'Série Wizards / ancienne détectée',
+  french_edition: 'Langue française probable',
+  lot_detected: 'Lot ou collection détecté',
+  premium_card_detected: 'Carte rare/holo détectée',
+  exploration_candidate: 'Candidat Pokémon à vérifier',
+};
+
+const RISK_REASON_LABELS = {
+  modern_detected: 'Bloc moderne détecté',
+  accessory_detected: 'Accessoire probablement vendu seul',
+  foreign_language_detected: 'Langue étrangère probable',
+  fake_detected: 'Fake/proxy/reproduction détecté',
+  energy_bulk_detected: 'Lot énergie / vrac faible valeur',
+  toy_detected: 'Produit dérivé plutôt qu’une carte',
+  manual_review_needed: 'Vérification manuelle nécessaire',
+};
+
+function buildDecisionReasons({ signals, noise, reason, price, budgetMax }) {
+  const positive = signals
+    .map(signal => POSITIVE_REASON_LABELS[signal])
+    .filter(Boolean);
+  const risks = noise
+    .map(risk => RISK_REASON_LABELS[risk])
+    .filter(Boolean);
+
+  if (reason === 'missing_wizards_or_french_signal') risks.push('Signal Wizards/FR insuffisant');
+  if (reason === 'score_below_threshold') risks.push('Score sous le seuil radar');
+  if (reason === 'borderline_target_candidate') risks.push('Signal cible présent mais confiance limitée');
+  if (reason === 'exploration_fallback_candidate') {
+    risks.push('Candidat large gardé pour revue');
+    if (!signals.includes('wizards_detected') && !signals.includes('french_edition')) {
+      risks.push('Signal Wizards/FR insuffisant');
+    }
+  }
+  if (Number.isFinite(Number(budgetMax)) && Number(budgetMax) > 0 && Number(price || 0) > Number(budgetMax)) risks.push('Prix au-dessus du budget');
+
+  return {
+    positive_reasons: [...new Set(positive)],
+    risk_reasons: [...new Set(risks)],
+  };
+}
+
+function tierFromQuality({ keep, reason, score, noise, signals, budgetRejected }) {
+  if (budgetRejected) return 'rejected_budget';
+  if (noise.length > 0) return 'rejected_noise';
+  if (!keep && reason === 'missing_wizards_or_french_signal') return 'rejected_no_signal';
+  if (!keep) return 'rejected_low_score';
+  if (reason === 'exploration_fallback_candidate') return 'manual_review';
+  if (score >= 75 && signals.length >= 2) return 'strong_opportunity';
+  if (score >= 50 || signals.includes('wizards_detected') || signals.includes('french_edition')) return 'good_candidate';
+  return 'manual_review';
+}
+
+function suggestionFromTier(tier) {
+  if (tier === 'strong_opportunity') return 'contacter_rapidement';
+  if (tier === 'good_candidate') return 'examiner';
+  if (tier === 'manual_review') return 'verifier_manuellement';
+  return 'ignorer';
+}
+
+export function classifyListingQuality(listing, options = {}) {
+  const base = evaluateListingQuality(listing, options);
+  const price = Number(listing.price || 0);
+  const budgetMax = options.budgetMax ?? options.budget ?? null;
+  const budgetRejected = Number.isFinite(Number(budgetMax)) && Number(budgetMax) > 0 && price > Number(budgetMax);
+  let keep = base.keep && !budgetRejected;
+  let reason = budgetRejected ? 'over_budget' : base.reason;
+  const text = textOf(listing);
+
+  if (!keep && options.allowExplorationFallback && !budgetRejected && base.noise.length === 0 && POKEMON_CARD_PATTERN.test(text)) {
+    keep = true;
+    reason = 'exploration_fallback_candidate';
+  }
+
+  const tier = tierFromQuality({
+    keep,
+    reason,
+    score: base.score,
+    noise: budgetRejected ? [] : base.noise,
+    signals: base.signals,
+    budgetRejected,
+  });
+  const reasons = buildDecisionReasons({
+    signals: reason === 'exploration_fallback_candidate'
+      ? [...new Set([...base.signals, 'exploration_candidate'])]
+      : base.signals,
+    noise: budgetRejected ? [] : base.noise,
+    reason,
+    price,
+    budgetMax,
+  });
+
+  return {
+    ...base,
+    keep,
+    reason,
+    quality_tier: tier,
+    action_suggestion: suggestionFromTier(tier),
+    ...reasons,
+  };
+}
+
 export function evaluateListingQuality(listing, options = {}) {
   const minScore = options.minScore ?? 50;
   const candidateScoreFloor = options.candidateScoreFloor ?? 20;
@@ -75,7 +178,7 @@ export function evaluateListingQuality(listing, options = {}) {
 }
 
 export function annotateListingQuality(listing, options = {}) {
-  const quality = evaluateListingQuality(listing, options);
+  const quality = classifyListingQuality(listing, options);
   const scoreBreakdown = listing.score_breakdown || {};
   const existingSignals = Array.isArray(scoreBreakdown.signals) ? scoreBreakdown.signals : [];
   const existingRisks = Array.isArray(scoreBreakdown.risks) ? scoreBreakdown.risks : [];
@@ -122,6 +225,10 @@ export function selectExplorationCandidates(listings, options = {}) {
         ...listing.quality,
         keep: true,
         reason: 'exploration_fallback_candidate',
+        quality_tier: 'manual_review',
+        action_suggestion: 'verifier_manuellement',
+        positive_reasons: [...new Set([...(listing.quality.positive_reasons || []), 'Candidat Pokémon à vérifier'])],
+        risk_reasons: [...new Set([...(listing.quality.risk_reasons || []), 'Candidat large gardé pour revue'])],
       },
       score_breakdown: {
         ...(listing.score_breakdown || {}),
@@ -131,6 +238,10 @@ export function selectExplorationCandidates(listings, options = {}) {
           ...listing.quality,
           keep: true,
           reason: 'exploration_fallback_candidate',
+          quality_tier: 'manual_review',
+          action_suggestion: 'verifier_manuellement',
+          positive_reasons: [...new Set([...(listing.quality.positive_reasons || []), 'Candidat Pokémon à vérifier'])],
+          risk_reasons: [...new Set([...(listing.quality.risk_reasons || []), 'Candidat large gardé pour revue'])],
         },
       },
     }));

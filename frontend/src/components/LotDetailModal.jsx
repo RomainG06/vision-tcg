@@ -4,6 +4,23 @@ import theme from '../theme';
 import Badge from './Badge';
 import TcgIcon from './TcgIcon';
 
+const QUALITY_TIER_LABELS = {
+  strong_opportunity: '🔥 Opportunité forte',
+  good_candidate: '🟢 Candidat intéressant',
+  manual_review: '🟡 À vérifier',
+  rejected_noise: '⛔ Bruit',
+  rejected_budget: '💸 Hors budget',
+  rejected_no_signal: 'Signal faible',
+  rejected_low_score: 'Score faible',
+};
+
+const ACTION_LABELS = {
+  contacter_rapidement: 'Contacter rapidement',
+  examiner: 'Examiner',
+  verifier_manuellement: 'Vérifier manuellement',
+  ignorer: 'Ignorer',
+};
+
 /**
  * Modal full-screen pour afficher les détails complets d'une opportunité
  * Basé sur MODAL_DETAIL_SPEC.md (1167 lignes)
@@ -130,6 +147,10 @@ function LotDetailModal({ isOpen, onClose, listing, onUpdate, onDelete }) {
   const confidence = listing.confidence ?? 70;
   const opportunitySignals = (listing.opportunity_signals || [])
     .filter((signal) => shouldDisplayOpportunitySignal(listing, signal));
+  const qualityTier = listing.quality_tier || listing.quality?.quality_tier;
+  const actionSuggestion = listing.action_suggestion || listing.quality?.action_suggestion;
+  const positiveReasons = listing.positive_reasons || listing.quality?.positive_reasons || [];
+  const riskReasons = listing.risk_reasons || listing.quality?.risk_reasons || [];
 
   // Calculate potential gain only when estimation exists
   const potentialMin = estimatedLow !== null ? estimatedLow - price : null;
@@ -297,6 +318,33 @@ function LotDetailModal({ isOpen, onClose, listing, onUpdate, onDelete }) {
             </div>
           )}
 
+          {(qualityTier || positiveReasons.length > 0 || riskReasons.length > 0) && (
+            <div style={decisionSectionStyle}>
+              <h4 style={sectionTitleHighlightedStyle}><TcgIcon name="spark" size={18} /> DÉCISION RADAR</h4>
+              {qualityTier && (
+                <div style={decisionTierStyle}>{QUALITY_TIER_LABELS[qualityTier] || qualityTier}</div>
+              )}
+              <div style={decisionColumnsStyle}>
+                {positiveReasons.length > 0 && (
+                  <div>
+                    <div style={decisionColumnTitleStyle}>Pourquoi c’est gardé</div>
+                    <ul style={decisionListStyle}>
+                      {positiveReasons.map((reason) => <li key={reason} style={positiveReasonStyle}>+ {reason}</li>)}
+                    </ul>
+                  </div>
+                )}
+                {riskReasons.length > 0 && (
+                  <div>
+                    <div style={decisionColumnTitleStyle}>Points à vérifier</div>
+                    <ul style={decisionListStyle}>
+                      {riskReasons.map((reason) => <li key={reason} style={riskReasonStyle}>- {reason}</li>)}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* SECTION: Évaluation */}
           <div style={sectionContainerStyle}>
             <h4 style={sectionTitleStyle}><TcgIcon name="chart" size={18} /> ÉVALUATION</h4>
@@ -321,7 +369,7 @@ function LotDetailModal({ isOpen, onClose, listing, onUpdate, onDelete }) {
               />
               <div style={actionSuggestedStyle}>
                 <span style={detailLabelStyle}>Action suggérée:</span>
-                <span style={actionValueStyle}><TcgIcon name="bolt" size={16} /> Contacter rapidement</span>
+                <span style={actionValueStyle}><TcgIcon name="bolt" size={16} /> {ACTION_LABELS[actionSuggestion] || 'Examiner'}</span>
               </div>
             </div>
           </div>
@@ -676,6 +724,55 @@ const sectionTitleStyle = {
 const sectionTitleHighlightedStyle = {
   ...sectionTitleStyle,
   textShadow: `0 0 12px ${theme.accents.hunterGold}60`,
+};
+
+const decisionSectionStyle = {
+  ...sectionContainerStyle,
+  border: `1px solid ${theme.accents.manaCyan}55`,
+  background: `linear-gradient(135deg, ${theme.colors.primary.deepDark}, ${theme.accents.manaCyan}0D)`,
+};
+
+const decisionTierStyle = {
+  display: 'inline-flex',
+  padding: `${theme.spacing.sm} ${theme.spacing.md}`,
+  borderRadius: theme.borders.radiusMd,
+  border: `1px solid ${theme.accents.hunterGold}66`,
+  color: theme.accents.hunterGold,
+  background: `${theme.accents.hunterGold}12`,
+  fontWeight: theme.typography.weights.bold,
+  marginBottom: theme.spacing.md,
+};
+
+const decisionColumnsStyle = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+  gap: theme.spacing.lg,
+};
+
+const decisionColumnTitleStyle = {
+  color: theme.colors.text.tertiary,
+  fontSize: theme.typography.sizes.bodySm,
+  fontWeight: theme.typography.weights.semibold,
+  textTransform: 'uppercase',
+  marginBottom: theme.spacing.sm,
+};
+
+const decisionListStyle = {
+  margin: 0,
+  paddingLeft: theme.spacing.lg,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing.xs,
+};
+
+const positiveReasonStyle = {
+  color: theme.accents.successGreen,
+  fontSize: theme.typography.sizes.bodySm,
+};
+
+const riskReasonStyle = {
+  color: theme.accents.warningOrange,
+  fontSize: theme.typography.sizes.bodySm,
 };
 
 // Details Grid

@@ -1,7 +1,58 @@
 import { describe, test, expect } from '@jest/globals';
-import { evaluateListingQuality, filterQualityListings, isLotListingText, selectExplorationCandidates, splitQualityListings } from '../src/services/listing-quality.js';
+import { evaluateListingQuality, filterQualityListings, isLotListingText, selectExplorationCandidates, splitQualityListings, classifyListingQuality } from '../src/services/listing-quality.js';
 
 describe('Listing quality filter', () => {
+  test('classifies kept listings into decision tiers with human explanations', () => {
+    const strong = classifyListingQuality({
+      title: 'Lot 100 cartes Pokemon Wizards Team Rocket françaises holo',
+      description: 'Collection ancienne FR, plusieurs rares',
+      price: 80,
+      score: 82,
+    }, { minScore: 50 });
+
+    expect(strong.quality_tier).toBe('strong_opportunity');
+    expect(strong.action_suggestion).toBe('contacter_rapidement');
+    expect(strong.positive_reasons).toEqual(expect.arrayContaining([
+      'Série Wizards / ancienne détectée',
+      'Langue française probable',
+      'Lot ou collection détecté',
+    ]));
+
+    const review = classifyListingQuality({
+      title: 'Carte Pokemon holo bon état',
+      description: 'Photo disponible',
+      price: 12,
+      score: 10,
+    }, { allowExplorationFallback: true });
+
+    expect(review.quality_tier).toBe('manual_review');
+    expect(review.keep).toBe(true);
+    expect(review.action_suggestion).toBe('verifier_manuellement');
+    expect(review.risk_reasons).toContain('Signal Wizards/FR insuffisant');
+  });
+
+  test('classifies noisy and budget rejected listings with explicit tiers', () => {
+    const noisy = classifyListingQuality({
+      title: 'Lot Pokemon japonais fake proxy',
+      description: 'Japanese custom cards',
+      price: 20,
+      score: 70,
+    });
+    expect(noisy.keep).toBe(false);
+    expect(noisy.quality_tier).toBe('rejected_noise');
+    expect(noisy.action_suggestion).toBe('ignorer');
+
+    const budget = classifyListingQuality({
+      title: 'Lot Wizards FR',
+      description: 'Cartes françaises',
+      price: 600,
+      score: 75,
+    }, { budgetMax: 500 });
+    expect(budget.keep).toBe(false);
+    expect(budget.quality_tier).toBe('rejected_budget');
+    expect(budget.risk_reasons).toContain('Prix au-dessus du budget');
+  });
+
   test('keeps a strong Wizards French lot', () => {
     const listing = {
       title: 'Lot 100 cartes Pokemon Wizards Jungle Fossile françaises',

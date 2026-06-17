@@ -4,6 +4,26 @@ import Badge from './Badge';
 import TcgIcon from './TcgIcon';
 import theme, { getRarityLevel, rarityLabels } from '../theme';
 
+const QUALITY_TIER_LABELS = {
+  strong_opportunity: '🔥 Opportunité forte',
+  good_candidate: '🟢 Candidat intéressant',
+  manual_review: '🟡 À vérifier',
+  rejected_noise: '⛔ Bruit',
+  rejected_budget: '💸 Hors budget',
+  rejected_no_signal: 'Signal faible',
+  rejected_low_score: 'Score faible',
+};
+
+const QUALITY_TIER_COLORS = {
+  strong_opportunity: theme.colors.status.legendary,
+  good_candidate: theme.accents.successGreen,
+  manual_review: theme.accents.warningOrange,
+  rejected_noise: theme.accents.preyRed,
+  rejected_budget: theme.accents.preyRed,
+  rejected_no_signal: theme.colors.text.muted,
+  rejected_low_score: theme.colors.text.muted,
+};
+
 function LotList({ listings, onUpdate, onDelete, highlightedIds = [] }) {
   const [selectedLot, setSelectedLot] = useState(null);
 
@@ -99,6 +119,15 @@ function LotList({ listings, onUpdate, onDelete, highlightedIds = [] }) {
                 }}>
                   {rarityLabels[rarity]}
                 </div>
+                {listing.quality_tier && (
+                  <div style={{
+                    ...styles.qualityTier,
+                    color: QUALITY_TIER_COLORS[listing.quality_tier] || theme.colors.text.secondary,
+                    borderColor: `${QUALITY_TIER_COLORS[listing.quality_tier] || theme.colors.primary.slate}66`,
+                  }}>
+                    {QUALITY_TIER_LABELS[listing.quality_tier] || listing.quality_tier}
+                  </div>
+                )}
                 
                 {/* Title */}
                 <h3 style={styles.title}>{listing.title}</h3>
@@ -386,9 +415,20 @@ const styles = {
   rarityLabel: {
     fontSize: theme.typography.sizes.bodySm,
     fontWeight: theme.typography.weights.semibold,
-    marginBottom: theme.spacing.md,
+    marginBottom: theme.spacing.sm,
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
+  },
+  qualityTier: {
+    display: 'inline-flex',
+    alignSelf: 'flex-start',
+    padding: `${theme.spacing.xs} ${theme.spacing.sm}`,
+    border: '1px solid',
+    borderRadius: theme.borders.radiusSm,
+    background: 'rgba(10,14,39,.35)',
+    fontSize: theme.typography.sizes.tiny,
+    fontWeight: theme.typography.weights.semibold,
+    marginBottom: theme.spacing.md,
   },
   title: {
     fontSize: theme.typography.sizes.bodyLg,

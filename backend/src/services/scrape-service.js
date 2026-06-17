@@ -5,7 +5,7 @@ import { scoreListing } from '../scoring/scorer-simple.js';
 import { ListingRepository } from '../repositories/listing-repository.js';
 import { ScrapeRunRepository } from '../repositories/scrape-run-repository.js';
 import { logger } from '../utils/logger.js';
-import { filterQualityListings } from './listing-quality.js';
+import { filterQualityListings, selectExplorationCandidates } from './listing-quality.js';
 import { filterByBudget } from './hunt-filters.js';
 
 const listingRepo = new ListingRepository();
@@ -104,6 +104,7 @@ export async function startScrape(options = {}) {
   let qualityFiltered = 0;
   let budgetFiltered = 0;
   let knownBeforeScan = 0;
+  let explorationFallback = 0;
 
   try {
     for (const source of enabledSources) {
@@ -130,11 +131,23 @@ export async function startScrape(options = {}) {
 
         const scored = budgetResult.kept.map(scoreRawListing);
         const minScore = filters.minScore ?? filters.min_score ?? (filters.sensitivity === 'aggressive' ? 40 : filters.sensitivity === 'prudent' ? 60 : 50);
-        const qualityListings = filterQualityListings(scored, {
+        let qualityListings = filterQualityListings(scored, {
           minScore,
           allowBorderlineTargets: true,
           candidateScoreFloor: filters.sensitivity === 'prudent' ? 30 : 20,
         });
+        if (qualityListings.length === 0 && scored.length > 0) {
+          const fallbackLimit = Math.min(maxResults, filters.sensitivity === 'prudent' ? 3 : 5);
+          qualityListings = selectExplorationCandidates(scored, {
+            limit: fallbackLimit,
+            minScore,
+            allowBorderlineTargets: true,
+          });
+          explorationFallback += qualityListings.length;
+          if (qualityListings.length > 0) {
+            errors.push({ source, type: 'exploration_fallback', count: qualityListings.length });
+          }
+        }
         const rejectedCount = scored.length - qualityListings.length;
         if (rejectedCount > 0) {
           qualityFiltered += rejectedCount;
@@ -166,7 +179,7 @@ export async function startScrape(options = {}) {
       status,
       results_count: allListings.length,
       errors_count: errors.length,
-      metadata: JSON.stringify({ profile, filters, maxResults, saved, updated, budgetFiltered, qualityFiltered, knownBeforeScan, errors }),
+      metadata: JSON.stringify({ profile, filters, maxResults, saved, updated, budgetFiltered, qualityFiltered, explorationFallback, knownBeforeScan, errors }),
     });
 
     return {
@@ -183,6 +196,7 @@ export async function startScrape(options = {}) {
         filtered: allListings.length,
         quality_filtered: qualityFiltered,
         budget_filtered: budgetFiltered,
+        exploration_fallback: explorationFallback,
         known_before_scan: knownBeforeScan,
         saved,
         updated,

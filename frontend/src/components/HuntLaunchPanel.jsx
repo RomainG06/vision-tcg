@@ -102,6 +102,7 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
         updated: data.stats?.updated ?? 0,
         qualityFiltered: data.stats?.quality_filtered ?? 0,
         budgetFiltered: data.stats?.budget_filtered ?? 0,
+        explorationFallback: data.stats?.exploration_fallback ?? 0,
         knownBeforeScan: data.stats?.known_before_scan ?? 0,
         rawFound: data.stats?.raw_found ?? 0,
         sources: latestRun.source || 'historique',
@@ -218,6 +219,9 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
               )}
               {summary.budgetFiltered > 0 && (
                 <span>{summary.budgetFiltered} annonces hors budget</span>
+              )}
+              {summary.explorationFallback > 0 && (
+                <span>{summary.explorationFallback} candidats larges gardés pour revue</span>
               )}
               {summary.qualityFiltered > 0 && (
                 <span>{summary.qualityFiltered} annonces écartées par qualité</span>

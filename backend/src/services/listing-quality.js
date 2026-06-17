@@ -2,6 +2,7 @@ const WIZARDS_PATTERN = /\b(wizards|wotc|base set|set de base|jungle|fossile|fos
 const FRENCH_PATTERN = /\b(fr|vf|français|francais|française|francaise|édition française|edition francaise)\b/i;
 const LOT_PATTERN = /\b(lot|collection|vrac|classeur|set complet|complete set)\b/i;
 const SINGLE_CARD_PATTERN = /\b(carte seule|carte unique|à l'unité|a l'unite|unitaire|single card|dracaufeu|tortank|florizarre|mewtwo|pikachu)\b/i;
+const POKEMON_CARD_PATTERN = /\b(pokemon|pokémon|carte|cartes|holo|rare|jungle|fossile|fossil|rocket|dracaufeu|tortank|florizarre|mewtwo|pikachu)\b/i;
 
 const NOISE_PATTERNS = [
   { code: 'modern_detected', pattern: /\b(écarlate|ecarlate|violet|epee|épée|bouclier|sword|shield|scarlet|sun|moon|soleil|lune|moderne|display moderne|booster moderne)\b/i },
@@ -83,6 +84,37 @@ export function isLotListingText(text = '') {
   }
 
   return hasLotSignal || hasExplicitCount;
+}
+
+export function selectExplorationCandidates(listings, options = {}) {
+  const limit = options.limit ?? 5;
+
+  return listings
+    .map((listing) => annotateListingQuality(listing, options))
+    .filter((listing) => {
+      const text = textOf(listing);
+      return POKEMON_CARD_PATTERN.test(text) && listing.quality.noise.length === 0;
+    })
+    .sort((a, b) => Number(b.score || 0) - Number(a.score || 0))
+    .slice(0, limit)
+    .map((listing) => ({
+      ...listing,
+      quality: {
+        ...listing.quality,
+        keep: true,
+        reason: 'exploration_fallback_candidate',
+      },
+      score_breakdown: {
+        ...(listing.score_breakdown || {}),
+        signals: [...new Set([...(listing.score_breakdown?.signals || []), 'exploration_candidate'])],
+        risks: [...new Set([...(listing.score_breakdown?.risks || []), 'manual_review_needed'])],
+        quality: {
+          ...listing.quality,
+          keep: true,
+          reason: 'exploration_fallback_candidate',
+        },
+      },
+    }));
 }
 
 export function filterQualityListings(listings, options = {}) {

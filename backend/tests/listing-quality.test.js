@@ -1,5 +1,5 @@
 import { describe, test, expect } from '@jest/globals';
-import { evaluateListingQuality, filterQualityListings, isLotListingText } from '../src/services/listing-quality.js';
+import { evaluateListingQuality, filterQualityListings, isLotListingText, selectExplorationCandidates } from '../src/services/listing-quality.js';
 
 describe('Listing quality filter', () => {
   test('keeps a strong Wizards French lot', () => {
@@ -76,6 +76,20 @@ describe('Listing quality filter', () => {
     expect(quality.keep).toBe(true);
     expect(quality.reason).toBe('borderline_target_candidate');
     expect(quality.signals).toContain('wizards_detected');
+  });
+
+  test('selects exploration candidates when strict quality keeps nothing', () => {
+    const listings = [
+      { title: 'Carte Pokemon holo bon état', description: 'Photo disponible', price: 12, score: 10, score_breakdown: { signals: [] } },
+      { title: 'Sleeves Pokemon neuves', description: 'Accessoires', price: 5, score: 10, score_breakdown: { signals: [] } },
+      { title: 'Carte Pokemon ancienne', description: 'À voir', price: 8, score: 8, score_breakdown: { signals: [] } },
+    ];
+
+    const candidates = selectExplorationCandidates(listings, { limit: 2 });
+
+    expect(candidates.map(item => item.title)).toEqual(['Carte Pokemon holo bon état', 'Carte Pokemon ancienne']);
+    expect(candidates[0].quality.reason).toBe('exploration_fallback_candidate');
+    expect(candidates[0].score_breakdown.risks).toContain('manual_review_needed');
   });
 
   test('filterQualityListings keeps only actionable candidates and annotates score_breakdown', () => {

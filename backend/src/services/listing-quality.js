@@ -136,8 +136,37 @@ export function selectExplorationCandidates(listings, options = {}) {
     }));
 }
 
+export function formatRejectedListing(listing) {
+  const quality = listing.quality || listing.score_breakdown?.quality || {};
+  return {
+    title: listing.title || 'Annonce sans titre',
+    price: listing.price ?? null,
+    url: listing.url || null,
+    source: listing.source || null,
+    external_id: listing.external_id || listing.id || null,
+    score: Number(listing.score || quality.score || 0),
+    rejection_reason: quality.reason || 'unknown',
+    signals: quality.signals || listing.score_breakdown?.signals || [],
+    risks: quality.noise || listing.score_breakdown?.risks || [],
+  };
+}
+
+export function splitQualityListings(listings, options = {}) {
+  const rejectedLimit = options.rejectedLimit ?? 20;
+  const kept = [];
+  const rejected = [];
+
+  for (const listing of listings.map((item) => annotateListingQuality(item, options))) {
+    if (listing.quality.keep) {
+      kept.push(listing);
+    } else if (rejected.length < rejectedLimit) {
+      rejected.push(formatRejectedListing(listing));
+    }
+  }
+
+  return { kept, rejected };
+}
+
 export function filterQualityListings(listings, options = {}) {
-  return listings
-    .map((listing) => annotateListingQuality(listing, options))
-    .filter((listing) => listing.quality.keep);
+  return splitQualityListings(listings, options).kept;
 }

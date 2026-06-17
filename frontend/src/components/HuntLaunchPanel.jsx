@@ -40,6 +40,40 @@ const statusCopy = {
   },
 };
 
+const REJECTION_LABELS = {
+  noise_detected: 'Bruit détecté',
+  missing_wizards_or_french_signal: 'Signal Wizards/FR manquant',
+  score_below_threshold: 'Score trop faible',
+  over_budget: 'Hors budget',
+  unknown: 'Raison inconnue',
+};
+
+const RISK_LABELS = {
+  modern_detected: 'moderne',
+  accessory_detected: 'accessoire',
+  foreign_language_detected: 'langue étrangère',
+  fake_detected: 'fake/proxy',
+  energy_bulk_detected: 'énergies',
+  toy_detected: 'jouet',
+  over_budget: 'hors budget',
+};
+
+const SIGNAL_LABELS = {
+  wizards_detected: 'Wizards',
+  french_edition: 'FR/VF',
+  lot_detected: 'lot',
+  premium_card_detected: 'rare/holo',
+};
+
+function labelFrom(map, value) {
+  return map[value] || value;
+}
+
+function formatPrice(price) {
+  if (price === null || price === undefined || Number.isNaN(Number(price))) return 'prix ?';
+  return `${Number(price).toFixed(2).replace('.00', '')} €`;
+}
+
 function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
   const [series, setSeries] = useState('all');
   const [budget, setBudget] = useState(1500);
@@ -105,6 +139,7 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
         explorationFallback: data.stats?.exploration_fallback ?? 0,
         knownBeforeScan: data.stats?.known_before_scan ?? 0,
         rawFound: data.stats?.raw_found ?? 0,
+        rejectedSamples: data.rejected_samples ?? [],
         sources: latestRun.source || 'historique',
       });
       setStatus('success');
@@ -229,6 +264,41 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
               {summary.knownBeforeScan > 0 && (
                 <span>{summary.knownBeforeScan} annonces déjà connues en mémoire anti-doublon</span>
               )}
+            </div>
+          )}
+
+          {summary?.rejectedSamples?.length > 0 && (
+            <div style={styles.rejectedPanel}>
+              <div style={styles.rejectedHeader}>
+                <strong>Annonces écartées — debug</strong>
+                <span>{summary.rejectedSamples.length} exemple{summary.rejectedSamples.length > 1 ? 's' : ''}</span>
+              </div>
+              <div style={styles.rejectedList}>
+                {summary.rejectedSamples.slice(0, 5).map((item, index) => (
+                  <a
+                    key={`${item.external_id || item.url || item.title}-${index}`}
+                    href={item.url || undefined}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={styles.rejectedItem}
+                  >
+                    <span style={styles.rejectedTitle}>{item.title}</span>
+                    <span style={styles.rejectedMeta}>
+                      {formatPrice(item.price)} · score {item.score ?? 0} · {labelFrom(REJECTION_LABELS, item.rejection_reason)}
+                    </span>
+                    {(item.risks?.length > 0 || item.signals?.length > 0) && (
+                      <span style={styles.rejectedTags}>
+                        {item.risks?.slice(0, 3).map(risk => (
+                          <em key={risk} style={styles.riskTag}>⚠ {labelFrom(RISK_LABELS, risk)}</em>
+                        ))}
+                        {item.signals?.slice(0, 3).map(signal => (
+                          <em key={signal} style={styles.signalTag}>✓ {labelFrom(SIGNAL_LABELS, signal)}</em>
+                        ))}
+                      </span>
+                    )}
+                  </a>
+                ))}
+              </div>
             </div>
           )}
 
@@ -420,6 +490,61 @@ const styles = {
     color: theme.accents.successGreen,
     background: `${theme.accents.successGreen}10`,
     fontSize: theme.typography.sizes.bodySm,
+  },
+  rejectedPanel: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+    border: `1px solid ${theme.accents.preyRed}35`,
+    borderRadius: theme.borders.radiusMd,
+    background: `${theme.accents.preyRed}0D`,
+  },
+  rejectedHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: theme.spacing.md,
+    color: theme.colors.text.secondary,
+    fontSize: theme.typography.sizes.bodySm,
+  },
+  rejectedList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing.sm,
+  },
+  rejectedItem: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing.xs,
+    padding: theme.spacing.sm,
+    border: `1px solid ${theme.colors.primary.slate}`,
+    borderRadius: theme.borders.radiusSm,
+    background: 'rgba(10,14,39,.42)',
+    color: theme.colors.text.primary,
+    textDecoration: 'none',
+  },
+  rejectedTitle: {
+    fontSize: theme.typography.sizes.bodySm,
+    fontWeight: theme.typography.weights.semibold,
+  },
+  rejectedMeta: {
+    color: theme.colors.text.muted,
+    fontSize: theme.typography.sizes.tiny,
+  },
+  rejectedTags: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: theme.spacing.xs,
+  },
+  riskTag: {
+    fontStyle: 'normal',
+    color: theme.accents.preyRed,
+    fontSize: theme.typography.sizes.tiny,
+  },
+  signalTag: {
+    fontStyle: 'normal',
+    color: theme.accents.successGreen,
+    fontSize: theme.typography.sizes.tiny,
   },
   actions: {
     display: 'flex',

@@ -1,5 +1,5 @@
 import { describe, test, expect } from '@jest/globals';
-import { evaluateListingQuality, filterQualityListings, isLotListingText, selectExplorationCandidates } from '../src/services/listing-quality.js';
+import { evaluateListingQuality, filterQualityListings, isLotListingText, selectExplorationCandidates, splitQualityListings } from '../src/services/listing-quality.js';
 
 describe('Listing quality filter', () => {
   test('keeps a strong Wizards French lot', () => {
@@ -114,6 +114,25 @@ D'autres cartes disponibles dans mon dressing : WIZARD, EX, DP, PLATINE, HGSS, N
     expect(candidates.map(item => item.title)).toEqual(['Carte Pokemon holo bon état', 'Carte Pokemon ancienne']);
     expect(candidates[0].quality.reason).toBe('exploration_fallback_candidate');
     expect(candidates[0].score_breakdown.risks).toContain('manual_review_needed');
+  });
+
+  test('splitQualityListings exposes rejected samples with reasons for scan debug', () => {
+    const listings = [
+      { title: 'Lot Wizards FR Jungle', description: '50 cartes françaises', price: 90, score: 75, score_breakdown: { signals: [] } },
+      { title: 'Carte Pokemon japonaise', description: 'Japanese only', price: 15, score: 70, score_breakdown: { signals: [] } },
+      { title: 'Booster moderne Pokemon', description: 'Écarlate Violet', price: 8, score: 65, score_breakdown: { signals: [] } },
+    ];
+
+    const result = splitQualityListings(listings, { minScore: 50, rejectedLimit: 2 });
+
+    expect(result.kept).toHaveLength(1);
+    expect(result.rejected).toHaveLength(2);
+    expect(result.rejected[0]).toMatchObject({
+      title: 'Carte Pokemon japonaise',
+      rejection_reason: 'noise_detected',
+    });
+    expect(result.rejected[0].risks).toContain('foreign_language_detected');
+    expect(result.rejected[1].risks).toContain('modern_detected');
   });
 
   test('filterQualityListings keeps only actionable candidates and annotates score_breakdown', () => {

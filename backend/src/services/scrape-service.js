@@ -5,7 +5,7 @@ import { scoreListing } from '../scoring/scorer-simple.js';
 import { ListingRepository } from '../repositories/listing-repository.js';
 import { ScrapeRunRepository } from '../repositories/scrape-run-repository.js';
 import { logger } from '../utils/logger.js';
-import { filterQualityListings, selectExplorationCandidates } from './listing-quality.js';
+import { selectExplorationCandidates, splitQualityListings } from './listing-quality.js';
 import { filterByBudget } from './hunt-filters.js';
 
 const listingRepo = new ListingRepository();
@@ -105,6 +105,7 @@ export async function startScrape(options = {}) {
   let budgetFiltered = 0;
   let knownBeforeScan = 0;
   let explorationFallback = 0;
+  const rejectedSamples = [];
 
   try {
     for (const source of enabledSources) {
@@ -126,16 +127,30 @@ export async function startScrape(options = {}) {
         const budgetResult = filterByBudget(rawListings, budgetMax);
         if (budgetResult.rejected.length > 0) {
           budgetFiltered += budgetResult.rejected.length;
+          rejectedSamples.push(...budgetResult.rejected.slice(0, Math.max(0, 20 - rejectedSamples.length)).map((listing) => ({
+            title: listing.title || 'Annonce sans titre',
+            price: listing.price ?? null,
+            url: listing.url || null,
+            source: listing.source || source,
+            external_id: listing.external_id || listing.id || null,
+            score: Number(listing.score || 0),
+            rejection_reason: 'over_budget',
+            signals: [],
+            risks: ['over_budget'],
+          })));
           errors.push({ source, type: 'budget_filtered', count: budgetResult.rejected.length, budget: Number(budgetMax) });
         }
 
         const scored = budgetResult.kept.map(scoreRawListing);
         const minScore = filters.minScore ?? filters.min_score ?? (filters.sensitivity === 'aggressive' ? 40 : filters.sensitivity === 'prudent' ? 60 : 50);
-        let qualityListings = filterQualityListings(scored, {
+        const qualityResult = splitQualityListings(scored, {
           minScore,
           allowBorderlineTargets: true,
           candidateScoreFloor: filters.sensitivity === 'prudent' ? 30 : 20,
+          rejectedLimit: 20,
         });
+        let qualityListings = qualityResult.kept;
+        rejectedSamples.push(...qualityResult.rejected.slice(0, Math.max(0, 20 - rejectedSamples.length)));
         if (qualityListings.length === 0 && scored.length > 0) {
           const fallbackLimit = Math.min(maxResults, filters.sensitivity === 'prudent' ? 3 : 5);
           qualityListings = selectExplorationCandidates(scored, {
@@ -179,7 +194,7 @@ export async function startScrape(options = {}) {
       status,
       results_count: allListings.length,
       errors_count: errors.length,
-      metadata: JSON.stringify({ profile, filters, maxResults, saved, updated, budgetFiltered, qualityFiltered, explorationFallback, knownBeforeScan, errors }),
+      metadata: JSON.stringify({ profile, filters, maxResults, saved, updated, budgetFiltered, qualityFiltered, explorationFallback, knownBeforeScan, rejectedSamples, errors }),
     });
 
     return {
@@ -197,11 +212,13 @@ export async function startScrape(options = {}) {
         quality_filtered: qualityFiltered,
         budget_filtered: budgetFiltered,
         exploration_fallback: explorationFallback,
+        rejected_samples_count: rejectedSamples.length,
         known_before_scan: knownBeforeScan,
         saved,
         updated,
         errors: errors.length,
       },
+      rejected_samples: rejectedSamples,
       errors,
     };
   } catch (error) {

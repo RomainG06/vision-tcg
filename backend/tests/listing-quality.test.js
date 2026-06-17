@@ -78,6 +78,30 @@ describe('Listing quality filter', () => {
     expect(quality.signals).toContain('wizards_detected');
   });
 
+  test('keeps French card listings mentioning shipping protection and noisy hashtags', () => {
+    const listing = {
+      title: 'Dracolosse Obscur Edition 1 22/82',
+      description: `Série : Team Rocket Edition 1
+Numéro : 22/82
+Rareté : Rare
+État : Used (Pliures)
+Langue : Français 🇫🇷
+Carte 100% authentique
+Protection rigide (Top Loader) – envoi rapide et soigné.
+D'autres cartes disponibles dans mon dressing : WIZARD, EX, DP, PLATINE, HGSS, NOIR & BLANC, XY, SL, EB, EV...
+#pokemon #cartepokemon #japonaise #rare #holo #wizard #dracaufeu`,
+      price: 35,
+      score: 62,
+    };
+
+    const quality = evaluateListingQuality(listing, { minScore: 50 });
+
+    expect(quality.keep).toBe(true);
+    expect(quality.signals).toEqual(expect.arrayContaining(['wizards_detected', 'french_edition']));
+    expect(quality.noise).not.toContain('foreign_language_detected');
+    expect(quality.noise).not.toContain('accessory_detected');
+  });
+
   test('selects exploration candidates when strict quality keeps nothing', () => {
     const listings = [
       { title: 'Carte Pokemon holo bon état', description: 'Photo disponible', price: 12, score: 10, score_breakdown: { signals: [] } },

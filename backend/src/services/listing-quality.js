@@ -17,6 +17,23 @@ function textOf(listing) {
   return `${listing.title || ''} ${listing.description || ''}`.trim();
 }
 
+function shouldIgnoreNoise(code, text, signals) {
+  const hasFrenchSignal = signals.includes('french_edition');
+  const hasCardSignal = POKEMON_CARD_PATTERN.test(text) || signals.includes('wizards_detected') || signals.includes('premium_card_detected');
+
+  if (code === 'foreign_language_detected' && hasFrenchSignal) {
+    return true;
+  }
+
+  if (code === 'accessory_detected' && hasCardSignal) {
+    const shippingProtectionContext = /\b(protection|protégé|protege|envoi|expédié|expedie|soigné|soigne|rigide|top loader offert|sleeve offerte)\b/i.test(text);
+    const accessoryOnlyContext = /\b(lot de sleeves?|sleeves? seules?|toploaders? seuls?|classeur vide|accessoires? seuls?|rangement seul)\b/i.test(text);
+    return shippingProtectionContext && !accessoryOnlyContext;
+  }
+
+  return false;
+}
+
 export function evaluateListingQuality(listing, options = {}) {
   const minScore = options.minScore ?? 50;
   const candidateScoreFloor = options.candidateScoreFloor ?? 20;
@@ -32,7 +49,9 @@ export function evaluateListingQuality(listing, options = {}) {
   if (/\b(holo|holographique|brillante|rare|dracaufeu|tortank|florizarre|mewtwo|ronflex)\b/i.test(text)) signals.push('premium_card_detected');
 
   for (const rule of NOISE_PATTERNS) {
-    if (rule.pattern.test(text)) noise.push(rule.code);
+    if (rule.pattern.test(text) && !shouldIgnoreNoise(rule.code, text, signals)) {
+      noise.push(rule.code);
+    }
   }
 
   const hasTargetSignal = signals.includes('wizards_detected') || signals.includes('french_edition');

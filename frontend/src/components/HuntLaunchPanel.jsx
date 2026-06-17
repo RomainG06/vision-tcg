@@ -139,6 +139,8 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
         explorationFallback: data.stats?.exploration_fallback ?? 0,
         knownBeforeScan: data.stats?.known_before_scan ?? 0,
         rawFound: data.stats?.raw_found ?? 0,
+        queriesCount: data.stats?.queries_count ?? data.queries?.length ?? 0,
+        queryStats: data.query_stats ?? data.stats?.query_stats ?? [],
         rejectedSamples: data.rejected_samples ?? [],
         sources: latestRun.source || 'historique',
       });
@@ -248,6 +250,9 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
           {summary && (
             <div style={styles.summary}>
               <span>{summary.found} pistes détectées</span>
+              {summary.queriesCount > 0 && (
+                <span>{summary.queriesCount} requêtes intelligentes lancées</span>
+              )}
               <span>{summary.saved} nouvelles, {summary.updated} mises à jour</span>
               {summary.rawFound > 0 && (
                 <span>{summary.rawFound} annonces analysées après exclusion des déjà vues</span>
@@ -264,6 +269,25 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
               {summary.knownBeforeScan > 0 && (
                 <span>{summary.knownBeforeScan} annonces déjà connues en mémoire anti-doublon</span>
               )}
+            </div>
+          )}
+
+          {summary?.queryStats?.length > 0 && (
+            <div style={styles.queryPanel}>
+              <div style={styles.queryHeader}>
+                <strong>Requêtes intelligentes</strong>
+                <span>{summary.queryStats.length} exécutée{summary.queryStats.length > 1 ? 's' : ''}</span>
+              </div>
+              <div style={styles.queryList}>
+                {summary.queryStats.slice(0, 6).map((item, index) => (
+                  <div key={`${item.source}-${item.query}-${index}`} style={styles.queryItem}>
+                    <span style={styles.queryText}>“{item.query}”</span>
+                    <span style={styles.queryMeta}>
+                      {item.raw_found ?? 0} brutes · {item.cumulative_unique ?? 0} uniques cumulées{item.error ? ` · erreur: ${item.error}` : ''}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
@@ -490,6 +514,45 @@ const styles = {
     color: theme.accents.successGreen,
     background: `${theme.accents.successGreen}10`,
     fontSize: theme.typography.sizes.bodySm,
+  },
+  queryPanel: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+    border: `1px solid ${theme.accents.manaCyan}35`,
+    borderRadius: theme.borders.radiusMd,
+    background: `${theme.accents.manaCyan}0D`,
+  },
+  queryHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: theme.spacing.md,
+    color: theme.colors.text.secondary,
+    fontSize: theme.typography.sizes.bodySm,
+  },
+  queryList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing.xs,
+  },
+  queryItem: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing.xs,
+    padding: theme.spacing.sm,
+    border: `1px solid ${theme.colors.primary.slate}`,
+    borderRadius: theme.borders.radiusSm,
+    background: 'rgba(10,14,39,.36)',
+  },
+  queryText: {
+    color: theme.accents.manaCyan,
+    fontSize: theme.typography.sizes.bodySm,
+    fontWeight: theme.typography.weights.semibold,
+  },
+  queryMeta: {
+    color: theme.colors.text.muted,
+    fontSize: theme.typography.sizes.tiny,
   },
   rejectedPanel: {
     display: 'flex',

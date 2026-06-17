@@ -7,6 +7,7 @@ import { ScrapeRunRepository } from '../repositories/scrape-run-repository.js';
 import { logger } from '../utils/logger.js';
 import { selectExplorationCandidates, splitQualityListings } from './listing-quality.js';
 import { filterByBudget } from './hunt-filters.js';
+import { buildHuntQueries, buildPrimaryHuntQuery, dedupeListingsBySourceExternalId } from './hunt-queries.js';
 
 const listingRepo = new ListingRepository();
 const scrapeRunRepo = new ScrapeRunRepository();
@@ -16,18 +17,12 @@ const FETCHERS = {
   leboncoin: fetchLeboncoin,
 };
 
-const SERIES_QUERY = {
-  all: 'pokemon cartes wizards francais lot',
-  base: 'pokemon set de base wizards francais',
-  jungle: 'pokemon jungle wizards francais',
-  fossil: 'pokemon fossile fossil wizards francais',
-  rocket: 'pokemon team rocket wizards francais',
-};
+export function buildHuntQuery(options = {}) {
+  return buildPrimaryHuntQuery(options);
+}
 
-export function buildHuntQuery({ profile = 'wizards-fr', filters = {} } = {}) {
-  const series = filters.series || 'all';
-  const base = SERIES_QUERY[series] || SERIES_QUERY.all;
-  return profile === 'wizards-fr' ? base : `${profile} ${base}`;
+export function buildSmartHuntQueries(options = {}) {
+  return buildHuntQueries(options);
 }
 
 function buildScoreBreakdown(listing, score) {
@@ -82,6 +77,8 @@ export async function startScrape(options = {}) {
     saveToDb = true,
     filters = {},
     waitForCaptcha = 60,
+    smartQueries = true,
+    maxQueries = filters.maxQueries || filters.max_queries,
   } = options;
 
   const enabledSources = sources.filter(source => FETCHERS[source]);
@@ -89,12 +86,15 @@ export async function startScrape(options = {}) {
     throw new Error('No supported source selected. Use vinted or leboncoin.');
   }
 
-  const query = buildHuntQuery({ profile, filters });
+  const queries = smartQueries
+    ? buildHuntQueries({ profile, filters, maxQueries })
+    : [buildHuntQuery({ profile, filters })];
+  const query = queries[0];
   const runId = scrapeRunRepo.create({
     source: enabledSources.join(','),
     query,
     status: 'running',
-    metadata: JSON.stringify({ profile, filters, maxResults }),
+    metadata: JSON.stringify({ profile, filters, maxResults, queries, smartQueries }),
   });
 
   const startedAt = new Date().toISOString();
@@ -108,21 +108,55 @@ export async function startScrape(options = {}) {
   let knownBeforeScan = 0;
   let explorationFallback = 0;
   const rejectedSamples = [];
+  const queryStats = [];
 
   try {
     for (const source of enabledSources) {
       try {
-        logger.info(`Starting scrape: ${source} query="${query}" maxResults=${maxResults}`);
+        logger.info(`Starting smart scrape: ${source} queries=${queries.length} maxResults=${maxResults}`);
         const excludeExternalIds = saveToDb ? listingRepo.findExternalIdsBySource(source) : [];
         knownBeforeScan += excludeExternalIds.length;
-        const rawListings = await FETCHERS[source](query, {
-          maxResults,
-          scanDepth: Math.max(maxResults * 8, 80),
-          excludeExternalIds,
-          waitForCaptcha,
-          location: 'nice',
-          radius: 50,
-        });
+        const queryRawListings = [];
+        const scanDepth = Math.max(maxResults * 8, 80);
+        const perQueryLimit = Math.max(maxResults, Math.ceil(maxResults * 1.5));
+        const dynamicExcludeIds = new Set(excludeExternalIds.map(String));
+
+        for (const currentQuery of queries) {
+          const beforeCount = queryRawListings.length;
+          try {
+            const fetchedListings = await FETCHERS[source](currentQuery, {
+              maxResults: perQueryLimit,
+              scanDepth,
+              excludeExternalIds: [...dynamicExcludeIds],
+              waitForCaptcha,
+              location: 'nice',
+              radius: 50,
+            });
+            const taggedListings = fetchedListings.map(listing => ({
+              ...listing,
+              query: currentQuery,
+              matched_query: currentQuery,
+            }));
+            queryRawListings.push(...taggedListings);
+            for (const listing of fetchedListings) {
+              const id = listing.external_id || listing.id;
+              if (id) dynamicExcludeIds.add(String(id));
+            }
+            queryStats.push({
+              source,
+              query: currentQuery,
+              raw_found: fetchedListings.length,
+              cumulative_unique: dedupeListingsBySourceExternalId(queryRawListings).length,
+              error: null,
+            });
+          } catch (error) {
+            logger.error(`Scrape failed for ${source} query="${currentQuery}":`, error);
+            queryStats.push({ source, query: currentQuery, raw_found: 0, cumulative_unique: beforeCount, error: error.message });
+            errors.push({ source, query: currentQuery, type: 'query_error', message: error.message });
+          }
+        }
+
+        const rawListings = dedupeListingsBySourceExternalId(queryRawListings);
 
         rawFound += rawListings.length;
         const budgetMax = getBudgetMax(filters);
@@ -196,19 +230,22 @@ export async function startScrape(options = {}) {
       status,
       results_count: allListings.length,
       errors_count: errors.length,
-      metadata: JSON.stringify({ profile, filters, maxResults, saved, updated, budgetFiltered, qualityFiltered, explorationFallback, knownBeforeScan, rejectedSamples, errors }),
+      metadata: JSON.stringify({ profile, filters, maxResults, queries, saved, updated, budgetFiltered, qualityFiltered, explorationFallback, knownBeforeScan, rejectedSamples, queryStats, errors }),
     });
 
     return {
       run_id: runId,
       status,
       query,
+      queries,
       sources: enabledSources,
       started_at: startedAt,
       completed_at: new Date().toISOString(),
       listings: allListings,
       stats: {
         raw_found: rawFound,
+        queries_count: queries.length,
+        query_stats: queryStats,
         found: allListings.length,
         filtered: allListings.length,
         quality_filtered: qualityFiltered,
@@ -220,6 +257,7 @@ export async function startScrape(options = {}) {
         updated,
         errors: errors.length,
       },
+      query_stats: queryStats,
       rejected_samples: rejectedSamples,
       errors,
     };

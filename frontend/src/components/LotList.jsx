@@ -44,6 +44,7 @@ function LotList({ listings, onUpdate, onDelete, highlightedIds = [] }) {
           const rarity = getRarityLevel(listing.score);
           const rarityStyle = getRarityStyle(rarity);
           const isHighlighted = highlightedIds.includes(listing.id);
+          const isUncalibratedEstimate = listing.estimate_method === 'price_multiplier_fallback' || listing.estimate_confidence === 'low';
           const opportunitySignals = (listing.opportunity_signals || [])
             .filter((signal) => shouldDisplayOpportunitySignal(listing, signal));
 
@@ -138,7 +139,18 @@ function LotList({ listings, onUpdate, onDelete, highlightedIds = [] }) {
                     <span style={styles.priceLabel}>Prix:</span>
                     <span style={styles.price}>{listing.price}€</span>
                   </div>
-                  {listing.value_estimate_low && listing.value_estimate_high && (
+                  {isUncalibratedEstimate ? (
+                    <>
+                      <div style={styles.estimateRow}>
+                        <span style={styles.estimateLabel}>Estimation:</span>
+                        <span style={styles.estimateMuted}>Non calibrée</span>
+                      </div>
+                      <div style={styles.gainRow}>
+                        <span style={styles.gainLabel}>Potentiel:</span>
+                        <span style={styles.gainMuted}>À vérifier</span>
+                      </div>
+                    </>
+                  ) : listing.value_estimate_low && listing.value_estimate_high && (
                     <div style={styles.estimateRow}>
                       <span style={styles.estimateLabel}>Valeur estimée:</span>
                       <span style={styles.estimate}>
@@ -146,7 +158,7 @@ function LotList({ listings, onUpdate, onDelete, highlightedIds = [] }) {
                       </span>
                     </div>
                   )}
-                  {listing.gain_potential && listing.gain_potential > 0 && (
+                  {!isUncalibratedEstimate && listing.gain_potential && listing.gain_potential > 0 && (
                     <div style={styles.gainRow}>
                       <span style={styles.gainLabel}>Gain potentiel:</span>
                       <span style={styles.gainValue}>
@@ -475,9 +487,14 @@ const styles = {
     color: theme.colors.text.tertiary,
   },
   estimate: {
-    fontSize: theme.typography.sizes.bodyMd,
+    fontSize: theme.typography.sizes.bodySm,
     fontWeight: theme.typography.weights.semibold,
-    color: theme.colors.text.secondary,
+    color: theme.accents.manaCyan,
+  },
+  estimateMuted: {
+    fontSize: theme.typography.sizes.bodySm,
+    fontWeight: theme.typography.weights.semibold,
+    color: theme.colors.text.tertiary,
   },
   gainRow: {
     display: 'flex',
@@ -491,9 +508,14 @@ const styles = {
     color: theme.colors.text.tertiary,
   },
   gainValue: {
-    fontSize: theme.typography.sizes.bodyLg,
+    fontSize: theme.typography.sizes.bodySm,
     fontWeight: theme.typography.weights.bold,
     color: theme.accents.successGreen,
+  },
+  gainMuted: {
+    fontSize: theme.typography.sizes.bodySm,
+    fontWeight: theme.typography.weights.semibold,
+    color: theme.colors.text.tertiary,
   },
   location: {
     color: theme.colors.text.secondary,

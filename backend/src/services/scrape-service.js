@@ -51,6 +51,8 @@ function buildScoreBreakdown(listing, score) {
     confidence: Math.min(95, Math.max(45, score + 10)),
     estimated_value_min: estimatedMin || null,
     estimated_value_max: estimatedMax || null,
+    estimate_method: 'price_multiplier_fallback',
+    estimate_confidence: 'low',
     signals: [...new Set(signals)],
     risks: [...new Set(risks)],
   };

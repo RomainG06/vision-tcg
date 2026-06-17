@@ -142,6 +142,7 @@ function LotDetailModal({ isOpen, onClose, listing, onUpdate, onDelete }) {
   const price = Number(listing.price) || 0;
   const estimatedLow = listing.estimated_value_low ?? listing.estimated_value_min ?? null;
   const estimatedHigh = listing.estimated_value_high ?? listing.estimated_value_max ?? null;
+  const isUncalibratedEstimate = listing.estimate_method === 'price_multiplier_fallback' || listing.estimate_confidence === 'low';
   const distance = listing.distance ?? listing.distance_km ?? null;
   const platform = listing.source ?? listing.platform ?? '—';
   const confidence = listing.confidence ?? 70;
@@ -249,15 +250,15 @@ function LotDetailModal({ isOpen, onClose, listing, onUpdate, onDelete }) {
                 <div>
                   <div style={labelSmallStyle}>Estimation</div>
                   <div style={estimationValueStyle}>
-                    {estimatedLow ?? '?'}–{estimatedHigh ?? '?'} €
+                    {isUncalibratedEstimate ? 'Non calibrée' : `${estimatedLow ?? '?'}–${estimatedHigh ?? '?'} €`}
                   </div>
                 </div>
               </div>
 
               <div style={potentialBlockStyle}>
                 <div style={labelSmallStyle}>Potentiel de gain</div>
-                <div style={potentialValueStyle(potentialMin, potentialMax)}>
-                  {potentialMin === null ? 'Estimation indisponible' : `${potentialMin > 0 ? '+' : ''}${potentialMin} à ${potentialMax > 0 ? '+' : ''}${potentialMax} €`}
+                <div style={potentialValueStyle(isUncalibratedEstimate ? null : potentialMin, isUncalibratedEstimate ? null : potentialMax)}>
+                  {isUncalibratedEstimate ? 'À vérifier' : (potentialMin === null ? 'Estimation indisponible' : `${potentialMin > 0 ? '+' : ''}${potentialMin} à ${potentialMax > 0 ? '+' : ''}${potentialMax} €`)}
                 </div>
               </div>
 
@@ -683,8 +684,8 @@ const potentialBlockStyle = {
 const potentialValueStyle = (min, max) => ({
   fontSize: theme.typography.sizes.headingMd,
   fontWeight: theme.typography.weights.bold,
-  color: min > 0 ? theme.accents.successGreen : theme.accents.preyRed,
-  textShadow: min > 0 ? `0 0 12px ${theme.accents.successGreen}60` : 'none',
+  color: min === null ? theme.colors.text.tertiary : (min > 0 ? theme.accents.successGreen : theme.accents.preyRed),
+  textShadow: min !== null && min > 0 ? `0 0 12px ${theme.accents.successGreen}60` : 'none',
 });
 
 const badgesContainerStyle = {

@@ -55,6 +55,8 @@ function mapListing(listing) {
     confidence: scoreBreakdown.confidence || null,
     estimated_value_min: scoreBreakdown.estimated_value_min || null,
     estimated_value_max: scoreBreakdown.estimated_value_max || null,
+    estimate_method: scoreBreakdown.estimate_method || null,
+    estimate_confidence: scoreBreakdown.estimate_confidence || null,
     opportunity_signals: scoreBreakdown.signals || [],
     risk_signals: scoreBreakdown.risks || [],
     quality: scoreBreakdown.quality || null,

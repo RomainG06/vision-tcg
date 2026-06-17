@@ -3,7 +3,6 @@ import { logger } from '../utils/logger.js';
 import { ListingRepository } from '../repositories/listing-repository.js';
 import { ScrapeRunRepository } from '../repositories/scrape-run-repository.js';
 import { getDatabaseInfo } from '../db/database.js';
-import { startScrape } from '../services/scrape-service.js';
 
 const router = express.Router();
 
@@ -120,6 +119,7 @@ router.get('/debug/db', (req, res) => {
  */
 router.post('/scrape/start', async (req, res) => {
   try {
+    const { startScrape } = await import('../services/scrape-service.js');
     const result = await startScrape(req.body || {});
     res.json(result);
   } catch (error) {

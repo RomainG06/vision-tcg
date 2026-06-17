@@ -4,6 +4,13 @@ const LOT_PATTERN = /\b(lot|collection|vrac|classeur|set complet|complete set)\b
 const SINGLE_CARD_PATTERN = /\b(carte seule|carte unique|à l'unité|a l'unite|unitaire|single card|dracaufeu|tortank|florizarre|mewtwo|pikachu)\b/i;
 const POKEMON_CARD_PATTERN = /\b(pokemon|pokémon|carte|cartes|holo|rare|jungle|fossile|fossil|rocket|dracaufeu|tortank|florizarre|mewtwo|pikachu)\b/i;
 
+const TARGET_SERIES_PATTERNS = {
+  rocket: /\b(team\s*rocket|rocket|obscur(?:e|s)?|dark\s+(?:charizard|blastoise|dragonite|raichu|alakazam|magneton|hypno|slowbro|arbok|dugtrio|golbat|gyarados|machamp|vileplume|weezing))\b/i,
+  jungle: /\b(jungle)\b/i,
+  fossil: /\b(fossile|fossil)\b/i,
+  base: /\b(set\s*de\s*base|base\s*set)\b/i,
+};
+
 const NOISE_PATTERNS = [
   { code: 'modern_detected', pattern: /\b(écarlate|ecarlate|violet|epee|épée|bouclier|sword|shield|scarlet|sun|moon|soleil|lune|moderne|display moderne|booster moderne)\b/i },
   { code: 'accessory_detected', pattern: /\b(sleeves?|protections?|toploader|top loader|classeur vide|binder empty|accessoires?|rangement|boite vide|box vide)\b/i },
@@ -50,7 +57,17 @@ const RISK_REASON_LABELS = {
   energy_bulk_detected: 'Lot énergie / vrac faible valeur',
   toy_detected: 'Produit dérivé plutôt qu’une carte',
   manual_review_needed: 'Vérification manuelle nécessaire',
+  series_mismatch: 'Série ciblée non détectée',
 };
+
+function isSeriesTargeted(targetSeries) {
+  return Boolean(targetSeries && targetSeries !== 'all' && TARGET_SERIES_PATTERNS[targetSeries]);
+}
+
+function matchesTargetSeries(text, targetSeries) {
+  if (!isSeriesTargeted(targetSeries)) return true;
+  return TARGET_SERIES_PATTERNS[targetSeries].test(text);
+}
 
 function buildDecisionReasons({ signals, noise, reason, price, budgetMax }) {
   const positive = signals
@@ -61,6 +78,7 @@ function buildDecisionReasons({ signals, noise, reason, price, budgetMax }) {
     .filter(Boolean);
 
   if (reason === 'missing_wizards_or_french_signal') risks.push('Signal Wizards/FR insuffisant');
+  if (reason === 'series_mismatch') risks.push('Série ciblée non détectée');
   if (reason === 'score_below_threshold') risks.push('Score sous le seuil radar');
   if (reason === 'borderline_target_candidate') risks.push('Signal cible présent mais confiance limitée');
   if (reason === 'exploration_fallback_candidate') {
@@ -79,6 +97,7 @@ function buildDecisionReasons({ signals, noise, reason, price, budgetMax }) {
 
 function tierFromQuality({ keep, reason, score, noise, signals, budgetRejected }) {
   if (budgetRejected) return 'rejected_budget';
+  if (!keep && reason === 'series_mismatch') return 'rejected_series_mismatch';
   if (noise.length > 0) return 'rejected_noise';
   if (!keep && reason === 'missing_wizards_or_french_signal') return 'rejected_no_signal';
   if (!keep) return 'rejected_low_score';
@@ -100,11 +119,12 @@ export function classifyListingQuality(listing, options = {}) {
   const price = Number(listing.price || 0);
   const budgetMax = options.budgetMax ?? options.budget ?? null;
   const budgetRejected = Number.isFinite(Number(budgetMax)) && Number(budgetMax) > 0 && price > Number(budgetMax);
-  let keep = base.keep && !budgetRejected;
-  let reason = budgetRejected ? 'over_budget' : base.reason;
   const text = textOf(listing);
+  const seriesMismatch = isSeriesTargeted(options.targetSeries) && !matchesTargetSeries(text, options.targetSeries);
+  let keep = base.keep && !budgetRejected && !seriesMismatch;
+  let reason = budgetRejected ? 'over_budget' : seriesMismatch ? 'series_mismatch' : base.reason;
 
-  if (!keep && options.allowExplorationFallback && !budgetRejected && base.noise.length === 0 && POKEMON_CARD_PATTERN.test(text)) {
+  if (!keep && options.allowExplorationFallback && !budgetRejected && !seriesMismatch && base.noise.length === 0 && POKEMON_CARD_PATTERN.test(text)) {
     keep = true;
     reason = 'exploration_fallback_candidate';
   }
@@ -215,7 +235,7 @@ export function selectExplorationCandidates(listings, options = {}) {
     .map((listing) => annotateListingQuality(listing, options))
     .filter((listing) => {
       const text = textOf(listing);
-      return POKEMON_CARD_PATTERN.test(text) && listing.quality.noise.length === 0;
+      return POKEMON_CARD_PATTERN.test(text) && matchesTargetSeries(text, options.targetSeries) && listing.quality.noise.length === 0;
     })
     .sort((a, b) => Number(b.score || 0) - Number(a.score || 0))
     .slice(0, limit)
@@ -249,6 +269,9 @@ export function selectExplorationCandidates(listings, options = {}) {
 
 export function formatRejectedListing(listing) {
   const quality = listing.quality || listing.score_breakdown?.quality || {};
+  const risks = [...(quality.noise || listing.score_breakdown?.risks || [])];
+  if (quality.reason === 'series_mismatch') risks.push('series_mismatch');
+
   return {
     title: listing.title || 'Annonce sans titre',
     price: listing.price ?? null,
@@ -258,7 +281,7 @@ export function formatRejectedListing(listing) {
     score: Number(listing.score || quality.score || 0),
     rejection_reason: quality.reason || 'unknown',
     signals: quality.signals || listing.score_breakdown?.signals || [],
-    risks: quality.noise || listing.score_breakdown?.risks || [],
+    risks: [...new Set(risks)],
   };
 }
 

@@ -1,10 +1,13 @@
-import { scoreListing, calculateDistance, estimateCardCount } from '../src/scoring/scorer.js';
+let scoreListing;
+let calculateDistance;
+let estimateCardCount;
 
 describe('Scorer', () => {
-  beforeAll(() => {
+  beforeAll(async () => {
     process.env.DB_PATH = ':memory:';
-    const { migrate } = require('../src/db/migrations.js');
-    migrate();
+    const { migrate } = await import('../src/db/migrations.js');
+    await migrate();
+    ({ scoreListing, calculateDistance, estimateCardCount } = await import('../src/scoring/scorer.js'));
   });
   
   describe('scoreListing', () => {

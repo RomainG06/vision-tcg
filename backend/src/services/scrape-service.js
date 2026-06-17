@@ -181,6 +181,7 @@ export async function startScrape(options = {}) {
         const minScore = filters.minScore ?? filters.min_score ?? (filters.sensitivity === 'aggressive' ? 40 : filters.sensitivity === 'prudent' ? 60 : 50);
         const qualityResult = splitQualityListings(scored, {
           minScore,
+          targetSeries: filters.series || 'all',
           allowBorderlineTargets: true,
           candidateScoreFloor: filters.sensitivity === 'prudent' ? 30 : 20,
           rejectedLimit: 20,
@@ -192,6 +193,7 @@ export async function startScrape(options = {}) {
           qualityListings = selectExplorationCandidates(scored, {
             limit: fallbackLimit,
             minScore,
+            targetSeries: filters.series || 'all',
             allowBorderlineTargets: true,
           });
           explorationFallback += qualityListings.length;

@@ -153,6 +153,53 @@ D'autres cartes disponibles dans mon dressing : WIZARD, EX, DP, PLATINE, HGSS, N
     expect(quality.noise).not.toContain('accessory_detected');
   });
 
+  test('requires explicit Team Rocket signal when rocket series is targeted', () => {
+    const result = splitQualityListings([
+      {
+        title: 'Lot cartes Pokemon Jungle Wizards françaises',
+        description: 'Collection ancienne FR avec plusieurs holos Jungle',
+        price: 85,
+        score: 82,
+      },
+      {
+        title: 'Dracolosse Obscur Edition 1 22/82',
+        description: 'Série : Team Rocket Edition 1 - Langue : Français',
+        price: 35,
+        score: 62,
+      },
+    ], { minScore: 50, targetSeries: 'rocket', rejectedLimit: 5 });
+
+    expect(result.kept.map(item => item.title)).toEqual(['Dracolosse Obscur Edition 1 22/82']);
+    expect(result.rejected[0]).toMatchObject({
+      title: 'Lot cartes Pokemon Jungle Wizards françaises',
+      rejection_reason: 'series_mismatch',
+    });
+    expect(result.rejected[0].risks).toContain('series_mismatch');
+  });
+
+  test('requires explicit Jungle signal when jungle series is targeted', () => {
+    const rocketQuality = classifyListingQuality({
+      title: 'Dracolosse Obscur Edition 1 22/82',
+      description: 'Série : Team Rocket Edition 1 - Langue : Français',
+      price: 35,
+      score: 62,
+    }, { minScore: 50, targetSeries: 'jungle' });
+
+    expect(rocketQuality.keep).toBe(false);
+    expect(rocketQuality.reason).toBe('series_mismatch');
+    expect(rocketQuality.quality_tier).toBe('rejected_series_mismatch');
+    expect(rocketQuality.risk_reasons).toContain('Série ciblée non détectée');
+  });
+
+  test('does not use exploration fallback for off-series candidates', () => {
+    const candidates = selectExplorationCandidates([
+      { title: 'Carte Pokemon holo bon état', description: 'Photo disponible', price: 12, score: 70, score_breakdown: { signals: [] } },
+      { title: 'Lot Team Rocket cartes Pokemon', description: 'Rocket obscur wizard', price: 40, score: 30, score_breakdown: { signals: [] } },
+    ], { limit: 2, targetSeries: 'rocket' });
+
+    expect(candidates.map(item => item.title)).toEqual(['Lot Team Rocket cartes Pokemon']);
+  });
+
   test('selects exploration candidates when strict quality keeps nothing', () => {
     const listings = [
       { title: 'Carte Pokemon holo bon état', description: 'Photo disponible', price: 12, score: 10, score_breakdown: { signals: [] } },

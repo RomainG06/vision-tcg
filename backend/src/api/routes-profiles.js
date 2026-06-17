@@ -5,8 +5,6 @@ import { ListingRepository } from '../repositories/listing-repository.js';
 import { ScrapeRunRepository } from '../repositories/scrape-run-repository.js';
 import { normalizeListings } from '../services/normalizer.js';
 import { scoreListings, filterListings } from '../services/scorer.js';
-import { fetchLeboncoin } from '../fetchers/leboncoin.js';
-import { fetchVinted } from '../fetchers/vinted.js';
 
 const router = express.Router();
 
@@ -102,12 +100,14 @@ router.post('/scrape', async (req, res) => {
           
           if (source === 'leboncoin') {
             const location = profile.search.locations?.[0];
+            const { fetchLeboncoin } = await import('../fetchers/leboncoin.js');
             rawListings = await fetchLeboncoin(keyword, {
               maxResults: resultsLimit,
               location: location?.name || 'nice',
               radius: location?.radius_km || 50
             });
           } else if (source === 'vinted') {
+            const { fetchVinted } = await import('../fetchers/vinted.js');
             rawListings = await fetchVinted(keyword, {
               maxResults: resultsLimit
             });

@@ -58,7 +58,11 @@ describe('Fetchers', () => {
           text: 'Évoli reverse 54/78 – FR – Mint !',
         },
         {
-          url: 'https://www.vinted.fr/items/104-dracolosse-obscur-edition-1-22-82',
+          url: 'https://www.vinted.fr/items/104-feurisson-obscur-39-105-wizards-neo-destiny-2002',
+          text: 'Carte Pokémon Feurisson obscur 39/105 - Wizards Neo Destiny 2002',
+        },
+        {
+          url: 'https://www.vinted.fr/items/105-dracolosse-obscur-edition-1-22-82',
           text: 'Dracolosse Obscur Edition 1 22/82 Team Rocket Français',
         },
       ];
@@ -69,7 +73,7 @@ describe('Fetchers', () => {
       });
 
       expect(selected.map(item => item.url)).toEqual([
-        'https://www.vinted.fr/items/104-dracolosse-obscur-edition-1-22-82',
+        'https://www.vinted.fr/items/105-dracolosse-obscur-edition-1-22-82',
       ]);
     });
   });

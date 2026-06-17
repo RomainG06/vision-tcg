@@ -1,7 +1,7 @@
 import { fetchVinted } from '../fetchers/vinted.js';
 import { fetchLeboncoin } from '../fetchers/leboncoin.js';
 import { normalizeListings } from './normalizer.js';
-import { scoreListing } from '../scoring/scorer-simple.js';
+import { explainListingScore } from '../scoring/scorer-simple.js';
 import { ListingRepository } from '../repositories/listing-repository.js';
 import { ScrapeRunRepository } from '../repositories/scrape-run-repository.js';
 import { SeenListingRepository } from '../repositories/seen-listing-repository.js';
@@ -27,40 +27,21 @@ export function buildSmartHuntQueries(options = {}) {
   return buildHuntQueries(options);
 }
 
-function buildScoreBreakdown(listing, score) {
-  const text = `${listing.title || ''} ${listing.description || ''}`.toLowerCase();
-  const signals = [];
-  const risks = [];
-
-  if (/wizards|wotc|base set|set de base|jungle|fossile|fossil|team rocket|gym/.test(text)) signals.push('wizards_detected');
-  if (/français|francais|\bfr\b|vf/.test(text)) signals.push('french_edition');
-  if (/lot|collection|cartes/.test(text)) signals.push('lot_detected');
-  if (/holo|holographique|brillante/.test(text)) signals.push('holographic');
-  if (/rare|dracaufeu|tortank|florizarre|mewtwo|ronflex/.test(text)) signals.push('rare_cards');
-  if ((listing.price || 0) > 0 && (listing.price || 0) <= 100) signals.push('below_market');
-  if (!listing.description || listing.description.length < 20) risks.push('description_short');
-  if (!listing.location) risks.push('location_unknown');
-
-  const estimatedMin = Math.max(0, Math.round((listing.price || 0) * 1.15));
-  const estimatedMax = Math.max(estimatedMin, Math.round((listing.price || 0) * 1.55));
-
-  return {
-    confidence: Math.min(95, Math.max(45, score + 10)),
-    estimated_value_min: estimatedMin || null,
-    estimated_value_max: estimatedMax || null,
-    estimate_method: 'price_multiplier_fallback',
-    estimate_confidence: 'low',
-    signals: [...new Set(signals)],
-    risks: [...new Set(risks)],
-  };
-}
-
 function scoreRawListing(rawListing) {
-  const score = scoreListing(rawListing);
+  const scored = explainListingScore(rawListing);
+  const estimatedMin = Math.max(0, Math.round((rawListing.price || 0) * 1.15));
+  const estimatedMax = Math.max(estimatedMin, Math.round((rawListing.price || 0) * 1.55));
+
   return {
-    ...rawListing,
-    score,
-    score_breakdown: buildScoreBreakdown(rawListing, score),
+    ...scored,
+    score_breakdown: {
+      ...scored.score_breakdown,
+      confidence: Math.min(95, Math.max(45, scored.score + 10)),
+      estimated_value_min: estimatedMin || null,
+      estimated_value_max: estimatedMax || null,
+      estimate_method: 'price_multiplier_fallback',
+      estimate_confidence: 'low',
+    },
   };
 }
 

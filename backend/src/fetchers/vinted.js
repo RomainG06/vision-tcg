@@ -7,7 +7,7 @@ export function extractVintedExternalId(url) {
 }
 
 const SERIES_PREFILTER_PATTERNS = {
-  rocket: /\b(team\s*rocket|rocket|obscur(?:e|s)?|dark\s+(?:charizard|blastoise|dragonite|raichu|alakazam|magneton|hypno|slowbro|arbok|dugtrio|golbat|gyarados|machamp|vileplume|weezing))\b/i,
+  rocket: /\b(team\s*rocket|rocket|dark\s+(?:charizard|blastoise|dragonite|raichu|alakazam|magneton|hypno|slowbro|arbok|dugtrio|golbat|gyarados|machamp|vileplume|weezing))\b|\bobscur(?:e|s)?\b(?=.*\/82\b)/i,
   jungle: /\b(jungle)\b/i,
   fossil: /\b(fossile|fossil)\b/i,
   base: /\b(set\s*de\s*base|base\s*set)\b/i,

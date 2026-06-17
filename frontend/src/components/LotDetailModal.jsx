@@ -21,6 +21,14 @@ const ACTION_LABELS = {
   ignorer: 'Ignorer',
 };
 
+const SUBSCORE_LABELS = {
+  series: 'Série',
+  language: 'Langue',
+  lot: 'Lot',
+  price: 'Prix',
+  distance: 'Distance',
+};
+
 /**
  * Modal full-screen pour afficher les détails complets d'une opportunité
  * Basé sur MODAL_DETAIL_SPEC.md (1167 lignes)
@@ -152,6 +160,11 @@ function LotDetailModal({ isOpen, onClose, listing, onUpdate, onDelete }) {
   const actionSuggestion = listing.action_suggestion || listing.quality?.action_suggestion;
   const positiveReasons = listing.positive_reasons || listing.quality?.positive_reasons || [];
   const riskReasons = listing.risk_reasons || listing.quality?.risk_reasons || [];
+  const scoreSubscores = listing.score_subscores || listing.score_breakdown?.subscores || null;
+  const scoreExplanation = listing.score_explanation || listing.score_breakdown?.explanation || null;
+  const subscoreEntries = scoreSubscores
+    ? Object.entries(scoreSubscores).filter(([key]) => key !== 'risk')
+    : [];
 
   // Calculate potential gain only when estimation exists
   const potentialMin = estimatedLow !== null ? estimatedLow - price : null;
@@ -342,6 +355,26 @@ function LotDetailModal({ isOpen, onClose, listing, onUpdate, onDelete }) {
                     </ul>
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {subscoreEntries.length > 0 && (
+            <div style={scoreExplainSectionStyle}>
+              <h4 style={sectionTitleHighlightedStyle}><TcgIcon name="chart" size={18} /> SCORE EXPLICABLE</h4>
+              {scoreExplanation && <p style={scoreExplanationTextStyle}>{scoreExplanation}</p>}
+              <div style={subscoreGridStyle}>
+                {subscoreEntries.map(([key, item]) => (
+                  <div key={key} style={subscoreCardStyle}>
+                    <div style={subscoreHeaderStyle}>
+                      <span style={subscoreLabelStyle}>{SUBSCORE_LABELS[key] || key}</span>
+                      <strong style={subscoreValueStyle}>{item.points}/{item.max}</strong>
+                    </div>
+                    {item.reasons?.length > 0 && (
+                      <span style={subscoreReasonStyle}>{item.reasons[0]}</span>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
           )}
@@ -774,6 +807,57 @@ const positiveReasonStyle = {
 const riskReasonStyle = {
   color: theme.accents.warningOrange,
   fontSize: theme.typography.sizes.bodySm,
+};
+
+const scoreExplainSectionStyle = {
+  ...sectionContainerStyle,
+  border: `1px solid ${theme.accents.hunterGold}44`,
+  background: `linear-gradient(135deg, ${theme.colors.primary.deepDark}, ${theme.accents.hunterGold}0D)`,
+};
+
+const scoreExplanationTextStyle = {
+  margin: `0 0 ${theme.spacing.md}`,
+  color: theme.colors.text.secondary,
+  fontSize: theme.typography.sizes.bodyMd,
+  lineHeight: 1.5,
+};
+
+const subscoreGridStyle = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+  gap: theme.spacing.sm,
+};
+
+const subscoreCardStyle = {
+  padding: theme.spacing.sm,
+  borderRadius: theme.borders.radiusMd,
+  border: `1px solid ${theme.colors.primary.slate}`,
+  background: `${theme.colors.primary.slate}33`,
+};
+
+const subscoreHeaderStyle = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  gap: theme.spacing.sm,
+  alignItems: 'center',
+  marginBottom: theme.spacing.xs,
+};
+
+const subscoreLabelStyle = {
+  color: theme.colors.text.tertiary,
+  fontSize: theme.typography.sizes.bodySm,
+  fontWeight: theme.typography.weights.semibold,
+};
+
+const subscoreValueStyle = {
+  color: theme.accents.hunterGold,
+  fontSize: theme.typography.sizes.bodyMd,
+};
+
+const subscoreReasonStyle = {
+  color: theme.colors.text.secondary,
+  fontSize: theme.typography.sizes.tiny,
+  lineHeight: 1.35,
 };
 
 // Details Grid

@@ -153,6 +153,40 @@ D'autres cartes disponibles dans mon dressing : WIZARD, EX, DP, PLATINE, HGSS, N
     expect(quality.noise).not.toContain('accessory_detected');
   });
 
+  test('keeps authentic Team Rocket single cards even when they are not lots', () => {
+    const listings = [
+      {
+        title: 'Carte Pokémon Rafflesia obscur 13/82 - Wizards Team Rocket 2001',
+        description: 'Langue Français - état excellent',
+        price: 164.5,
+        score: 45,
+      },
+      {
+        title: 'Carte Pokémon Kadabra obscur 39/82 1st - Wizards Team Rocket 2001',
+        description: 'Edition 1 - Français',
+        price: 9.8,
+        score: 38,
+      },
+      {
+        title: 'Carte Pokémon Alakazam obscur 18/82 - Wizards Team Rocket 2001',
+        description: 'Carte originale française',
+        price: 16.5,
+        score: 42,
+      },
+    ];
+
+    const result = splitQualityListings(listings, {
+      minScore: 50,
+      targetSeries: 'rocket',
+      allowBorderlineTargets: true,
+      candidateScoreFloor: 20,
+    });
+
+    expect(result.kept.map(item => item.title)).toEqual(listings.map(item => item.title));
+    expect(result.rejected).toHaveLength(0);
+    expect(result.kept.every(item => item.quality.reason === 'borderline_target_candidate')).toBe(true);
+  });
+
   test('requires explicit Team Rocket signal when rocket series is targeted', () => {
     const result = splitQualityListings([
       {

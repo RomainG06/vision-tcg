@@ -138,6 +138,8 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
         budgetFiltered: data.stats?.budget_filtered ?? 0,
         explorationFallback: data.stats?.exploration_fallback ?? 0,
         knownBeforeScan: data.stats?.known_before_scan ?? 0,
+        seenExcluded: data.stats?.seen_excluded ?? 0,
+        seenRecorded: data.stats?.seen_recorded ?? 0,
         rawFound: data.stats?.raw_found ?? 0,
         queriesCount: data.stats?.queries_count ?? data.queries?.length ?? 0,
         queryStats: data.query_stats ?? data.stats?.query_stats ?? [],
@@ -267,7 +269,13 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
                 <span>{summary.qualityFiltered} annonces écartées par qualité</span>
               )}
               {summary.knownBeforeScan > 0 && (
-                <span>{summary.knownBeforeScan} annonces déjà connues en mémoire anti-doublon</span>
+                <span>{summary.knownBeforeScan} annonces déjà sauvegardées ignorées</span>
+              )}
+              {summary.seenExcluded > 0 && (
+                <span>{summary.seenExcluded} annonces déjà analysées ignorées</span>
+              )}
+              {summary.seenRecorded > 0 && (
+                <span>{summary.seenRecorded} décisions mémorisées pour éviter le rescan</span>
               )}
             </div>
           )}

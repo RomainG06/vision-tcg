@@ -72,7 +72,8 @@ export async function initDatabase() {
   // Important: ne pas ré-écrire une vieille DB en mémoire par-dessus un seed externe.
   if (!autosaveStarted) {
     autosaveStarted = true;
-    setInterval(() => saveDatabaseSync(), 30000);
+    const autosaveInterval = setInterval(() => saveDatabaseSync(), 30000);
+    autosaveInterval.unref?.();
     
     // Save on exit
     process.on('exit', () => {
@@ -95,19 +96,18 @@ async function runMigrations() {
   const schemaPath = path.resolve(__dirname, 'schema.sql');
   
   try {
-    // Vérifier si la table principale existe
+    const schema = await fs.readFile(schemaPath, 'utf-8');
+    db.exec(schema);
+    dbDirty = true;
+
     const result = db.exec("SELECT name FROM sqlite_master WHERE type='table' AND name='listings'");
-    
     if (result.length === 0) {
-      // Tables n'existent pas, charger le schema
-      const schema = await fs.readFile(schemaPath, 'utf-8');
-      db.exec(schema);
-      dbDirty = true;
       console.log('✅ Database schema created');
-      await saveDatabase(true);
     } else {
-      console.log('✅ Database schema already exists');
+      console.log('✅ Database schema ensured');
     }
+
+    await saveDatabase(true);
   } catch (err) {
     console.error('❌ Migration error:', err);
     throw err;

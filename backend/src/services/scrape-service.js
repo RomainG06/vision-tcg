@@ -128,6 +128,7 @@ export async function startScrape(options = {}) {
               maxResults: perQueryLimit,
               scanDepth,
               excludeExternalIds: [...dynamicExcludeIds],
+              targetSeries: filters.series || 'all',
               waitForCaptcha,
               location: 'nice',
               radius: 50,

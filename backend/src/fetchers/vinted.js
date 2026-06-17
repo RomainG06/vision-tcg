@@ -6,10 +6,34 @@ export function extractVintedExternalId(url) {
   return match ? match[1] : null;
 }
 
-export function selectUnseenVintedUrls(urls, options = {}) {
+const SERIES_PREFILTER_PATTERNS = {
+  rocket: /\b(team\s*rocket|rocket|obscur(?:e|s)?|dark\s+(?:charizard|blastoise|dragonite|raichu|alakazam|magneton|hypno|slowbro|arbok|dugtrio|golbat|gyarados|machamp|vileplume|weezing))\b/i,
+  jungle: /\b(jungle)\b/i,
+  fossil: /\b(fossile|fossil)\b/i,
+  base: /\b(set\s*de\s*base|base\s*set)\b/i,
+};
+
+function itemText(item) {
+  return typeof item === 'string'
+    ? item
+    : `${item.text || ''} ${item.url || ''}`.trim();
+}
+
+function itemUrl(item) {
+  return typeof item === 'string' ? item : item.url;
+}
+
+function matchesTargetSeriesPrefilter(item, targetSeries) {
+  const pattern = SERIES_PREFILTER_PATTERNS[targetSeries];
+  if (!targetSeries || targetSeries === 'all' || !pattern) return true;
+  return pattern.test(itemText(item));
+}
+
+export function selectUnseenVintedItems(items, options = {}) {
   const {
     excludeExternalIds = new Set(),
     maxResults = 50,
+    targetSeries = 'all',
   } = options;
 
   const seen = excludeExternalIds instanceof Set
@@ -18,15 +42,22 @@ export function selectUnseenVintedUrls(urls, options = {}) {
   const selected = [];
   const deduped = new Set();
 
-  for (const url of urls) {
+  for (const item of items) {
+    const url = itemUrl(item);
     const externalId = extractVintedExternalId(url);
     if (!externalId || seen.has(String(externalId)) || deduped.has(String(externalId))) continue;
+    if (!matchesTargetSeriesPrefilter(item, targetSeries)) continue;
+
     deduped.add(String(externalId));
-    selected.push(url);
+    selected.push(typeof item === 'string' ? { url, text: url } : item);
     if (selected.length >= maxResults) break;
   }
 
   return selected;
+}
+
+export function selectUnseenVintedUrls(urls, options = {}) {
+  return selectUnseenVintedItems(urls, options).map(item => item.url);
 }
 
 /**
@@ -52,7 +83,7 @@ export class VintedFetcher extends BaseFetcher {
    * Fetch listings from Vinted
    */
   async fetch(query, options = {}) {
-    const { maxResults = 50, waitForCaptcha = 60, excludeExternalIds = [], scanDepth = Math.max(maxResults * 5, 50) } = options;
+    const { maxResults = 50, waitForCaptcha = 60, excludeExternalIds = [], scanDepth = Math.max(maxResults * 5, 50), targetSeries = 'all' } = options;
     
     try {
       await this.init();
@@ -130,7 +161,7 @@ export class VintedFetcher extends BaseFetcher {
       await this.randomDelay(800, 1400);
 
       // Extract listing URLs - try multiple strategies
-      const listingUrls = await this.page.evaluate((limit) => {
+      const searchItems = await this.page.evaluate((limit) => {
         // Strategy 1: article links
         let items = Array.from(document.querySelectorAll('article a[href*="/items/"]'));
         console.log(`Strategy 1 (article a): Found ${items.length} links`);
@@ -147,24 +178,30 @@ export class VintedFetcher extends BaseFetcher {
           console.log(`Strategy 3 (feed-grid): Found ${items.length} links`);
         }
         
-        const urls = items
-          .map(a => a.href)
-          .filter(href => href && href.includes('/items/'))
-          // Remove duplicates
-          .filter((url, index, self) => self.indexOf(url) === index);
+        const byUrl = new Map();
+        for (const anchor of items) {
+          const url = anchor.href;
+          if (!url || !url.includes('/items/') || byUrl.has(url)) continue;
+          const container = anchor.closest('article, div.feed-grid__item, [class*="feed-grid__item"], [data-testid*="item"]');
+          const text = `${anchor.textContent || ''} ${container?.textContent || ''}`.trim();
+          byUrl.set(url, { url, text });
+        }
+
+        const urls = [...byUrl.keys()];
         
         console.log(`Total unique URLs: ${urls.length}`);
         if (urls.length > 0) {
           console.log(`First URL sample: ${urls[0]}`);
         }
         
-        return urls.slice(0, limit);
+        return [...byUrl.values()].slice(0, limit);
       }, scanDepth);
-      const selectedUrls = selectUnseenVintedUrls(listingUrls, { excludeExternalIds, maxResults });
+      const selectedItems = selectUnseenVintedItems(searchItems, { excludeExternalIds, maxResults, targetSeries });
+      const selectedUrls = selectedItems.map(item => item.url);
       
-      logger.info(`Found ${listingUrls.length} listing URLs on Vinted, ${selectedUrls.length} new after already-seen filter`);
-      if (listingUrls.length > 0) {
-        logger.debug(`First URL: ${listingUrls[0]}`);
+      logger.info(`Found ${searchItems.length} listing URLs on Vinted, ${selectedUrls.length} selected after already-seen + series prefilter`);
+      if (searchItems.length > 0) {
+        logger.debug(`First URL: ${searchItems[0].url}`);
       } else {
         logger.error('❌ No URLs extracted! Saving debug info...');
         await this.saveDebugInfo('no_urls_extracted');

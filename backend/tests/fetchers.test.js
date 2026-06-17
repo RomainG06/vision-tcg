@@ -1,5 +1,5 @@
 import { BaseFetcher } from '../src/fetchers/base.js';
-import { extractVintedExternalId, selectUnseenVintedUrls } from '../src/fetchers/vinted.js';
+import { extractVintedExternalId, selectUnseenVintedItems, selectUnseenVintedUrls } from '../src/fetchers/vinted.js';
 
 describe('Fetchers', () => {
   describe('BaseFetcher', () => {
@@ -40,6 +40,36 @@ describe('Fetchers', () => {
       expect(selected).toEqual([
         'https://www.vinted.fr/items/222-new-one',
         'https://www.vinted.fr/items/333-new-two',
+      ]);
+    });
+
+    it('prefilters off-series Vinted cards before opening detail pages', () => {
+      const items = [
+        {
+          url: 'https://www.vinted.fr/items/101-one-piece-card-game-pillars-of-strength-eustass-captain-kid-op01-051-english',
+          text: 'One Piece Card Game- Pillars Of Strength- Eustass Captain Kid OP01-051 English',
+        },
+        {
+          url: 'https://www.vinted.fr/items/102-regice-24-98-fr-excellent',
+          text: 'Regice 24/98 – FR – Excellent+',
+        },
+        {
+          url: 'https://www.vinted.fr/items/103-evoli-reverse-54-78-fr-mint',
+          text: 'Évoli reverse 54/78 – FR – Mint !',
+        },
+        {
+          url: 'https://www.vinted.fr/items/104-dracolosse-obscur-edition-1-22-82',
+          text: 'Dracolosse Obscur Edition 1 22/82 Team Rocket Français',
+        },
+      ];
+
+      const selected = selectUnseenVintedItems(items, {
+        targetSeries: 'rocket',
+        maxResults: 10,
+      });
+
+      expect(selected.map(item => item.url)).toEqual([
+        'https://www.vinted.fr/items/104-dracolosse-obscur-edition-1-22-82',
       ]);
     });
   });

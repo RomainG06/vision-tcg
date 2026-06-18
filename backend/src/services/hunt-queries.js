@@ -24,6 +24,7 @@ const SERIES_QUERIES = {
     'ronflex jungle',
     'scarabrute jungle',
     'insecateur jungle',
+    'pikachu jungle',
     'aquali jungle',
     'wizards jungle',
     'carte pokemon ancienne jungle',

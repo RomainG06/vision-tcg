@@ -29,6 +29,7 @@ const PAGE_SIZE = 12;
 function LotList({ listings, onUpdate, onDelete, highlightedIds = [] }) {
   const [selectedLot, setSelectedLot] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isCompactPagination, setIsCompactPagination] = useState(false);
   const totalPages = Math.max(1, Math.ceil(listings.length / PAGE_SIZE));
   const pageStart = (currentPage - 1) * PAGE_SIZE;
   const paginatedListings = useMemo(
@@ -39,6 +40,13 @@ function LotList({ listings, onUpdate, onDelete, highlightedIds = [] }) {
   useEffect(() => {
     setCurrentPage(1);
   }, [listings]);
+
+  useEffect(() => {
+    const updatePaginationMode = () => setIsCompactPagination(window.innerWidth < 520);
+    updatePaginationMode();
+    window.addEventListener('resize', updatePaginationMode);
+    return () => window.removeEventListener('resize', updatePaginationMode);
+  }, []);
 
   useEffect(() => {
     if (currentPage > totalPages) setCurrentPage(totalPages);
@@ -234,19 +242,26 @@ function LotList({ listings, onUpdate, onDelete, highlightedIds = [] }) {
       </div>
 
       {totalPages > 1 && (
-        <div style={styles.pagination}>
+        <div style={{
+          ...styles.pagination,
+          ...(isCompactPagination ? styles.paginationCompact : {}),
+        }}>
           <button
             type="button"
             style={{
               ...styles.paginationButton,
+              ...(isCompactPagination ? styles.paginationButtonCompact : {}),
               ...(currentPage === 1 ? styles.paginationButtonDisabled : {}),
             }}
             disabled={currentPage === 1}
             onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
           >
-            ← Précédent
+            {isCompactPagination ? '←' : '← Précédent'}
           </button>
-          <div style={styles.paginationInfo}>
+          <div style={{
+            ...styles.paginationInfo,
+            ...(isCompactPagination ? styles.paginationInfoCompact : {}),
+          }}>
             Page {currentPage} / {totalPages}
             <span style={styles.paginationCount}>
               {listings.length} annonce{listings.length > 1 ? 's' : ''}
@@ -256,12 +271,13 @@ function LotList({ listings, onUpdate, onDelete, highlightedIds = [] }) {
             type="button"
             style={{
               ...styles.paginationButton,
+              ...(isCompactPagination ? styles.paginationButtonCompact : {}),
               ...(currentPage === totalPages ? styles.paginationButtonDisabled : {}),
             }}
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
           >
-            Suivant →
+            {isCompactPagination ? '→' : 'Suivant →'}
           </button>
         </div>
       )}
@@ -615,6 +631,12 @@ const styles = {
     border: `${theme.borders.widthThin} solid ${theme.colors.primary.slate}`,
     borderRadius: theme.borders.radiusLg,
   },
+  paginationCompact: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+  },
   paginationButton: {
     padding: `${theme.spacing.sm} ${theme.spacing.lg}`,
     borderRadius: theme.borders.radiusMd,
@@ -623,6 +645,11 @@ const styles = {
     color: theme.colors.text.primary,
     fontWeight: theme.typography.weights.semibold,
     cursor: 'pointer',
+  },
+  paginationButtonCompact: {
+    minHeight: '42px',
+    padding: `${theme.spacing.sm} ${theme.spacing.md}`,
+    fontSize: theme.typography.sizes.headingSm,
   },
   paginationButtonDisabled: {
     opacity: 0.45,
@@ -637,6 +664,12 @@ const styles = {
     minWidth: '140px',
     color: theme.colors.text.primary,
     fontWeight: theme.typography.weights.semibold,
+  },
+  paginationInfoCompact: {
+    gridColumn: '1 / -1',
+    gridRow: 1,
+    minWidth: 0,
+    marginBottom: theme.spacing.xs,
   },
   paginationCount: {
     color: theme.colors.text.tertiary,

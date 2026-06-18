@@ -155,15 +155,18 @@ Note: la suite backend complète contient encore des tests legacy instables/non 
 
 ## Ce qui reste à faire pour MVP Radar
 
-### Priorité 1 — Stabilisation scrape runtime Windows
+### Priorité 1 — Stabilisation scrape runtime Windows — FAIT
 
 Objectif: plus de `ERR_CONNECTION_RESET`, même si Puppeteer/Vinted échoue.
 
-Actions recommandées:
-- Ajouter gestion globale `process.on('unhandledRejection')` / `uncaughtException` avec logs non secrets.
-- Retourner HTTP 500/503 JSON clair si le scan échoue totalement, au lieu d’un reset.
-- Éventuellement limiter un seul scan concurrent via verrou en mémoire.
-- Ajouter endpoint `/api/jobs/status` ou statut scan en cours.
+Livré après le handoff initial:
+- `ScrapeJobManager` avec verrou single-flight: une seule chasse active à la fois.
+- `POST /api/scrape/start` retourne `409` JSON si une chasse tourne déjà.
+- `GET /api/jobs/status` expose l’état courant/dernier scan.
+- Erreurs fatales de `startScrape` transformées en JSON `status: failed` au lieu de propagation brute.
+- Handlers serveur `unhandledRejection` / `uncaughtException` pour logs non silencieux.
+- UI: message clair “Une chasse est déjà en cours” si 409.
+- Smoke HTTP vérifié: `/health`, `/api/jobs/status`, POST scrape avec Chromium indisponible répond JSON HTTP 200 + `status: failed`, pas de reset.
 
 ### Priorité 2 — Résumé de scan actionnable
 

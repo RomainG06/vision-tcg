@@ -105,6 +105,13 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
       try {
         data = await startScrape(scrapeOptions);
       } catch (scrapeError) {
+        if (scrapeError.status === 409) {
+          setStatus('error');
+          setStep('Une chasse est déjà en cours');
+          setError(scrapeError.message);
+          return;
+        }
+
         // Keep the UI usable if the marketplace blocks the live scrape.
         // The error is surfaced, but we also load the last successful run when available.
         const history = await fetchScrapeRuns();

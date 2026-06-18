@@ -3,12 +3,19 @@ import { logger } from '../utils/logger.js';
 import { ListingRepository } from '../repositories/listing-repository.js';
 import { ScrapeRunRepository } from '../repositories/scrape-run-repository.js';
 import { getDatabaseInfo } from '../db/database.js';
+import { createScrapeJobManager, ScrapeAlreadyRunningError } from '../services/scrape-job-manager.js';
 
 const router = express.Router();
 
 // Initialize repositories
 const listingRepo = new ListingRepository();
 const scrapeRunRepo = new ScrapeRunRepository();
+const scrapeJobManager = createScrapeJobManager({
+  startScrape: async (payload) => {
+    const { startScrape } = await import('../services/scrape-service.js');
+    return startScrape(payload);
+  },
+});
 
 /**
  * Map database listing to frontend format
@@ -92,6 +99,7 @@ router.get('/docs', (req, res) => {
       { method: 'POST', path: '/api/listings/:id/watchlist', description: 'Mark listing as interesting' },
       { method: 'DELETE', path: '/api/listings/:id', description: 'Delete listing' },
       { method: 'POST', path: '/api/scrape/start', description: 'Start a marketplace scrape and save results' },
+      { method: 'GET', path: '/api/jobs/status', description: 'Get current scrape job status' },
       { method: 'GET', path: '/api/scrape-runs', description: 'Get scrape runs history' },
       { method: 'GET', path: '/api/stats', description: 'Get statistics' },
       { method: 'GET', path: '/api/debug/db', description: 'Debug database path/count (dev)' }
@@ -123,16 +131,27 @@ router.get('/debug/db', (req, res) => {
  */
 router.post('/scrape/start', async (req, res) => {
   try {
-    const { startScrape } = await import('../services/scrape-service.js');
-    const result = await startScrape(req.body || {});
+    const result = await scrapeJobManager.start(req.body || {});
     res.json(result);
   } catch (error) {
+    if (error instanceof ScrapeAlreadyRunningError) {
+      return res.status(409).json({
+        error: 'Scrape already running',
+        message: 'Une chasse est déjà en cours. Attends la fin avant de relancer.',
+        job: error.status,
+      });
+    }
+
     logger.error('Error starting scrape:', error);
     res.status(500).json({
       error: 'Scrape failed',
       message: error.message,
     });
   }
+});
+
+router.get('/jobs/status', (req, res) => {
+  res.json(scrapeJobManager.getStatus());
 });
 
 /**

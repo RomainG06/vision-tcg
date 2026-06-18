@@ -11,6 +11,14 @@ import { initDatabase } from '../db/database.js';
 
 export const app = express();
 
+process.on('unhandledRejection', (reason) => {
+  logger.error('Unhandled promise rejection:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+  logger.error('Uncaught exception:', error);
+});
+
 // Security middleware
 app.use(helmet());
 app.use(cors());

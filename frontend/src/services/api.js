@@ -94,8 +94,17 @@ export async function startScrape(options = {}) {
 
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(data.message || data.error || 'Failed to start scrape');
+    const error = new Error(data.message || data.error || 'Failed to start scrape');
+    error.status = response.status;
+    error.payload = data;
+    throw error;
   }
 
   return data;
+}
+
+export async function fetchJobStatus() {
+  const response = await fetch(`${API_URL}/api/jobs/status`);
+  if (!response.ok) throw new Error('Failed to fetch job status');
+  return response.json();
 }

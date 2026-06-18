@@ -168,19 +168,24 @@ Livré après le handoff initial:
 - UI: message clair “Une chasse est déjà en cours” si 409.
 - Smoke HTTP vérifié: `/health`, `/api/jobs/status`, POST scrape avec Chromium indisponible répond JSON HTTP 200 + `status: failed`, pas de reset.
 
-### Priorité 2 — Résumé de scan actionnable
+### Priorité 2 — Résumé de scan actionnable — FAIT
 
 Objectif: comprendre en UI pourquoi une annonce a disparu.
 
-Afficher clairement:
-- brutes trouvées
-- sélectionnées avant détail
-- déjà vues ignorées
-- hors série
-- hors budget
-- rejet qualité
-- sauvegardées / mises à jour
-- top exemples rejetés avec raison
+Livré:
+- Module backend pur `buildActionableScanSummary()` testé.
+- Réponse `POST /api/scrape/start` expose `actionable_summary`.
+- `GET /api/jobs/status` conserve aussi le dernier `actionable_summary`.
+- Funnel exposé:
+  - brutes trouvées
+  - sélectionnées avant détail
+  - détails fetchés
+  - après budget
+  - qualifiées après score/série
+  - sauvegardées/mises à jour
+- Alertes lisibles: requêtes en erreur, hors budget, rejet qualité/série, déjà analysées ignorées.
+- Raisons de rejet agrégées par type: `series_mismatch`, `over_budget`, `noise_detected`, etc.
+- UI `HuntLaunchPanel`: résumé actionnable avec funnel, alertes, raisons de rejet, requêtes les plus productives et exemples rejetés.
 
 ### Priorité 3 — Watchlist/statuts workflow
 

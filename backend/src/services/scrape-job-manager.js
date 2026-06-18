@@ -44,6 +44,7 @@ export function createScrapeJobManager({ startScrape }) {
           last_status: result?.status || 'completed',
           completed_at: nowIso(),
           stats: result?.stats || null,
+          actionable_summary: result?.actionable_summary || null,
         };
         return result;
       } catch (error) {

@@ -9,6 +9,7 @@ import { logger } from '../utils/logger.js';
 import { selectExplorationCandidates, splitQualityListings } from './listing-quality.js';
 import { filterByBudget } from './hunt-filters.js';
 import { buildHuntQueries, buildPrimaryHuntQuery, dedupeListingsBySourceExternalId } from './hunt-queries.js';
+import { buildActionableScanSummary } from './scan-summary.js';
 
 const listingRepo = new ListingRepository();
 const scrapeRunRepo = new ScrapeRunRepository();
@@ -112,6 +113,8 @@ export async function startScrape(options = {}) {
   let saved = 0;
   let updated = 0;
   let rawFound = 0;
+  let selectedForDetails = 0;
+  let fetchedDetails = 0;
   let qualityFiltered = 0;
   let budgetFiltered = 0;
   let knownBeforeScan = 0;
@@ -163,12 +166,14 @@ export async function startScrape(options = {}) {
               source,
               query: currentQuery,
               raw_found: fetchedListings.length,
+              selected_for_details: fetchedListings.length,
+              fetched_details: fetchedListings.length,
               cumulative_unique: dedupeListingsBySourceExternalId(queryRawListings).length,
               error: null,
             });
           } catch (error) {
             logger.error(`Scrape failed for ${source} query="${currentQuery}":`, error);
-            queryStats.push({ source, query: currentQuery, raw_found: 0, cumulative_unique: beforeCount, error: error.message });
+            queryStats.push({ source, query: currentQuery, raw_found: 0, selected_for_details: 0, fetched_details: 0, cumulative_unique: beforeCount, error: error.message });
             errors.push({ source, query: currentQuery, type: 'query_error', message: error.message });
           }
         }
@@ -177,6 +182,8 @@ export async function startScrape(options = {}) {
         const seenDecisions = new Map();
 
         rawFound += rawListings.length;
+        selectedForDetails += queryRawListings.length;
+        fetchedDetails += rawListings.length;
         const budgetMax = getBudgetMax(filters);
         const budgetResult = filterByBudget(rawListings, budgetMax);
         if (budgetResult.rejected.length > 0) {
@@ -287,11 +294,28 @@ export async function startScrape(options = {}) {
     const totalQueryAttempts = enabledSources.length * queries.length;
     const allQueriesFailed = totalQueryAttempts > 0 && queryErrorCount >= totalQueryAttempts;
     const status = allQueriesFailed ? 'failed' : 'completed';
+    const actionableSummary = buildActionableScanSummary({
+      rawFound,
+      selectedForDetails,
+      fetchedDetails,
+      budgetFiltered,
+      qualityFiltered,
+      saved,
+      updated,
+      explorationFallback,
+      knownBeforeScan,
+      seenExcluded,
+      seenRecorded,
+      rejectedSamples,
+      queryStats,
+      errors,
+    });
+
     scrapeRunRepo.update(runId, {
       status,
       results_count: allListings.length,
       errors_count: errors.length,
-      metadata: JSON.stringify({ profile, filters, maxResults, queries, saved, updated, budgetFiltered, qualityFiltered, explorationFallback, knownBeforeScan, seenExcluded, seenRecorded, rejectedSamples, queryStats, errors }),
+      metadata: JSON.stringify({ profile, filters, maxResults, queries, saved, updated, selectedForDetails, fetchedDetails, budgetFiltered, qualityFiltered, explorationFallback, knownBeforeScan, seenExcluded, seenRecorded, rejectedSamples, queryStats, actionableSummary, errors }),
     });
 
     return {
@@ -305,6 +329,8 @@ export async function startScrape(options = {}) {
       listings: allListings,
       stats: {
         raw_found: rawFound,
+        selected_for_details: selectedForDetails,
+        fetched_details: fetchedDetails,
         queries_count: queries.length,
         query_stats: queryStats,
         found: allListings.length,
@@ -322,6 +348,7 @@ export async function startScrape(options = {}) {
       },
       query_stats: queryStats,
       rejected_samples: rejectedSamples,
+      actionable_summary: actionableSummary,
       errors,
     };
   } catch (error) {

@@ -5,7 +5,7 @@ describe('Scrape job manager', () => {
   test('rejects a second scrape while one is already running', async () => {
     let release;
     const manager = createScrapeJobManager({
-      startScrape: () => new Promise(resolve => { release = () => resolve({ status: 'completed', stats: {} }); }),
+      startScrape: () => new Promise(resolve => { release = () => resolve({ status: 'completed', stats: {}, actionable_summary: { headline: '1 piste exploitable' } }); }),
     });
 
     const first = manager.start({ filters: { series: 'rocket' } });
@@ -19,7 +19,10 @@ describe('Scrape job manager', () => {
     release();
     await first;
 
-    expect(manager.getStatus()).toMatchObject({ state: 'idle' });
+    expect(manager.getStatus()).toMatchObject({
+      state: 'idle',
+      actionable_summary: { headline: '1 piste exploitable' },
+    });
   });
 
   test('returns a failed JSON-safe result when the scrape implementation throws', async () => {

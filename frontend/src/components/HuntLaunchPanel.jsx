@@ -45,6 +45,9 @@ const REJECTION_LABELS = {
   missing_wizards_or_french_signal: 'Signal Wizards/FR manquant',
   score_below_threshold: 'Score trop faible',
   over_budget: 'Hors budget',
+  series_mismatch: 'Hors série ciblée',
+  invalid_listing: 'Annonce invalide',
+  quality_filtered: 'Qualité insuffisante',
   unknown: 'Raison inconnue',
 };
 
@@ -72,6 +75,15 @@ function labelFrom(map, value) {
 function formatPrice(price) {
   if (price === null || price === undefined || Number.isNaN(Number(price))) return 'prix ?';
   return `${Number(price).toFixed(2).replace('.00', '')} €`;
+}
+
+function FunnelMetric({ label, value, highlight = false }) {
+  return (
+    <div style={{ ...styles.funnelMetric, ...(highlight ? styles.funnelMetricHighlight : {}) }}>
+      <strong>{Number(value || 0)}</strong>
+      <span>{label}</span>
+    </div>
+  );
 }
 
 function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
@@ -137,6 +149,7 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
       const latestRun = data.runs?.[0] || { source: data.sources?.join(', ') || 'live-scrape', results_count: data.stats?.found ?? data.listings?.length ?? 0 };
 
       const found = data.stats?.filtered ?? data.stats?.total_results ?? data.stats?.found ?? latestRun.results_count ?? 0;
+      const actionableSummary = data.actionable_summary || data.stats?.actionable_summary || null;
       setSummary({
         found,
         saved: data.stats?.saved ?? latestRun.results_count ?? found,
@@ -148,9 +161,12 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
         seenExcluded: data.stats?.seen_excluded ?? 0,
         seenRecorded: data.stats?.seen_recorded ?? 0,
         rawFound: data.stats?.raw_found ?? 0,
+        selectedForDetails: data.stats?.selected_for_details ?? actionableSummary?.funnel?.selected_for_details ?? 0,
+        fetchedDetails: data.stats?.fetched_details ?? actionableSummary?.funnel?.details_fetched ?? 0,
         queriesCount: data.stats?.queries_count ?? data.queries?.length ?? 0,
-        queryStats: data.query_stats ?? data.stats?.query_stats ?? [],
+        queryStats: actionableSummary?.query_performance ?? data.query_stats ?? data.stats?.query_stats ?? [],
         rejectedSamples: data.rejected_samples ?? [],
+        actionable: actionableSummary,
         sources: latestRun.source || 'historique',
       });
       setStatus('success');
@@ -258,31 +274,48 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
 
           {summary && (
             <div style={styles.summary}>
-              <span>{summary.found} pistes détectées</span>
-              {summary.queriesCount > 0 && (
-                <span>{summary.queriesCount} requêtes intelligentes lancées</span>
+              <div style={styles.summaryHeader}>
+                <strong>{summary.actionable?.headline || `${summary.found} pistes détectées`}</strong>
+                <span>{summary.sources}</span>
+              </div>
+
+              {summary.actionable?.alerts?.length > 0 && (
+                <div style={styles.alertList}>
+                  {summary.actionable.alerts.map(alert => (
+                    <span key={alert} style={styles.alertChip}>⚠ {alert}</span>
+                  ))}
+                </div>
               )}
-              <span>{summary.saved} nouvelles, {summary.updated} mises à jour</span>
-              {summary.rawFound > 0 && (
-                <span>{summary.rawFound} annonces analysées après exclusion des déjà vues</span>
-              )}
-              {summary.budgetFiltered > 0 && (
-                <span>{summary.budgetFiltered} annonces hors budget</span>
-              )}
-              {summary.explorationFallback > 0 && (
-                <span>{summary.explorationFallback} candidats larges gardés pour revue</span>
-              )}
-              {summary.qualityFiltered > 0 && (
-                <span>{summary.qualityFiltered} annonces écartées par qualité</span>
-              )}
-              {summary.knownBeforeScan > 0 && (
-                <span>{summary.knownBeforeScan} annonces déjà sauvegardées ignorées</span>
-              )}
-              {summary.seenExcluded > 0 && (
-                <span>{summary.seenExcluded} annonces déjà analysées ignorées</span>
-              )}
-              {summary.seenRecorded > 0 && (
-                <span>{summary.seenRecorded} décisions mémorisées pour éviter le rescan</span>
+
+              <div style={styles.funnelGrid}>
+                <FunnelMetric label="Brutes" value={summary.actionable?.funnel?.raw_found ?? summary.rawFound} />
+                <FunnelMetric label="Sélectionnées" value={summary.actionable?.funnel?.selected_for_details ?? summary.selectedForDetails} />
+                <FunnelMetric label="Détails" value={summary.actionable?.funnel?.details_fetched ?? summary.fetchedDetails} />
+                <FunnelMetric label="Après budget" value={summary.actionable?.funnel?.after_budget ?? Math.max(0, summary.rawFound - summary.budgetFiltered)} />
+                <FunnelMetric label="Qualifiées" value={summary.actionable?.funnel?.kept_after_quality ?? summary.found} />
+                <FunnelMetric label="Sauvegardées" value={summary.actionable?.funnel?.saved_or_updated ?? (summary.saved + summary.updated)} highlight />
+              </div>
+
+              <div style={styles.summaryLines}>
+                {summary.queriesCount > 0 && <span>{summary.queriesCount} requêtes intelligentes lancées</span>}
+                <span>{summary.saved} nouvelles, {summary.updated} mises à jour</span>
+                {summary.budgetFiltered > 0 && <span>{summary.budgetFiltered} hors budget</span>}
+                {summary.qualityFiltered > 0 && <span>{summary.qualityFiltered} écartées qualité/série</span>}
+                {summary.explorationFallback > 0 && <span>{summary.explorationFallback} candidats larges gardés pour revue</span>}
+                {summary.knownBeforeScan > 0 && <span>{summary.knownBeforeScan} déjà sauvegardées ignorées</span>}
+                {summary.seenExcluded > 0 && <span>{summary.seenExcluded} déjà analysées ignorées</span>}
+                {summary.seenRecorded > 0 && <span>{summary.seenRecorded} décisions mémorisées</span>}
+              </div>
+
+              {summary.actionable?.rejection_reasons && Object.keys(summary.actionable.rejection_reasons).length > 0 && (
+                <div style={styles.reasonPanel}>
+                  <strong>Pourquoi ça sort du radar</strong>
+                  <div style={styles.reasonList}>
+                    {Object.entries(summary.actionable.rejection_reasons).slice(0, 5).map(([reason, count]) => (
+                      <span key={reason} style={styles.reasonChip}>{labelFrom(REJECTION_LABELS, reason)} · {count}</span>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
           )}
@@ -522,13 +555,76 @@ const styles = {
   summary: {
     display: 'flex',
     flexDirection: 'column',
-    gap: theme.spacing.xs,
+    gap: theme.spacing.md,
     padding: theme.spacing.md,
     border: `1px solid ${theme.accents.successGreen}40`,
     borderRadius: theme.borders.radiusMd,
-    color: theme.accents.successGreen,
+    color: theme.colors.text.secondary,
     background: `${theme.accents.successGreen}10`,
     fontSize: theme.typography.sizes.bodySm,
+  },
+  summaryHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: theme.spacing.md,
+    color: theme.accents.successGreen,
+    alignItems: 'center',
+  },
+  alertList: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: theme.spacing.xs,
+  },
+  alertChip: {
+    padding: `${theme.spacing.xs} ${theme.spacing.sm}`,
+    borderRadius: theme.borders.radiusSm,
+    border: `1px solid ${theme.accents.warningOrange}55`,
+    color: theme.accents.warningOrange,
+    background: `${theme.accents.warningOrange}12`,
+    fontSize: theme.typography.sizes.tiny,
+  },
+  funnelGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+    gap: theme.spacing.sm,
+  },
+  funnelMetric: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing.xs,
+    padding: theme.spacing.sm,
+    border: `1px solid ${theme.colors.primary.slate}`,
+    borderRadius: theme.borders.radiusSm,
+    background: 'rgba(10,14,39,.32)',
+  },
+  funnelMetricHighlight: {
+    borderColor: `${theme.accents.successGreen}66`,
+    background: `${theme.accents.successGreen}12`,
+  },
+  summaryLines: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing.xs,
+  },
+  reasonPanel: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing.sm,
+    paddingTop: theme.spacing.sm,
+    borderTop: `1px solid ${theme.colors.primary.slate}`,
+  },
+  reasonList: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: theme.spacing.xs,
+  },
+  reasonChip: {
+    padding: `${theme.spacing.xs} ${theme.spacing.sm}`,
+    borderRadius: theme.borders.radiusSm,
+    border: `1px solid ${theme.accents.preyRed}35`,
+    color: theme.colors.text.secondary,
+    background: `${theme.accents.preyRed}0D`,
+    fontSize: theme.typography.sizes.tiny,
   },
   queryPanel: {
     display: 'flex',

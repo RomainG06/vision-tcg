@@ -50,6 +50,14 @@ describe('buildActionableScanSummary', () => {
     expect(summary.alerts).toContain('1 requête en erreur');
   });
 
+  it('suggests rescanning seen listings when memory hides all candidates', () => {
+    const summary = buildActionableScanSummary({ rawFound: 0, seenExcluded: 113 });
+
+    expect(summary.headline).toBe('0 piste exploitable');
+    expect(summary.alerts).toContain('113 annonces déjà analysées ignorées');
+    expect(summary.suggestions[0]).toContain('Ré-analyser les déjà vues');
+  });
+
   it('keeps counts non-negative when inputs are partial', () => {
     const summary = buildActionableScanSummary({ rawFound: 1, budgetFiltered: 5, qualityFiltered: 5 });
 

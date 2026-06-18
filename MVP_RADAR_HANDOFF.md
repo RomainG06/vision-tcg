@@ -186,6 +186,7 @@ Livré:
 - Alertes lisibles: requêtes en erreur, hors budget, rejet qualité/série, déjà analysées ignorées.
 - Raisons de rejet agrégées par type: `series_mismatch`, `over_budget`, `noise_detected`, etc.
 - UI `HuntLaunchPanel`: résumé actionnable avec funnel, alertes, raisons de rejet, requêtes les plus productives et exemples rejetés.
+- Ajustement MVP utilisateur: détails techniques masqués par défaut, suggestions explicites, option “Ré-analyser les déjà vues” sans effacer la mémoire.
 
 ### Priorité 3 — Watchlist/statuts workflow
 

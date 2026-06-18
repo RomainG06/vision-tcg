@@ -89,6 +89,7 @@ export async function startScrape(options = {}) {
     waitForCaptcha = 60,
     smartQueries = true,
     maxQueries = filters.maxQueries || filters.max_queries,
+    rescanSeen = filters.rescanSeen || filters.rescan_seen || false,
   } = options;
 
   const enabledSources = sources.filter(source => FETCHERS[source]);
@@ -129,7 +130,7 @@ export async function startScrape(options = {}) {
       try {
         logger.info(`Starting smart scrape: ${source} queries=${queries.length} maxResults=${maxResults}`);
         const savedExternalIds = saveToDb ? listingRepo.findExternalIdsBySource(source) : [];
-        const seenExternalIds = saveToDb
+        const seenExternalIds = saveToDb && !rescanSeen
           ? seenListingRepo.findExcludedExternalIdsBySource(source, { targetSeries: filters.series || 'all' })
           : [];
         const excludeExternalIds = [...new Set([...savedExternalIds, ...seenExternalIds].map(String))];
@@ -315,7 +316,7 @@ export async function startScrape(options = {}) {
       status,
       results_count: allListings.length,
       errors_count: errors.length,
-      metadata: JSON.stringify({ profile, filters, maxResults, queries, saved, updated, selectedForDetails, fetchedDetails, budgetFiltered, qualityFiltered, explorationFallback, knownBeforeScan, seenExcluded, seenRecorded, rejectedSamples, queryStats, actionableSummary, errors }),
+      metadata: JSON.stringify({ profile, filters, maxResults, queries, smartQueries, rescanSeen, saved, updated, selectedForDetails, fetchedDetails, budgetFiltered, qualityFiltered, explorationFallback, knownBeforeScan, seenExcluded, seenRecorded, rejectedSamples, queryStats, actionableSummary, errors }),
     });
 
     return {
@@ -341,6 +342,7 @@ export async function startScrape(options = {}) {
         rejected_samples_count: rejectedSamples.length,
         known_before_scan: knownBeforeScan,
         seen_excluded: seenExcluded,
+        rescan_seen: Boolean(rescanSeen),
         seen_recorded: seenRecorded,
         saved,
         updated,

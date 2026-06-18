@@ -90,6 +90,8 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
   const [series, setSeries] = useState('all');
   const [budget, setBudget] = useState(1500);
   const [sensitivity, setSensitivity] = useState('balanced');
+  const [rescanSeen, setRescanSeen] = useState(false);
+  const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
   const [status, setStatus] = useState('idle');
   const [step, setStep] = useState('');
   const [summary, setSummary] = useState(null);
@@ -111,7 +113,7 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
         sources: ['vinted'],
         maxResults: SENSITIVITY[sensitivity].maxResults,
         saveToDb: true,
-        filters: { series, budget: Number(budget) || 1500, sensitivity },
+        filters: { series, budget: Number(budget) || 1500, sensitivity, rescanSeen },
       };
       let data;
       try {
@@ -167,6 +169,7 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
         queryStats: actionableSummary?.query_performance ?? data.query_stats ?? data.stats?.query_stats ?? [],
         rejectedSamples: data.rejected_samples ?? [],
         actionable: actionableSummary,
+        rescanSeen: data.stats?.rescan_seen ?? rescanSeen,
         sources: latestRun.source || 'historique',
       });
       setStatus('success');
@@ -272,6 +275,19 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
             <span style={styles.hint}>{SENSITIVITY[sensitivity].hint}</span>
           </div>
 
+          <label style={styles.checkboxRow}>
+            <input
+              type="checkbox"
+              checked={rescanSeen}
+              onChange={(e) => setRescanSeen(e.target.checked)}
+              disabled={isRunning}
+            />
+            <span>
+              Ré-analyser les déjà vues
+              <small>Utile après recalibrage du score, sans effacer la mémoire.</small>
+            </span>
+          </label>
+
           {summary && (
             <div style={styles.summary}>
               <div style={styles.summaryHeader}>
@@ -283,6 +299,14 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
                 <div style={styles.alertList}>
                   {summary.actionable.alerts.map(alert => (
                     <span key={alert} style={styles.alertChip}>⚠ {alert}</span>
+                  ))}
+                </div>
+              )}
+
+              {summary.actionable?.suggestions?.length > 0 && (
+                <div style={styles.suggestionBox}>
+                  {summary.actionable.suggestions.map(suggestion => (
+                    <span key={suggestion}>💡 {suggestion}</span>
                   ))}
                 </div>
               )}
@@ -317,10 +341,14 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
                   </div>
                 </div>
               )}
+
+              <button type="button" onClick={() => setShowTechnicalDetails(v => !v)} style={styles.detailsToggle}>
+                {showTechnicalDetails ? 'Masquer les détails techniques' : 'Voir les détails techniques'}
+              </button>
             </div>
           )}
 
-          {summary?.queryStats?.length > 0 && (
+          {showTechnicalDetails && summary?.queryStats?.length > 0 && (
             <div style={styles.queryPanel}>
               <div style={styles.queryHeader}>
                 <strong>Requêtes intelligentes</strong>
@@ -339,7 +367,7 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
             </div>
           )}
 
-          {summary?.rejectedSamples?.length > 0 && (
+          {showTechnicalDetails && summary?.rejectedSamples?.length > 0 && (
             <div style={styles.rejectedPanel}>
               <div style={styles.rejectedHeader}>
                 <strong>Annonces écartées — debug</strong>
@@ -552,6 +580,17 @@ const styles = {
     background: `${theme.accents.hunterGold}14`,
   },
   hint: { color: theme.colors.text.muted, fontSize: theme.typography.sizes.bodySm },
+  checkboxRow: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+    border: `1px solid ${theme.colors.primary.slate}`,
+    borderRadius: theme.borders.radiusMd,
+    color: theme.colors.text.secondary,
+    background: 'rgba(10,14,39,.28)',
+    fontSize: theme.typography.sizes.bodySm,
+  },
   summary: {
     display: 'flex',
     flexDirection: 'column',
@@ -582,6 +621,27 @@ const styles = {
     color: theme.accents.warningOrange,
     background: `${theme.accents.warningOrange}12`,
     fontSize: theme.typography.sizes.tiny,
+  },
+  suggestionBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing.xs,
+    padding: theme.spacing.sm,
+    borderRadius: theme.borders.radiusSm,
+    border: `1px solid ${theme.accents.manaCyan}35`,
+    color: theme.colors.text.secondary,
+    background: `${theme.accents.manaCyan}0D`,
+    lineHeight: 1.4,
+  },
+  detailsToggle: {
+    alignSelf: 'flex-start',
+    border: 'none',
+    background: 'transparent',
+    color: theme.accents.manaCyan,
+    cursor: 'pointer',
+    padding: 0,
+    fontSize: theme.typography.sizes.bodySm,
+    fontWeight: theme.typography.weights.semibold,
   },
   funnelGrid: {
     display: 'grid',

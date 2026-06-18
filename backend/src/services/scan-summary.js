@@ -54,11 +54,18 @@ export function buildActionableScanSummary(input = {}) {
     .sort((a, b) => b.raw_found - a.raw_found || b.fetched_details - a.fetched_details || a.query.localeCompare(b.query));
 
   const alerts = [];
+  const suggestions = [];
   if (queryErrors > 0) alerts.push(`${pluralize(queryErrors, 'requête')} en erreur`);
   if (budgetFiltered > 0) alerts.push(`${pluralize(budgetFiltered, 'annonce')} hors budget`);
   if (qualityFiltered > 0) alerts.push(`${pluralize(qualityFiltered, 'annonce')} écartée${qualityFiltered > 1 ? 's' : ''} par qualité/série`);
   const seenExcluded = clampZero(input.seenExcluded ?? input.seen_excluded);
   if (seenExcluded > 0) alerts.push(`${pluralize(seenExcluded, 'annonce')} déjà analysée${seenExcluded > 1 ? 's' : ''} ignorée${seenExcluded > 1 ? 's' : ''}`);
+  if (rawFound === 0 && seenExcluded > 0) {
+    suggestions.push('Aucune nouvelle annonce après exclusion des déjà vues. Active “Ré-analyser les déjà vues” si tu veux recalibrer le radar.');
+  }
+  if (savedOrUpdated === 0 && budgetFiltered > 0) {
+    suggestions.push('Aucune piste dans le budget actuel. Augmente temporairement le budget pour vérifier le marché.');
+  }
 
   return {
     headline: `${pluralize(savedOrUpdated, 'piste')} exploitable${savedOrUpdated > 1 ? 's' : ''}`,
@@ -82,5 +89,6 @@ export function buildActionableScanSummary(input = {}) {
     rejection_reasons: rejectionReasons,
     query_performance: queryPerformance,
     alerts,
+    suggestions,
   };
 }

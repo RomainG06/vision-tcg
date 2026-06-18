@@ -283,7 +283,10 @@ export async function startScrape(options = {}) {
       }
     }
 
-    const status = errors.length === enabledSources.length ? 'failed' : 'completed';
+    const queryErrorCount = errors.filter(error => error.type === 'query_error').length;
+    const totalQueryAttempts = enabledSources.length * queries.length;
+    const allQueriesFailed = totalQueryAttempts > 0 && queryErrorCount >= totalQueryAttempts;
+    const status = allQueriesFailed ? 'failed' : 'completed';
     scrapeRunRepo.update(runId, {
       status,
       results_count: allListings.length,

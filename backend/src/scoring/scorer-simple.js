@@ -37,7 +37,7 @@ function detectLot(text) {
 
 function detectRisks(text) {
   const risks = [];
-  if (/\b(écarlate|ecarlate|violet|epee|épée|bouclier|sword|shield|scarlet|sun|moon|soleil|lune|moderne|display moderne|booster moderne)\b/i.test(text)) risks.push('modern_detected');
+  if (/\b(écarlate|ecarlate|violet|epee|épée|bouclier|sword|shield|scarlet|sun|moon|soleil|lune|moderne|display moderne|booster moderne|diamant\s*&?\s*perle|diamant\s+et\s+perle|dp\s*0?\d|dp01|dp02|trésors?\s+mystérieux|tresors?\s+mysterieux|pokemon\s+go|pokémon\s+go)\b|\/(?:78|123|130|236)\b/i.test(text)) risks.push('modern_detected');
   if (/\b(fake|proxy|reproduction|repro|custom|fan made|non officiel)\b/i.test(text)) risks.push('fake_detected');
   if (/\b(figurine|peluche|jouet|mug|poster|sticker|autocollant)\b/i.test(text)) risks.push('toy_detected');
   return unique(risks);

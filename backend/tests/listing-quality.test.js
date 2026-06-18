@@ -260,6 +260,38 @@ D'autres cartes disponibles dans mon dressing : WIZARD, EX, DP, PLATINE, HGSS, N
     expect(result.rejected.flatMap(item => item.risks || [])).toContain('foreign_language_detected');
   });
 
+  test('rejects Diamant & Perle cards during a Jungle hunt even when they are French and cheap', () => {
+    const result = splitQualityListings([
+      {
+        title: 'Carte Pokémon Simiabraz 5/130 Reverse Rare DP01 Set Diamant & Perle FR',
+        description: 'Carte française pas chère',
+        price: 5,
+        score: 78,
+      },
+      {
+        title: 'Carte Pokémon Abra 69/123 Commune DP02 Diamant & Perle Set Trésors Mystérieux FR',
+        description: 'Carte française pas chère',
+        price: 2,
+        score: 78,
+      },
+      {
+        title: 'Ronflex 11/64 Jungle holo français',
+        description: 'Carte Pokémon Wizards Jungle - Langue Français',
+        price: 55,
+        score: 62,
+      },
+    ], {
+      minScore: 50,
+      targetSeries: 'jungle',
+      rejectedLimit: 10,
+    });
+
+    expect(result.kept.map(item => item.title)).toEqual(['Ronflex 11/64 Jungle holo français']);
+    expect(result.rejected).toHaveLength(2);
+    expect(result.rejected.map(item => item.rejection_reason)).toEqual(expect.arrayContaining(['series_mismatch']));
+    expect(result.rejected.flatMap(item => item.risks || [])).toContain('modern_detected');
+  });
+
   test('does not use exploration fallback for off-series candidates', () => {
     const candidates = selectExplorationCandidates([
       { title: 'Carte Pokemon holo bon état', description: 'Photo disponible', price: 12, score: 70, score_breakdown: { signals: [] } },

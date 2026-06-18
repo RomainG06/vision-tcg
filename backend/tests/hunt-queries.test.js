@@ -28,6 +28,21 @@ describe('Smart hunt queries', () => {
     ]));
   });
 
+  test('uses high-precision Jungle queries and avoids noisy generic Pikachu query', () => {
+    const queries = buildHuntQueries({ profile: 'wizards-fr', filters: { series: 'jungle' } });
+
+    expect(queries).toEqual(expect.arrayContaining([
+      'pokemon jungle',
+      'carte pokemon jungle',
+      'jungle 64 pokemon',
+      'scarabrute jungle',
+      'insecateur jungle',
+      'aquali jungle',
+    ]));
+    expect(queries).not.toContain('pikachu jungle');
+    expect(queries.every(query => /jungle|64/i.test(query))).toBe(true);
+  });
+
   test('deduplicates listings by source and external id while preserving query matches', () => {
     const listings = [
       { source: 'vinted', external_id: '1', title: 'Dracolosse Obscur', query: 'team rocket' },

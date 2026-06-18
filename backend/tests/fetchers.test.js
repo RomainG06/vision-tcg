@@ -99,7 +99,7 @@ describe('Fetchers', () => {
       ]);
     });
 
-    it('opens a few unseen Jungle candidates when the grid text has no explicit series signal', () => {
+    it('opens only target-looking Jungle candidates and never blind fallback items', () => {
       const items = [
         {
           url: 'https://www.vinted.fr/items/301-carte-pokemon-wizards-fr-edition-1',
@@ -109,15 +109,51 @@ describe('Fetchers', () => {
           url: 'https://www.vinted.fr/items/302-lot-cartes-pokemon-anciennes-fr',
           text: 'Lot cartes Pokémon anciennes françaises',
         },
+        {
+          url: 'https://www.vinted.fr/items/303-ronflex-11-64-jungle-fr',
+          text: 'Ronflex 11/64 holo français',
+        },
       ];
 
       const selected = selectUnseenVintedItems(items, {
         targetSeries: 'jungle',
-        maxResults: 2,
+        maxResults: 3,
       });
 
-      expect(selected).toHaveLength(2);
-      expect(selected.every(item => item.prefilter_relaxed)).toBe(true);
+      expect(selected.map(item => item.url)).toEqual([
+        'https://www.vinted.fr/items/303-ronflex-11-64-jungle-fr',
+      ]);
+      expect(selected.some(item => item.prefilter_relaxed)).toBe(false);
+    });
+
+    it('does not open Diamant & Perle cards during a Jungle hunt', () => {
+      const items = [
+        {
+          url: 'https://www.vinted.fr/items/401-simiabraz-5-130-reverse-rare-dp01-fr',
+          text: 'Carte Pokémon Simiabraz 5/130 Reverse Rare DP01 Set Diamant & Perle FR - 5€',
+        },
+        {
+          url: 'https://www.vinted.fr/items/402-pingoleon-4-130-holo-dp01-fr',
+          text: 'Carte Pokémon Pingoleon 4/130 Holo Rare DP01 Set Diamant & Perle FR - 5€',
+        },
+        {
+          url: 'https://www.vinted.fr/items/403-abra-69-123-dp02-fr',
+          text: 'Carte Pokémon Abra 69/123 Commune DP02 Diamant & Perle Set Trésors Mystérieux FR - 2€',
+        },
+        {
+          url: 'https://www.vinted.fr/items/404-scarabrute-9-64-jungle-fr',
+          text: 'Scarabrute 9/64 Jungle holo français',
+        },
+      ];
+
+      const selected = selectUnseenVintedItems(items, {
+        targetSeries: 'jungle',
+        maxResults: 10,
+      });
+
+      expect(selected.map(item => item.url)).toEqual([
+        'https://www.vinted.fr/items/404-scarabrute-9-64-jungle-fr',
+      ]);
     });
   });
   

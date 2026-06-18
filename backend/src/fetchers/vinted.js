@@ -9,13 +9,13 @@ export function extractVintedExternalId(url) {
 const SERIES_PREFILTER_PATTERNS = {
   rocket: /\b(team\s*rocket|rocket|dark\s+(?:charizard|blastoise|dragonite|raichu|alakazam|magneton|hypno|slowbro|arbok|dugtrio|golbat|gyarados|machamp|vileplume|weezing))\b|\bobscur(?:e|s)?\b(?=.*\/82\b)/i,
   // Vinted grid titles often show only the card name + collector number, not the series name.
-  // Keep these broader than the final scorer: details are still fetched/scored before saving.
-  jungle: /\b(jungle)\b|\/64\b|\b(aeromite|aéromite|aquali|voltali|pyroli|ronflex|scarabrute|insécateur|nidoqueen|kangourex|electhor|électhor|rafflesia|victreebel|m.mime|mr mime|ossatueur|roucarnage|pikachu)\b/i,
-  fossil: /\b(fossile|fossil)\b|\/62\b|\b(artikodin|articuno|electhor|électhor|sulfura|moltres|dracolosse|dragonite|ectoplasma|gengar|lokhlass|lapras|kabutops|ptéra|ptera|aerodactyl|raichu|hypnomade|hypno|magneton)\b/i,
+  // These are still target-series clues, not a permission to open arbitrary cards.
+  jungle: /\b(jungle)\b|\/64\b|\b(aeromite|aéromite|aquali|vaporeon|voltali|jolteon|pyroli|flareon|ronflex|snorlax|scarabrute|pinsir|insécateur|insecateur|scyther|nidoqueen|kangourex|kangaskhan|electhor|électhor|rafflesia|vileplume|victreebel|m\.mime|mr\s+mime|ossatueur|marowak|roucarnage|pidgeot)\b/i,
+  fossil: /\b(fossile|fossil)\b|\/62\b|\b(artikodin|articuno|electhor|électhor|zapdos|sulfura|moltres|dracolosse|dragonite|ectoplasma|gengar|lokhlass|lapras|kabutops|ptéra|ptera|aerodactyl|raichu|hypnomade|hypno|magneton)\b/i,
   base: /\b(set\s*de\s*base|base\s*set)\b|\/102\b|\b(dracaufeu|charizard|tortank|blastoise|florizarre|venusaur|alakazam|leveinard|chansey|raichu|mewtwo|magneton|nidoking|feunard|ninetales)\b/i,
 };
 
-const RELAXABLE_SERIES_PREFILTER = new Set(['jungle', 'fossil', 'base']);
+const OFF_TARGET_PREFILTER_PATTERN = /\b(diamant\s*&?\s*perle|diamant\s+et\s+perle|dp\s*0?\d|dp01|dp02|trésors?\s+mystérieux|tresors?\s+mysterieux|sintonia\s+mentale|pokemon\s+go|pokémon\s+go|ecarlate|écarlate|violet|soleil|lune|sun\s*&?\s*moon|epee|épée|bouclier|sword|shield)\b|\/(?:78|123|130|236)\b/i;
 
 function itemText(item) {
   return typeof item === 'string'
@@ -28,9 +28,11 @@ function itemUrl(item) {
 }
 
 function matchesTargetSeriesPrefilter(item, targetSeries) {
+  const text = itemText(item);
   const pattern = SERIES_PREFILTER_PATTERNS[targetSeries];
   if (!targetSeries || targetSeries === 'all' || !pattern) return true;
-  return pattern.test(itemText(item));
+  if (OFF_TARGET_PREFILTER_PATTERN.test(text)) return false;
+  return pattern.test(text);
 }
 
 export function selectUnseenVintedItems(items, options = {}) {
@@ -44,7 +46,6 @@ export function selectUnseenVintedItems(items, options = {}) {
     ? excludeExternalIds
     : new Set(Array.from(excludeExternalIds || []).map(String));
   const selected = [];
-  const fallbackCandidates = [];
   const deduped = new Set();
 
   for (const item of items) {
@@ -58,13 +59,7 @@ export function selectUnseenVintedItems(items, options = {}) {
     if (matchesTargetSeriesPrefilter(item, targetSeries)) {
       selected.push(normalizedItem);
       if (selected.length >= maxResults) break;
-    } else if (RELAXABLE_SERIES_PREFILTER.has(targetSeries)) {
-      fallbackCandidates.push({ ...normalizedItem, prefilter_relaxed: true });
     }
-  }
-
-  if (selected.length === 0 && fallbackCandidates.length > 0) {
-    return fallbackCandidates.slice(0, maxResults);
   }
 
   return selected;
@@ -213,10 +208,7 @@ export class VintedFetcher extends BaseFetcher {
       const selectedItems = selectUnseenVintedItems(searchItems, { excludeExternalIds, maxResults, targetSeries });
       const selectedUrls = selectedItems.map(item => item.url);
       
-      logger.info(`Found ${searchItems.length} listing URLs on Vinted, ${selectedUrls.length} selected after already-seen + series prefilter`);
-      if (selectedItems.some(item => item.prefilter_relaxed)) {
-        logger.info(`Series prefilter relaxed for ${targetSeries}: opening ${selectedUrls.length} unseen candidates for detail scoring`);
-      }
+      logger.info(`Found ${searchItems.length} listing URLs on Vinted, ${selectedUrls.length} selected after already-seen + target-series prefilter`);
       if (searchItems.length > 0) {
         logger.debug(`First URL: ${searchItems[0].url}`);
       } else {

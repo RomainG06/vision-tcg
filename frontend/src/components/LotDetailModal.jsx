@@ -120,6 +120,16 @@ function LotDetailModal({ isOpen, onClose, listing, onUpdate, onDelete }) {
     }
   };
 
+  const handleMarkReviewed = async () => {
+    try {
+      await onUpdate?.(listing.id, { status: 'reviewed' });
+      onClose();
+      alert('Marqué comme vu');
+    } catch (err) {
+      alert('Erreur : ' + err.message);
+    }
+  };
+
   const handleMarkContacted = async () => {
     try {
       await onUpdate?.(listing.id, { status: 'contacted' });
@@ -416,6 +426,9 @@ function LotDetailModal({ isOpen, onClose, listing, onUpdate, onDelete }) {
           </button>
           <button className="lot-modal-action" onClick={handleAddToWatchlist} style={secondaryButtonStyle}>
             <TcgIcon name="watch" size={16} /> Watchlist
+          </button>
+          <button className="lot-modal-action" onClick={handleMarkReviewed} style={tertiaryButtonStyle}>
+            <TcgIcon name="contacted" size={16} /> Vu
           </button>
           <button className="lot-modal-action" onClick={handleIgnore} style={tertiaryButtonStyle}>
             <TcgIcon name="ignore" size={16} /> Ignorer

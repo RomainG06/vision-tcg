@@ -297,9 +297,12 @@ function formatTimeAgo(isoDate) {
 function formatStatus(status) {
   const labels = {
     new: 'Nouveau',
-    interested: 'Intéressant',
-    passed: 'Passé',
+    interested: 'Watchlist',
+    reviewed: 'Vu',
+    ignored: 'Ignoré',
     contacted: 'Contacté',
+    purchased: 'Acheté',
+    passed: 'Ignoré',
   };
   return labels[status] || status;
 }

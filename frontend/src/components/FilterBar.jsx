@@ -1,8 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import theme from '../theme';
 
 function FilterBar({ filters, onChange }) {
   const [localFilters, setLocalFilters] = useState(filters);
+
+  useEffect(() => {
+    setLocalFilters(filters);
+  }, [filters]);
 
   const handleChange = (key, value) => {
     const updated = { ...localFilters, [key]: value };
@@ -21,9 +25,23 @@ function FilterBar({ filters, onChange }) {
         >
           <option value="all">Tous</option>
           <option value="new">Nouveau</option>
-          <option value="interested">Intéressant</option>
-          <option value="passed">Passé</option>
+          <option value="interested">Watchlist</option>
+          <option value="reviewed">Vu</option>
+          <option value="ignored">Ignoré</option>
           <option value="contacted">Contacté</option>
+        </select>
+      </div>
+
+      <div style={styles.filterGroup}>
+        <label style={styles.label}>Trier par</label>
+        <select
+          style={styles.select}
+          value={localFilters.sortBy}
+          onChange={(e) => handleChange('sortBy', e.target.value)}
+        >
+          <option value="date">Plus récent</option>
+          <option value="score">Meilleur score</option>
+          <option value="price">Prix croissant</option>
         </select>
       </div>
 
@@ -79,6 +97,7 @@ function FilterBar({ filters, onChange }) {
           onClick={() => {
             const defaults = {
               status: 'all',
+              sortBy: 'date',
               minScore: 0,
               maxPrice: 1500,
               maxDistance: 50,

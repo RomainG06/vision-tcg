@@ -12,6 +12,7 @@ function App() {
   const [stats, setStats] = useState(null);
   const [filters, setFilters] = useState({
     status: 'all',
+    sortBy: 'date',
     minScore: 0,
     maxPrice: 1500,
     maxDistance: 50,
@@ -55,15 +56,22 @@ function App() {
       filtered = filtered.filter(l => l.status === filters.status);
     }
 
-    filtered = filtered.filter(l =>
-      l.score >= filters.minScore &&
-      l.price <= filters.maxPrice &&
-      l.distance_km <= filters.maxDistance
-    );
+    filtered = filtered.filter(l => {
+      const score = Number(l.score || 0);
+      const price = Number(l.price || 0);
+      const distance = l.distance_km === null || l.distance_km === undefined ? 0 : Number(l.distance_km);
+      return score >= filters.minScore &&
+        price <= filters.maxPrice &&
+        distance <= filters.maxDistance;
+    });
 
     filtered.sort((a, b) => {
       const lastScanDelta = Number((lastHunt?.highlightedIds || []).includes(b.id)) - Number((lastHunt?.highlightedIds || []).includes(a.id));
       if (lastScanDelta !== 0) return lastScanDelta;
+
+      if (filters.sortBy === 'score') return Number(b.score || 0) - Number(a.score || 0);
+      if (filters.sortBy === 'price') return Number(a.price || 0) - Number(b.price || 0);
+
       const runDelta = Number(b.scrape_run_id || 0) - Number(a.scrape_run_id || 0);
       if (runDelta !== 0) return runDelta;
       return new Date(b.scraped_at || b.published_at || 0) - new Date(a.scraped_at || a.published_at || 0);
@@ -209,12 +217,18 @@ function App() {
                 {(stats.avg_price ?? stats.avgPrice) ? Math.round(stats.avg_price ?? stats.avgPrice) : '0'}€
               </div>
             </div>
-            <div style={styles.statCard}>
-              <div style={styles.statLabel}>Wizards FR</div>
-              <div style={styles.statValue}>
-                {stats.wizards_count ?? stats.highScore ?? 0}
-              </div>
-            </div>
+            <button type="button" style={styles.statCardButton} onClick={() => handleFilterChange({ status: 'interested' })}>
+              <div style={styles.statLabel}>Watchlist</div>
+              <div style={styles.statValue}>{stats.watchlist ?? stats.interesting ?? 0}</div>
+            </button>
+            <button type="button" style={styles.statCardButton} onClick={() => handleFilterChange({ status: 'contacted' })}>
+              <div style={styles.statLabel}>Contactés</div>
+              <div style={styles.statValue}>{stats.contacted ?? 0}</div>
+            </button>
+            <button type="button" style={styles.statCardButton} onClick={() => handleFilterChange({ status: 'ignored' })}>
+              <div style={styles.statLabel}>Ignorés</div>
+              <div style={styles.statValue}>{stats.ignored ?? stats.passed ?? 0}</div>
+            </button>
           </div>
         )}
 
@@ -320,6 +334,17 @@ const styles = {
     textAlign: 'center',
     boxShadow: theme.shadows.md,
     transition: `all ${theme.effects.transitionNormal}`,
+  },
+  statCardButton: {
+    background: theme.colors.primary.deepDark,
+    border: `${theme.borders.widthMedium} solid ${theme.colors.primary.slate}`,
+    borderRadius: theme.borders.radiusLg,
+    padding: theme.spacing.xl,
+    textAlign: 'center',
+    boxShadow: theme.shadows.md,
+    transition: `all ${theme.effects.transitionNormal}`,
+    cursor: 'pointer',
+    color: 'inherit',
   },
   statLabel: {
     fontSize: theme.typography.sizes.bodySm,

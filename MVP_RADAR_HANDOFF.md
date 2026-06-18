@@ -188,17 +188,18 @@ Livré:
 - UI `HuntLaunchPanel`: résumé actionnable avec funnel, alertes, raisons de rejet, requêtes les plus productives et exemples rejetés.
 - Ajustement MVP utilisateur: détails techniques masqués par défaut, suggestions explicites, option “Ré-analyser les déjà vues” sans effacer la mémoire.
 
-### Priorité 3 — Watchlist/statuts workflow
+### Priorité 3 — Watchlist/statuts workflow — FAIT
 
 Objectif: transformer le radar en outil utilisable.
 
-À faire:
-- `Intéressé`
-- `Vu`
-- `Ignorer`
-- filtre statut
-- vue watchlist
-- tri par score/date/prix
+Livré:
+- Statuts MVP canoniques: `new`, `interested`, `reviewed`, `ignored`, `contacted`, `purchased`.
+- Normalisation des anciens alias UI/API: `passed`/`rejected` -> `ignored`, `viewed` -> `reviewed`, `watchlist`/`interesting` -> `interested`.
+- API: validation/normalisation des statuts sur PATCH listing, endpoint status et endpoint watchlist.
+- Stats backend: `watchlist`, `ignored`, `contacted`, compat `interesting`/`passed`.
+- UI FilterBar: filtres Tous/Nouveau/Watchlist/Vu/Ignoré/Contacté + tri Plus récent/Meilleur score/Prix croissant.
+- UI dashboard: cartes stats cliquables Watchlist/Contactés/Ignorés.
+- Modal détail: actions Watchlist, Vu, Ignorer, Contacté.
 
 ### Priorité 4 — Nettoyage tests legacy / release locale
 

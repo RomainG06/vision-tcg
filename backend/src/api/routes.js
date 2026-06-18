@@ -4,6 +4,7 @@ import { ListingRepository } from '../repositories/listing-repository.js';
 import { ScrapeRunRepository } from '../repositories/scrape-run-repository.js';
 import { getDatabaseInfo } from '../db/database.js';
 import { createScrapeJobManager, ScrapeAlreadyRunningError } from '../services/scrape-job-manager.js';
+import { assertValidListingStatus, normalizeListingStatus } from '../services/listing-status.js';
 
 const router = express.Router();
 
@@ -160,9 +161,10 @@ router.get('/jobs/status', (req, res) => {
  */
 router.get('/listings', (req, res) => {
   try {
+    const requestedStatus = req.query.status || 'all';
     const filters = {
       source: req.query.source,
-      status: req.query.status || 'all', // Changed from 'new' to 'all' - show everything by default
+      status: requestedStatus === 'all' ? 'all' : normalizeListingStatus(requestedStatus),
       minScore: req.query.min_score ? parseFloat(req.query.min_score) : undefined,
       maxPrice: req.query.max_price ? parseFloat(req.query.max_price) : undefined,
       maxDistance: req.query.max_distance ? parseFloat(req.query.max_distance) : undefined,
@@ -217,7 +219,7 @@ router.patch('/listings/:id', (req, res) => {
     const updates = {};
     
     if (req.body.status !== undefined) {
-      updates.status = req.body.status;
+      updates.status = assertValidListingStatus(req.body.status);
     }
     
     if (req.body.notes !== undefined) {
@@ -255,7 +257,7 @@ router.patch('/listings/:id/status', (req, res) => {
       return res.status(400).json({ error: 'Missing status' });
     }
 
-    listingRepo.update(id, { status });
+    listingRepo.update(id, { status: assertValidListingStatus(status) });
     const updated = listingRepo.findById(id);
 
     if (!updated) {
@@ -276,7 +278,7 @@ router.patch('/listings/:id/status', (req, res) => {
 router.post('/listings/:id/watchlist', (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const status = req.body.status || 'interested';
+    const status = assertValidListingStatus(req.body.status || 'interested');
 
     listingRepo.update(id, { status });
     const updated = listingRepo.findById(id);
@@ -347,8 +349,11 @@ router.get('/stats', (req, res) => {
     const stats = {
       total: listingRepo.count(),
       viewed: listingRepo.countByStatus('reviewed'),
-      passed: listingRepo.countByStatus('rejected'),
+      passed: listingRepo.countByStatus('ignored'),
+      ignored: listingRepo.countByStatus('ignored'),
+      contacted: listingRepo.countByStatus('contacted'),
       interesting: listingRepo.countByStatus('interested'),
+      watchlist: listingRepo.countByStatus('interested'),
       new: listingRepo.countByStatus('new'),
       avgScore: Math.round(listingRepo.getAverageScore() * 10) / 10,
       avgPrice: Math.round(listingRepo.getAveragePrice() * 100) / 100,

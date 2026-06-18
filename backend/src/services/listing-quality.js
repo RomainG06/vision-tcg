@@ -1,20 +1,20 @@
 const WIZARDS_PATTERN = /\b(wizards|wotc|base set|set de base|jungle|fossile|fossil|team rocket|gym|neo genesis|neo|wizard)\b/i;
-const FRENCH_PATTERN = /\b(fr|vf|français|francais|française|francaise|édition française|edition francaise)\b/i;
+const FRENCH_PATTERN = /\b(fr|vf|français|francais|française|francaise|édition française|edition francaise|langue\s*:?\s*fran[cç]ais(?:e)?)\b/i;
 const LOT_PATTERN = /\b(lot|collection|vrac|classeur|set complet|complete set)\b/i;
 const SINGLE_CARD_PATTERN = /\b(carte seule|carte unique|à l'unité|a l'unite|unitaire|single card|dracaufeu|tortank|florizarre|mewtwo|pikachu)\b/i;
 const POKEMON_CARD_PATTERN = /\b(pokemon|pokémon|carte|cartes|holo|rare|jungle|fossile|fossil|rocket|dracaufeu|tortank|florizarre|mewtwo|pikachu)\b/i;
 
 const TARGET_SERIES_PATTERNS = {
   rocket: /\b(team\s*rocket|rocket|dark\s+(?:charizard|blastoise|dragonite|raichu|alakazam|magneton|hypno|slowbro|arbok|dugtrio|golbat|gyarados|machamp|vileplume|weezing))\b|\bobscur(?:e|s)?\b(?=.*\/82\b)/i,
-  jungle: /\b(jungle)\b/i,
-  fossil: /\b(fossile|fossil)\b/i,
-  base: /\b(set\s*de\s*base|base\s*set)\b/i,
+  jungle: /\b(jungle)\b|\/64\b|\b(aeromite|aéromite|aquali|vaporeon|voltali|jolteon|pyroli|flareon|ronflex|snorlax|scarabrute|pinsir|insécateur|insecateur|scyther|nidoqueen|kangourex|kangaskhan|electhor|électhor|jolteon|rafflesia|vileplume|victreebel|m\.mime|mr\s+mime|ossatueur|marowak|roucarnage|pidgeot)\b/i,
+  fossil: /\b(fossile|fossil)\b|\/62\b|\b(artikodin|articuno|electhor|électhor|zapdos|sulfura|moltres|dracolosse|dragonite|ectoplasma|gengar|lokhlass|lapras|kabutops|ptéra|ptera|aerodactyl|hypnomade|hypno|magneton)\b/i,
+  base: /\b(set\s*de\s*base|base\s*set)\b|\/102\b|\b(dracaufeu|charizard|tortank|blastoise|florizarre|venusaur|alakazam|leveinard|chansey|raichu|mewtwo|magneton|nidoking|feunard|ninetales)\b/i,
 };
 
 const NOISE_PATTERNS = [
   { code: 'modern_detected', pattern: /\b(écarlate|ecarlate|violet|epee|épée|bouclier|sword|shield|scarlet|sun|moon|soleil|lune|moderne|display moderne|booster moderne)\b/i },
   { code: 'accessory_detected', pattern: /\b(sleeves?|protections?|toploader|top loader|classeur vide|binder empty|accessoires?|rangement|boite vide|box vide)\b/i },
-  { code: 'foreign_language_detected', pattern: /\b(japonais|japonaise|japanese|anglais|english|allemand|german|italien|italian|espagnol|spanish)\b/i },
+  { code: 'foreign_language_detected', pattern: /\b(japonais|japonaise|japanese|anglais|english|allemand|german|italien|italienne|italian|italiano|italiana|italiane|ita|espagnol|spanish)\b/i },
   { code: 'fake_detected', pattern: /\b(fake|proxy|reproduction|repro|custom|fan made|non officiel)\b/i },
   { code: 'energy_bulk_detected', pattern: /\b(énergies?|energies?|cartes énergie|cartes energie)\b/i },
   { code: 'toy_detected', pattern: /\b(figurine|peluche|jouet|mug|poster|sticker|autocollant)\b/i },

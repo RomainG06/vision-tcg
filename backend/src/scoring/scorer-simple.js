@@ -11,7 +11,7 @@ function unique(values) {
 function detectSeries(text) {
   const series = [];
   if (/\b(team\s*rocket|rocket)\b/i.test(text) || (/\bobscur(?:e|s)?\b/i.test(text) && /\/82\b/.test(text))) series.push('rocket');
-  if (/\b(jungle)\b/i.test(text)) series.push('jungle');
+  if (/\b(jungle)\b|\/64\b|\b(aeromite|aéromite|aquali|vaporeon|voltali|jolteon|pyroli|flareon|ronflex|snorlax|scarabrute|pinsir|insécateur|insecateur|scyther|nidoqueen|kangourex|kangaskhan|rafflesia|vileplume|victreebel|m\.mime|mr\s+mime|ossatueur|marowak|roucarnage|pidgeot)\b/i.test(text)) series.push('jungle');
   if (/\b(fossile|fossil)\b/i.test(text)) series.push('fossil');
   if (/\b(set\s*de\s*base|base\s*set)\b/i.test(text)) series.push('base');
   if (/\b(neo\s*destiny|neo destiny|105)\b/i.test(text)) series.push('neo');
@@ -20,8 +20,8 @@ function detectSeries(text) {
 }
 
 function detectLanguage(text) {
-  const french = /\b(fr|vf|français|francais|française|francaise|édition française|edition francaise)\b/i.test(text);
-  const foreign = /\b(english|anglais|japanese|japonais|japonaise|allemand|german|italien|italian|espagnol|spanish)\b/i.test(text);
+  const french = /\b(fr|vf|français|francais|française|francaise|édition française|edition francaise|langue\s*:?\s*fran[cç]ais(?:e)?)\b/i.test(text);
+  const foreign = /\b(english|anglais|japanese|japonais|japonaise|allemand|german|italien|italienne|italian|italiano|italiana|italiane|ita|espagnol|spanish)\b/i.test(text);
   return { french, foreign };
 }
 

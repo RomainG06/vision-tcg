@@ -225,6 +225,41 @@ D'autres cartes disponibles dans mon dressing : WIZARD, EX, DP, PLATINE, HGSS, N
     expect(rocketQuality.risk_reasons).toContain('Série ciblée non détectée');
   });
 
+  test('rejects Italian modern Pikachu cards during a Jungle hunt', () => {
+    const result = splitQualityListings([
+      {
+        title: 'Carta pokemon Pikachu 55/236 reverse sintonia mentale Sokuna ita',
+        description: 'Carta italiana near mint',
+        price: 9.9,
+        score: 78,
+      },
+      {
+        title: 'Carta Pikachu Holo stamped Pokemon GO 028/078 ita',
+        description: 'Near mint italiano',
+        price: 3.9,
+        score: 78,
+      },
+      {
+        title: 'Scarabrute 9/64 Jungle holo français',
+        description: 'Carte Pokémon Wizards Jungle - Langue Français',
+        price: 45,
+        score: 62,
+      },
+    ], {
+      minScore: 50,
+      targetSeries: 'jungle',
+      rejectedLimit: 10,
+    });
+
+    expect(result.kept.map(item => item.title)).toEqual(['Scarabrute 9/64 Jungle holo français']);
+    expect(result.rejected).toEqual(expect.arrayContaining([
+      expect.objectContaining({ title: 'Carta pokemon Pikachu 55/236 reverse sintonia mentale Sokuna ita' }),
+      expect.objectContaining({ title: 'Carta Pikachu Holo stamped Pokemon GO 028/078 ita' }),
+    ]));
+    expect(result.rejected.map(item => item.rejection_reason)).toEqual(expect.arrayContaining(['series_mismatch']));
+    expect(result.rejected.flatMap(item => item.risks || [])).toContain('foreign_language_detected');
+  });
+
   test('does not use exploration fallback for off-series candidates', () => {
     const candidates = selectExplorationCandidates([
       { title: 'Carte Pokemon holo bon état', description: 'Photo disponible', price: 12, score: 70, score_breakdown: { signals: [] } },

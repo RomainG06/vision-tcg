@@ -14,7 +14,6 @@ function LotDetail({ listing, onClose, onUpdate }) {
       onClose();
     } catch (error) {
       console.error('Failed to update status:', error);
-      alert('Erreur lors de la mise à jour');
     }
   };
 

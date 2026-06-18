@@ -8,10 +8,14 @@ export function extractVintedExternalId(url) {
 
 const SERIES_PREFILTER_PATTERNS = {
   rocket: /\b(team\s*rocket|rocket|dark\s+(?:charizard|blastoise|dragonite|raichu|alakazam|magneton|hypno|slowbro|arbok|dugtrio|golbat|gyarados|machamp|vileplume|weezing))\b|\bobscur(?:e|s)?\b(?=.*\/82\b)/i,
-  jungle: /\b(jungle)\b/i,
-  fossil: /\b(fossile|fossil)\b/i,
-  base: /\b(set\s*de\s*base|base\s*set)\b/i,
+  // Vinted grid titles often show only the card name + collector number, not the series name.
+  // Keep these broader than the final scorer: details are still fetched/scored before saving.
+  jungle: /\b(jungle)\b|\/64\b|\b(aeromite|aéromite|aquali|voltali|pyroli|ronflex|scarabrute|insécateur|nidoqueen|kangourex|electhor|électhor|rafflesia|victreebel|m.mime|mr mime|ossatueur|roucarnage|pikachu)\b/i,
+  fossil: /\b(fossile|fossil)\b|\/62\b|\b(artikodin|articuno|electhor|électhor|sulfura|moltres|dracolosse|dragonite|ectoplasma|gengar|lokhlass|lapras|kabutops|ptéra|ptera|aerodactyl|raichu|hypnomade|hypno|magneton)\b/i,
+  base: /\b(set\s*de\s*base|base\s*set)\b|\/102\b|\b(dracaufeu|charizard|tortank|blastoise|florizarre|venusaur|alakazam|leveinard|chansey|raichu|mewtwo|magneton|nidoking|feunard|ninetales)\b/i,
 };
+
+const RELAXABLE_SERIES_PREFILTER = new Set(['jungle', 'fossil', 'base']);
 
 function itemText(item) {
   return typeof item === 'string'
@@ -40,17 +44,27 @@ export function selectUnseenVintedItems(items, options = {}) {
     ? excludeExternalIds
     : new Set(Array.from(excludeExternalIds || []).map(String));
   const selected = [];
+  const fallbackCandidates = [];
   const deduped = new Set();
 
   for (const item of items) {
     const url = itemUrl(item);
     const externalId = extractVintedExternalId(url);
     if (!externalId || seen.has(String(externalId)) || deduped.has(String(externalId))) continue;
-    if (!matchesTargetSeriesPrefilter(item, targetSeries)) continue;
 
     deduped.add(String(externalId));
-    selected.push(typeof item === 'string' ? { url, text: url } : item);
-    if (selected.length >= maxResults) break;
+    const normalizedItem = typeof item === 'string' ? { url, text: url } : item;
+
+    if (matchesTargetSeriesPrefilter(item, targetSeries)) {
+      selected.push(normalizedItem);
+      if (selected.length >= maxResults) break;
+    } else if (RELAXABLE_SERIES_PREFILTER.has(targetSeries)) {
+      fallbackCandidates.push({ ...normalizedItem, prefilter_relaxed: true });
+    }
+  }
+
+  if (selected.length === 0 && fallbackCandidates.length > 0) {
+    return fallbackCandidates.slice(0, maxResults);
   }
 
   return selected;
@@ -200,6 +214,9 @@ export class VintedFetcher extends BaseFetcher {
       const selectedUrls = selectedItems.map(item => item.url);
       
       logger.info(`Found ${searchItems.length} listing URLs on Vinted, ${selectedUrls.length} selected after already-seen + series prefilter`);
+      if (selectedItems.some(item => item.prefilter_relaxed)) {
+        logger.info(`Series prefilter relaxed for ${targetSeries}: opening ${selectedUrls.length} unseen candidates for detail scoring`);
+      }
       if (searchItems.length > 0) {
         logger.debug(`First URL: ${searchItems[0].url}`);
       } else {

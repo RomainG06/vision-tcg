@@ -99,6 +99,7 @@ router.get('/docs', (req, res) => {
       { method: 'PATCH', path: '/api/listings/:id', description: 'Update listing' },
       { method: 'PATCH', path: '/api/listings/:id/status', description: 'Update listing status' },
       { method: 'POST', path: '/api/listings/:id/watchlist', description: 'Mark listing as interesting' },
+      { method: 'DELETE', path: '/api/listings', description: 'Clear all local dashboard listings' },
       { method: 'DELETE', path: '/api/listings/:id', description: 'Delete listing' },
       { method: 'POST', path: '/api/scrape/start', description: 'Start a marketplace scrape and save results' },
       { method: 'GET', path: '/api/jobs/status', description: 'Get current scrape job status' },
@@ -291,6 +292,21 @@ router.post('/listings/:id/watchlist', (req, res) => {
     res.json(mapListing(updated));
   } catch (error) {
     logger.error(`Error adding listing ${req.params.id} to watchlist:`, error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * DELETE /api/listings
+ * Clear all local dashboard listings. Scrape history/seen cache are preserved.
+ */
+router.delete('/listings', (req, res) => {
+  try {
+    const before = listingRepo.count();
+    listingRepo.deleteAll();
+    res.json({ deleted: before });
+  } catch (error) {
+    logger.error('Error clearing listings:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

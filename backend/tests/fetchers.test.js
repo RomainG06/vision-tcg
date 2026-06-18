@@ -76,6 +76,49 @@ describe('Fetchers', () => {
         'https://www.vinted.fr/items/105-dracolosse-obscur-edition-1-22-82',
       ]);
     });
+
+    it('relaxes grid prefilter for Jungle because Vinted often hides series names before detail pages', () => {
+      const items = [
+        {
+          url: 'https://www.vinted.fr/items/201-carte-pokemon-nidoran-edition-1-wizards',
+          text: 'Carte Pokémon Nidoran édition 1 Wizards FR',
+        },
+        {
+          url: 'https://www.vinted.fr/items/202-scarabrute-9-64-jungle-fr',
+          text: 'Scarabrute 9/64 holo français',
+        },
+      ];
+
+      const selected = selectUnseenVintedItems(items, {
+        targetSeries: 'jungle',
+        maxResults: 2,
+      });
+
+      expect(selected.map(item => item.url)).toEqual([
+        'https://www.vinted.fr/items/202-scarabrute-9-64-jungle-fr',
+      ]);
+    });
+
+    it('opens a few unseen Jungle candidates when the grid text has no explicit series signal', () => {
+      const items = [
+        {
+          url: 'https://www.vinted.fr/items/301-carte-pokemon-wizards-fr-edition-1',
+          text: 'Carte Pokémon Wizards FR édition 1 bon état',
+        },
+        {
+          url: 'https://www.vinted.fr/items/302-lot-cartes-pokemon-anciennes-fr',
+          text: 'Lot cartes Pokémon anciennes françaises',
+        },
+      ];
+
+      const selected = selectUnseenVintedItems(items, {
+        targetSeries: 'jungle',
+        maxResults: 2,
+      });
+
+      expect(selected).toHaveLength(2);
+      expect(selected.every(item => item.prefilter_relaxed)).toBe(true);
+    });
   });
   
   // TODO: Add integration tests with actual fetchers

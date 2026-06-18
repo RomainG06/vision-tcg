@@ -35,6 +35,7 @@ const SUBSCORE_LABELS = {
  */
 function LotDetailModal({ isOpen, onClose, listing, onUpdate, onDelete }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [actionFeedback, setActionFeedback] = useState(null);
   const modalRef = useRef(null);
 
   // Focus trap + Escape key
@@ -101,12 +102,17 @@ function LotDetailModal({ isOpen, onClose, listing, onUpdate, onDelete }) {
     window.open(listing.url, '_blank');
   };
 
+  const showFeedback = (message, type = 'success') => {
+    setActionFeedback({ message, type });
+    window.setTimeout(() => setActionFeedback(null), 3000);
+  };
+
   const handleAddToWatchlist = async () => {
     try {
       await onUpdate?.(listing.id, { status: 'interested' });
-      alert('Ajouté à la watchlist');
+      showFeedback('Ajouté à la watchlist');
     } catch (err) {
-      alert('Erreur : ' + err.message);
+      showFeedback('Erreur : ' + err.message, 'error');
     }
   };
 
@@ -114,9 +120,8 @@ function LotDetailModal({ isOpen, onClose, listing, onUpdate, onDelete }) {
     try {
       await onUpdate?.(listing.id, { status: 'ignored' });
       onClose();
-      alert('Annonce ignorée');
     } catch (err) {
-      alert('Erreur : ' + err.message);
+      showFeedback('Erreur : ' + err.message, 'error');
     }
   };
 
@@ -124,9 +129,8 @@ function LotDetailModal({ isOpen, onClose, listing, onUpdate, onDelete }) {
     try {
       await onUpdate?.(listing.id, { status: 'reviewed' });
       onClose();
-      alert('Marqué comme vu');
     } catch (err) {
-      alert('Erreur : ' + err.message);
+      showFeedback('Erreur : ' + err.message, 'error');
     }
   };
 
@@ -134,9 +138,8 @@ function LotDetailModal({ isOpen, onClose, listing, onUpdate, onDelete }) {
     try {
       await onUpdate?.(listing.id, { status: 'contacted' });
       onClose();
-      alert('Marqué comme contacté');
     } catch (err) {
-      alert('Erreur : ' + err.message);
+      showFeedback('Erreur : ' + err.message, 'error');
     }
   };
 
@@ -144,9 +147,9 @@ function LotDetailModal({ isOpen, onClose, listing, onUpdate, onDelete }) {
     try {
       if (!window.confirm('Supprimer définitivement cette annonce de la liste ?')) return;
       await onDelete?.(listing.id);
-      alert('Annonce supprimée');
+      onClose();
     } catch (err) {
-      alert('Erreur : ' + err.message);
+      showFeedback('Erreur : ' + err.message, 'error');
     }
   };
 
@@ -208,6 +211,15 @@ function LotDetailModal({ isOpen, onClose, listing, onUpdate, onDelete }) {
             Score: {listing.score}
           </div>
         </div>
+
+        {actionFeedback && (
+          <div style={{
+            ...actionFeedbackStyle,
+            ...(actionFeedback.type === 'error' ? actionFeedbackErrorStyle : {}),
+          }}>
+            {actionFeedback.message}
+          </div>
+        )}
 
         {/* BODY SCROLLABLE */}
         <div className="lot-modal-body" style={bodyStyle}>
@@ -584,6 +596,23 @@ const scoreBadgeStyle = {
   fontSize: theme.typography.sizes.headingMd,
   fontWeight: theme.typography.weights.bold,
   boxShadow: `0 0 20px ${theme.accents.hunterGold}80`,
+};
+
+const actionFeedbackStyle = {
+  margin: `${theme.spacing.md} ${theme.spacing.lg} 0`,
+  padding: `${theme.spacing.sm} ${theme.spacing.md}`,
+  borderRadius: theme.borders.radiusMd,
+  border: `${theme.borders.widthThin} solid ${theme.accents.successGreen}66`,
+  background: `${theme.accents.successGreen}18`,
+  color: theme.colors.text.primary,
+  fontSize: theme.typography.sizes.bodySm,
+  fontWeight: theme.typography.weights.semibold,
+};
+
+const actionFeedbackErrorStyle = {
+  borderColor: `${theme.accents.preyRed}66`,
+  background: `${theme.accents.preyRed}18`,
+  color: theme.accents.preyRed,
 };
 
 const bodyStyle = {

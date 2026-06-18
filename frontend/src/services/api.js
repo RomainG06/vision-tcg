@@ -63,6 +63,15 @@ export async function deleteListing(id) {
   return true;
 }
 
+export async function deleteAllListings() {
+  const response = await fetch(`${API_URL}/api/listings`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) throw new Error('Failed to clear listings');
+  return response.json();
+}
+
 /**
  * Fetch statistics
  */

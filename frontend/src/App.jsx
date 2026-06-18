@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import FilterBar from './components/FilterBar';
 import LotList from './components/LotList';
 import HuntLaunchPanel from './components/HuntLaunchPanel';
-import { fetchListings, fetchStats, updateListing, deleteListing } from './services/api';
+import { fetchListings, fetchStats, updateListing, deleteListing, deleteAllListings } from './services/api';
 import theme from './theme';
 import TcgIcon from './components/TcgIcon';
 
@@ -20,6 +20,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lastHunt, setLastHunt] = useState(null);
+  const [notice, setNotice] = useState(null);
   const resultsRef = useRef(null);
 
   // Load initial data
@@ -145,6 +146,27 @@ function App() {
     }
   };
 
+  const handleClearAllListings = async () => {
+    const total = stats?.total_listings ?? stats?.total ?? listings.length;
+    if (total <= 0) return;
+    if (!window.confirm(`Supprimer les ${total} annonces du dashboard ?\n\nLa mémoire anti-rescan et l'historique de scan sont conservés.`)) return;
+
+    try {
+      const result = await deleteAllListings();
+      setListings([]);
+      setFilteredListings([]);
+      setLastHunt(null);
+      const statsData = await fetchStats();
+      setStats(statsData);
+      setNotice(`${result.deleted ?? total} annonces supprimées du dashboard.`);
+      setTimeout(() => setNotice(null), 3500);
+    } catch (err) {
+      console.error('Failed to clear listings:', err);
+      setNotice(`Erreur suppression : ${err.message}`);
+      setTimeout(() => setNotice(null), 5000);
+    }
+  };
+
   if (loading) {
     return (
       <div style={styles.loading}>
@@ -230,6 +252,24 @@ function App() {
               <div style={styles.statValue}>{stats.ignored ?? stats.passed ?? 0}</div>
             </button>
           </div>
+        )}
+
+        <div style={styles.dashboardActions}>
+          <div style={styles.dashboardActionsText}>
+            Nettoyage local : supprime les annonces affichées sans effacer la mémoire anti-rescan.
+          </div>
+          <button
+            type="button"
+            style={styles.clearAllButton}
+            onClick={handleClearAllListings}
+            disabled={(stats?.total_listings ?? stats?.total ?? listings.length) <= 0}
+          >
+            Vider les annonces
+          </button>
+        </div>
+
+        {notice && (
+          <div style={styles.notice}>{notice}</div>
         )}
 
         <LotList
@@ -360,6 +400,40 @@ const styles = {
     fontWeight: theme.typography.weights.bold,
     color: theme.accents.hunterGold,
     textShadow: `0 0 16px ${theme.accents.hunterGold}80`,
+  },
+  dashboardActions: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: theme.spacing.md,
+    marginTop: `-${theme.spacing.xxl}`,
+    marginBottom: theme.spacing.xl,
+    padding: `${theme.spacing.md} ${theme.spacing.lg}`,
+    background: `${theme.colors.primary.deepDark}AA`,
+    border: `${theme.borders.widthThin} solid ${theme.colors.primary.slate}`,
+    borderRadius: theme.borders.radiusLg,
+    flexWrap: 'wrap',
+  },
+  dashboardActionsText: {
+    color: theme.colors.text.tertiary,
+    fontSize: theme.typography.sizes.bodySm,
+  },
+  clearAllButton: {
+    border: `${theme.borders.widthThin} solid ${theme.accents.preyRed}99`,
+    borderRadius: theme.borders.radiusMd,
+    background: `${theme.accents.preyRed}18`,
+    color: theme.accents.preyRed,
+    padding: `${theme.spacing.sm} ${theme.spacing.lg}`,
+    cursor: 'pointer',
+    fontWeight: theme.typography.weights.semibold,
+  },
+  notice: {
+    marginBottom: theme.spacing.xl,
+    padding: `${theme.spacing.md} ${theme.spacing.lg}`,
+    borderRadius: theme.borders.radiusMd,
+    border: `${theme.borders.widthThin} solid ${theme.accents.successGreen}66`,
+    background: `${theme.accents.successGreen}14`,
+    color: theme.colors.text.secondary,
   },
   loading: {
     display: 'flex',

@@ -249,7 +249,7 @@ const styles = {
     background: theme.colors.primary.obsidian,
     fontFamily: theme.typography.fonts.primary,
     color: theme.colors.text.primary,
-    padding: theme.spacing.xl,
+    padding: 'clamp(12px, 2.5vw, 24px)',
   },
   header: {
     textAlign: 'center',
@@ -264,7 +264,7 @@ const styles = {
   },
   title: {
     fontFamily: theme.typography.fonts.heading,
-    fontSize: theme.typography.sizes.display,
+    fontSize: 'clamp(30px, 6vw, 56px)',
     fontWeight: theme.typography.weights.bold,
     marginBottom: theme.spacing.sm,
     color: theme.colors.text.primary,
@@ -273,6 +273,7 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     gap: theme.spacing.lg,
+    flexWrap: 'wrap',
   },
   titleIcon: {
     display: 'inline-flex',
@@ -322,7 +323,7 @@ const styles = {
   },
   stats: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
     gap: theme.spacing.xl,
     marginBottom: theme.spacing.xxxl,
   },

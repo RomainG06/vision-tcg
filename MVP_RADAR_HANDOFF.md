@@ -214,17 +214,22 @@ Livré:
 - README principal mis à jour sur la branche `feature/ui-hunting-radar` et le statut réel Vinted/Leboncoin.
 - Nouveau guide local: `MVP_LOCAL_RELEASE.md` avec commandes Windows, parcours de test MVP, validations.
 
+### Priorité 5 — Polish final MVP — FAIT
+
+Objectif: rendre le MVP plus lisible sans ajouter de grosse feature.
+
+Livré:
+- Messages d’erreur scrape/Vinted plus humains: Chromium impossible, blocage marketplace/CAPTCHA, timeout/réseau.
+- Bloc “Prochaine action” dans le résumé de scan: guide l’utilisateur vers Watchlist/Vu/Ignoré ou ré-analyse.
+- CTA direct “Activer la ré-analyse au prochain scan” quand beaucoup d’annonces déjà vues masquent les pistes.
+- Responsive léger: funnel sur 2 colonnes puis 1 colonne mobile, cartes annonces à partir de 280px, stats dashboard plus compactes, titre clamp mobile.
+- Tentative review design via sous-agent: bloquée par quota HTTP 429, polish appliqué manuellement côté dev.
+
 ## Recommandation orchestrateur
 
-Avant de continuer les features UI, traiter un petit bloc de robustesse:
-
-```txt
-fix(api): make scrape endpoint crash-safe and single-flight
-```
-
-Puis continuer avec:
-
-```txt
-feat(radar): expose actionable scan summary
-feat(radar): add watchlist and status workflow
-```
+1. Pull la branche `feature/ui-hunting-radar`.
+2. Tester `npm run dev` backend + frontend.
+3. Lancer un scan Vinted Rocket budget 200 avec sensibilité équilibrée.
+4. Tester le parcours MVP complet: résumé -> annonce -> Watchlist/Vu/Ignoré/Contacté -> filtres.
+5. Si reset revient, collecter le log backend Windows exact.
+6. Sinon préparer une PR/merge MVP local.

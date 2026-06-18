@@ -77,6 +77,33 @@ function formatPrice(price) {
   return `${Number(price).toFixed(2).replace('.00', '')} €`;
 }
 
+function getFriendlyScrapeError(message = '') {
+  const text = String(message);
+  if (/Missing X server|\$DISPLAY|Failed to launch the browser process/i.test(text)) {
+    return 'Chromium n’a pas pu démarrer. Ferme les anciens Chrome/Puppeteer puis relance le backend.';
+  }
+  if (/captcha|datadome|blocked|forbidden|403/i.test(text)) {
+    return 'Vinted semble bloquer le scan. Réessaie plus tard, réduis la sensibilité ou résous le challenge si une fenêtre s’ouvre.';
+  }
+  if (/network|timeout|ERR_|ECONN|fetch/i.test(text)) {
+    return 'Connexion marketplace instable. Vérifie internet puis relance avec une sensibilité plus basse.';
+  }
+  return text || 'Le scan n’a pas pu se terminer. Réessaie avec moins de requêtes.';
+}
+
+function getSummaryAdvice(summary) {
+  const saved = Number(summary?.actionable?.funnel?.saved_or_updated ?? summary?.saved ?? 0);
+  const seenExcluded = Number(summary?.seenExcluded ?? 0);
+  const budgetFiltered = Number(summary?.budgetFiltered ?? 0);
+  const qualityFiltered = Number(summary?.qualityFiltered ?? 0);
+
+  if (saved > 0) return 'Priorité MVP : ouvre les meilleures cartes, mets en Watchlist celles à contacter, puis marque les autres comme Vu ou Ignoré.';
+  if (seenExcluded > 0 && !summary?.rescanSeen) return 'Aucune nouvelle piste : beaucoup d’annonces ont déjà été analysées. Active “Ré-analyser les déjà vues” pour recalibrer avec le scoring actuel.';
+  if (budgetFiltered > 0) return 'Aucune piste gardée : plusieurs annonces semblent hors budget. Augmente le budget ou filtre une série moins chère.';
+  if (qualityFiltered > 0) return 'Aucune piste gardée : le radar a surtout vu du bruit ou des annonces hors série. Essaie le mode Agressif ou Toutes Wizards FR.';
+  return 'Aucune piste exploitable pour l’instant. Relance plus tard ou élargis la série ciblée.';
+}
+
 function FunnelMetric({ label, value, highlight = false }) {
   return (
     <div style={{ ...styles.funnelMetric, ...(highlight ? styles.funnelMetricHighlight : {}) }}>
@@ -122,7 +149,7 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
         if (scrapeError.status === 409) {
           setStatus('error');
           setStep('Une chasse est déjà en cours');
-          setError(scrapeError.message);
+          setError(getFriendlyScrapeError(scrapeError.message));
           return;
         }
 
@@ -174,7 +201,7 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
       });
       setStatus('success');
       setStep(`${data.warning ? 'Dernier scan disponible' : 'Scan terminé'} : ${latestRun.source || 'source inconnue'} · ${found} résultat${found > 1 ? 's' : ''}`);
-      if (data.warning) setError(`Live scrape bloqué : ${data.warning}`);
+      if (data.warning) setError(getFriendlyScrapeError(data.warning));
       await onHuntComplete?.({
         ...data,
         stats: {
@@ -183,7 +210,7 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
         },
       });
     } catch (err) {
-      setError(err.message);
+      setError(getFriendlyScrapeError(err.message));
       setStatus('error');
       setStep('Historique de scan indisponible');
     }
@@ -290,7 +317,7 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
 
           {summary && (
             <div style={styles.summary}>
-              <div style={styles.summaryHeader}>
+              <div className="hunt-summary-header" style={styles.summaryHeader}>
                 <strong>{summary.actionable?.headline || `${summary.found} pistes détectées`}</strong>
                 <span>{summary.sources}</span>
               </div>
@@ -311,7 +338,22 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
                 </div>
               )}
 
-              <div style={styles.funnelGrid}>
+              <div style={styles.nextStepBox}>
+                <strong>Prochaine action</strong>
+                <span>{getSummaryAdvice(summary)}</span>
+                {summary.seenExcluded > 0 && !summary.rescanSeen && (
+                  <button
+                    type="button"
+                    style={styles.inlineActionButton}
+                    onClick={() => setRescanSeen(true)}
+                    disabled={isRunning}
+                  >
+                    Activer la ré-analyse au prochain scan
+                  </button>
+                )}
+              </div>
+
+              <div className="hunt-funnel" style={styles.funnelGrid}>
                 <FunnelMetric label="Brutes" value={summary.actionable?.funnel?.raw_found ?? summary.rawFound} />
                 <FunnelMetric label="Sélectionnées" value={summary.actionable?.funnel?.selected_for_details ?? summary.selectedForDetails} />
                 <FunnelMetric label="Détails" value={summary.actionable?.funnel?.details_fetched ?? summary.fetchedDetails} />
@@ -473,6 +515,11 @@ const css = `
     .hunt-layout { grid-template-columns: 1fr !important; }
     .hunt-actions { flex-direction: column !important; }
     .hunt-actions button { width: 100% !important; }
+    .hunt-funnel { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  }
+  @media (max-width: 520px) {
+    .hunt-summary-header { align-items: flex-start !important; flex-direction: column !important; }
+    .hunt-funnel { grid-template-columns: 1fr !important; }
   }
   @media (prefers-reduced-motion: reduce) {
     .hunt-radar::before { animation: none; opacity: .2; }
@@ -632,6 +679,28 @@ const styles = {
     color: theme.colors.text.secondary,
     background: `${theme.accents.manaCyan}0D`,
     lineHeight: 1.4,
+  },
+  nextStepBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing.xs,
+    padding: theme.spacing.md,
+    borderRadius: theme.borders.radiusMd,
+    border: `1px solid ${theme.accents.hunterGold}45`,
+    color: theme.colors.text.secondary,
+    background: `${theme.accents.hunterGold}10`,
+    lineHeight: 1.45,
+  },
+  inlineActionButton: {
+    alignSelf: 'flex-start',
+    marginTop: theme.spacing.xs,
+    padding: `${theme.spacing.xs} ${theme.spacing.md}`,
+    borderRadius: theme.borders.radiusSm,
+    border: `1px solid ${theme.accents.hunterGold}66`,
+    background: `${theme.accents.hunterGold}18`,
+    color: theme.accents.hunterGold,
+    cursor: 'pointer',
+    fontWeight: theme.typography.weights.semibold,
   },
   detailsToggle: {
     alignSelf: 'flex-start',

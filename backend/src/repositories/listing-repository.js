@@ -5,6 +5,39 @@ import { all, get, run } from '../db/database.js';
  * Centralizes all database operations for listings
  */
 export class ListingRepository {
+  buildFilterClause(filters = {}) {
+    let clause = 'WHERE 1=1';
+    const params = [];
+
+    if (filters.source) {
+      clause += ' AND source = ?';
+      params.push(filters.source);
+    }
+
+    // Handle 'all' status as no filter
+    if (filters.status && filters.status !== 'all') {
+      clause += ' AND status = ?';
+      params.push(filters.status);
+    }
+
+    if (filters.minScore !== undefined) {
+      clause += ' AND score >= ?';
+      params.push(filters.minScore);
+    }
+
+    if (filters.maxPrice !== undefined) {
+      clause += ' AND price <= ?';
+      params.push(filters.maxPrice);
+    }
+
+    if (filters.maxDistance !== undefined) {
+      clause += ' AND distance_km <= ?';
+      params.push(filters.maxDistance);
+    }
+
+    return { clause, params };
+  }
+
   /**
    * Find all listings with optional filters
    * @param {Object} filters - Filter options
@@ -18,35 +51,9 @@ export class ListingRepository {
    * @returns {Array} Array of listings
    */
   findAll(filters = {}) {
-    let query = 'SELECT * FROM listings WHERE 1=1';
-    const params = [];
-    
-    if (filters.source) {
-      query += ' AND source = ?';
-      params.push(filters.source);
-    }
-    
-    // Handle 'all' status as no filter
-    if (filters.status && filters.status !== 'all') {
-      query += ' AND status = ?';
-      params.push(filters.status);
-    }
-    
-    if (filters.minScore !== undefined) {
-      query += ' AND score >= ?';
-      params.push(filters.minScore);
-    }
-    
-    if (filters.maxPrice !== undefined) {
-      query += ' AND price <= ?';
-      params.push(filters.maxPrice);
-    }
-    
-    if (filters.maxDistance !== undefined) {
-      query += ' AND distance_km <= ?';
-      params.push(filters.maxDistance);
-    }
-    
+    const { clause, params } = this.buildFilterClause(filters);
+    let query = `SELECT * FROM listings ${clause}`;
+
     // Newest scan first so the dashboard shows fresh opportunities before old backlog.
     query += ' ORDER BY scrape_run_id DESC, datetime(COALESCE(scraped_at, posted_at)) DESC, score DESC';
     
@@ -198,8 +205,9 @@ export class ListingRepository {
    * Count total listings
    * @returns {number} Total count
    */
-  count() {
-    const result = get('SELECT COUNT(*) as count FROM listings');
+  count(filters = {}) {
+    const { clause, params } = this.buildFilterClause(filters);
+    const result = get(`SELECT COUNT(*) as count FROM listings ${clause}`, params);
     return result?.count || 0;
   }
   

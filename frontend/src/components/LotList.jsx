@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import LotDetailModal from './LotDetailModal';
 import Badge from './Badge';
 import TcgIcon from './TcgIcon';
@@ -24,8 +24,25 @@ const QUALITY_TIER_COLORS = {
   rejected_low_score: theme.colors.text.muted,
 };
 
+const PAGE_SIZE = 12;
+
 function LotList({ listings, onUpdate, onDelete, highlightedIds = [] }) {
   const [selectedLot, setSelectedLot] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil(listings.length / PAGE_SIZE));
+  const pageStart = (currentPage - 1) * PAGE_SIZE;
+  const paginatedListings = useMemo(
+    () => listings.slice(pageStart, pageStart + PAGE_SIZE),
+    [listings, pageStart]
+  );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [listings]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) setCurrentPage(totalPages);
+  }, [currentPage, totalPages]);
 
   if (listings.length === 0) {
     return (
@@ -40,7 +57,7 @@ function LotList({ listings, onUpdate, onDelete, highlightedIds = [] }) {
   return (
     <div>
       <div style={styles.grid}>
-        {listings.map((listing) => {
+        {paginatedListings.map((listing) => {
           const rarity = getRarityLevel(listing.score);
           const rarityStyle = getRarityStyle(rarity);
           const isHighlighted = highlightedIds.includes(listing.id);
@@ -208,13 +225,46 @@ function LotList({ listings, onUpdate, onDelete, highlightedIds = [] }) {
 
                 {/* Posted Time */}
                 <div style={styles.timestamp}>
-                  Publié {formatTimeAgo(listing.posted_at)}
+                  Publié {formatTimeAgo(listing.posted_at || listing.published_at || listing.scraped_at)}
                 </div>
               </div>
             </div>
           );
         })}
       </div>
+
+      {totalPages > 1 && (
+        <div style={styles.pagination}>
+          <button
+            type="button"
+            style={{
+              ...styles.paginationButton,
+              ...(currentPage === 1 ? styles.paginationButtonDisabled : {}),
+            }}
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+          >
+            ← Précédent
+          </button>
+          <div style={styles.paginationInfo}>
+            Page {currentPage} / {totalPages}
+            <span style={styles.paginationCount}>
+              {listings.length} annonce{listings.length > 1 ? 's' : ''}
+            </span>
+          </div>
+          <button
+            type="button"
+            style={{
+              ...styles.paginationButton,
+              ...(currentPage === totalPages ? styles.paginationButtonDisabled : {}),
+            }}
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+          >
+            Suivant →
+          </button>
+        </div>
+      )}
 
       {selectedLot && (
         <LotDetailModal
@@ -320,14 +370,19 @@ function formatRiskSignal(signal) {
  * Format time ago from ISO date string
  */
 function formatTimeAgo(isoDate) {
+  if (!isoDate) return 'date inconnue';
+
   const now = new Date();
   const posted = new Date(isoDate);
+
+  if (Number.isNaN(posted.getTime())) return 'date inconnue';
+
   const diffMs = now - posted;
   const diffMins = Math.floor(diffMs / 60000);
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);
 
-  if (diffMins < 1) return 'à l\'instant';
+  if (diffMs < 0 || diffMins < 1) return 'à l\'instant';
   if (diffMins < 60) return `il y a ${diffMins} min`;
   if (diffHours < 24) return `il y a ${diffHours}h`;
   if (diffDays === 1) return 'hier';
@@ -547,6 +602,46 @@ const styles = {
     marginTop: theme.spacing.md,
     paddingTop: theme.spacing.md,
     borderTop: `${theme.borders.widthThin} solid ${theme.colors.primary.slate}`,
+  },
+  pagination: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: theme.spacing.md,
+    flexWrap: 'wrap',
+    marginTop: theme.spacing.xl,
+    padding: theme.spacing.lg,
+    background: `${theme.colors.primary.deepDark}CC`,
+    border: `${theme.borders.widthThin} solid ${theme.colors.primary.slate}`,
+    borderRadius: theme.borders.radiusLg,
+  },
+  paginationButton: {
+    padding: `${theme.spacing.sm} ${theme.spacing.lg}`,
+    borderRadius: theme.borders.radiusMd,
+    border: `${theme.borders.widthThin} solid ${theme.accents.manaCyan}`,
+    background: `linear-gradient(135deg, ${theme.accents.manaCyan}33, ${theme.colors.primary.slate})`,
+    color: theme.colors.text.primary,
+    fontWeight: theme.typography.weights.semibold,
+    cursor: 'pointer',
+  },
+  paginationButtonDisabled: {
+    opacity: 0.45,
+    cursor: 'not-allowed',
+    filter: 'grayscale(0.5)',
+  },
+  paginationInfo: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: theme.spacing.xs,
+    minWidth: '140px',
+    color: theme.colors.text.primary,
+    fontWeight: theme.typography.weights.semibold,
+  },
+  paginationCount: {
+    color: theme.colors.text.tertiary,
+    fontSize: theme.typography.sizes.tiny,
+    fontWeight: theme.typography.weights.medium,
   },
   empty: {
     textAlign: 'center',

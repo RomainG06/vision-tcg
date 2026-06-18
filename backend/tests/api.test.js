@@ -17,8 +17,8 @@ describe('API Endpoints', () => {
     listingId = run(
       `INSERT INTO listings (
         scrape_run_id, source, external_id, url, title, description,
-        price, location, distance_km, images, scraped_at, score, status
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        price, location, distance_km, images, posted_at, scraped_at, score, status
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         scrapeRunId,
         'vinted',
@@ -30,6 +30,7 @@ describe('API Endpoints', () => {
         'Nice',
         5,
         '[]',
+        now,
         now,
         88,
         'new',
@@ -62,6 +63,22 @@ describe('API Endpoints', () => {
       expect(res.status).toBe(200);
       expect(res.body.listings).toBeInstanceOf(Array);
       expect(res.body.pagination).toBeDefined();
+    });
+
+    it('should expose posted_at to avoid NaN dates in the UI', async () => {
+      const res = await request(app).get('/api/listings?status=all&limit=1');
+      expect(res.status).toBe(200);
+      expect(res.body.listings[0]).toHaveProperty('posted_at');
+      expect(res.body.listings[0]).toHaveProperty('published_at');
+    });
+
+    it('should paginate listings with limit and offset', async () => {
+      const res = await request(app).get('/api/listings?status=all&limit=1&offset=0');
+      expect(res.status).toBe(200);
+      expect(res.body.listings.length).toBeLessThanOrEqual(1);
+      expect(res.body.pagination.limit).toBe(1);
+      expect(res.body.pagination.offset).toBe(0);
+      expect(res.body.pagination.total).toBeGreaterThanOrEqual(1);
     });
 
     it('should filter by min_score', async () => {

@@ -12,6 +12,8 @@ export async function fetchListings(filters = {}) {
   if (filters.minScore) params.append('min_score', filters.minScore);
   if (filters.maxPrice) params.append('max_price', filters.maxPrice);
   if (filters.maxDistance) params.append('max_distance', filters.maxDistance);
+  if (filters.limit) params.append('limit', filters.limit);
+  if (filters.offset) params.append('offset', filters.offset);
 
   const response = await fetch(`${API_URL}/api/listings?${params}`);
   if (!response.ok) throw new Error('Failed to fetch listings');

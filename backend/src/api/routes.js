@@ -50,6 +50,7 @@ function mapListing(listing) {
     distance_km: listing.distance_km,
     platform: listing.source, // Map 'source' to 'platform'
     source: listing.source,
+    posted_at: listing.posted_at,
     published_at: listing.posted_at,
     score: listing.score,
     status: listing.status,
@@ -173,7 +174,7 @@ router.get('/listings', (req, res) => {
     };
     
     const listings = listingRepo.findAll(filters);
-    const total = listingRepo.count();
+    const total = listingRepo.count(filters);
     
     res.json({
       listings: listings.map(mapListing),

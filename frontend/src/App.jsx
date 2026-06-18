@@ -36,7 +36,7 @@ function App() {
     try {
       if (showLoading) setLoading(true);
       const [listingsData, statsData] = await Promise.all([
-        fetchListings(),
+        fetchListings({ limit: 500 }),
         fetchStats(),
       ]);
       setListings(listingsData);

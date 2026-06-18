@@ -1,6 +1,8 @@
-# Vision TCG - MVP Step 1
+# Vision TCG - MVP Radar
 
-Détection et priorisation de lots de cartes Pokémon (focus Wizards FR).
+Radar local de détection/priorisation d’annonces Pokémon Wizards FR.
+
+Focus MVP: Vinted + dashboard hunting, score explicable, résumé de scan, mémoire anti-rescan, watchlist/statuts.
 
 ## 🚀 Démarrage rapide
 
@@ -14,15 +16,17 @@ Détection et priorisation de lots de cartes Pokémon (focus Wizards FR).
 # Cloner le repo
 git clone https://github.com/RomainG06/vision-tcg.git
 cd vision-tcg
-git checkout feature/mvp-step1
+git checkout feature/ui-hunting-radar
 
 # Backend
 cd backend
+copy .env.example .env
 npm install
 npm run dev  # Démarre sur http://localhost:3001
 
 # Frontend (nouveau terminal)
 cd ../frontend
+copy .env.example .env
 npm install
 npm run dev  # Démarre sur http://localhost:5173
 ```
@@ -53,17 +57,15 @@ vision-tcg/
 └── README.md
 ```
 
+Guide détaillé: voir [`MVP_LOCAL_RELEASE.md`](./MVP_LOCAL_RELEASE.md).
+
 ## 🛠️ Scripts disponibles
 
 ### Backend
 ```powershell
 npm run dev           # Mode dev avec hot-reload (port 3001)
-npm start             # Mode production (port 3000)
-npm run scrape:lbc    # Scraper Leboncoin
-npm run scrape:vinted # Scraper Vinted
-npm run scrape:all    # Tous les scrapers
-npm run resolve:captcha  # Résoudre CAPTCHA manuellement
-npm run clear:cookies    # Effacer cookies
+npm start             # Mode production (lit PORT depuis .env, défaut code 3000)
+npm test -- --runInBand
 ```
 
 ### Frontend
@@ -123,15 +125,17 @@ npm install
 - 2 fetchers : Leboncoin + Vinted
 
 ✅ **Frontend** :
-- Dashboard React
+- Dashboard React hunting
 - Liste et détail des annonces
-- Filtres (prix, distance, status)
-- Design "Heroic Fantasy Magic"
+- Filtres prix/distance/statut + tri
+- Watchlist, Vu, Ignoré, Contacté
+- Résumé de scan actionnable
 
-✅ **Scraping** :
+✅ **Scraping MVP** :
 - Mode headful (Chrome visible)
-- Résolution CAPTCHA manuelle (60s)
-- Cookies persistants
+- Vinted prioritaire
+- Gestion CAPTCHA: screenshot/debug + intervention humaine si nécessaire
+- Mémoire anti-rescan + option “Ré-analyser les déjà vues”
 - UPSERT en DB (pas de doublons)
 
 ## 🎯 Prochaines étapes
@@ -157,9 +161,9 @@ npm install
 - Fichier : `backend/data/dev.db`
 
 ### Scrapers
-- **Leboncoin** : 100% fonctionnel ✅
-- **Vinted** : 100% fonctionnel ✅
-- **Facebook Marketplace** : Abandonné MVP (nécessite login)
+- **Vinted** : chemin MVP principal
+- **Leboncoin** : intégré mais souvent bloqué par DataDome/anti-bot; intervention humaine/proxy à décider plus tard
+- **Facebook Marketplace** : hors MVP initial (login/restrictions)
 
 ## 🤝 Contribution
 

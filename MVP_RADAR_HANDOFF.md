@@ -201,15 +201,18 @@ Livré:
 - UI dashboard: cartes stats cliquables Watchlist/Contactés/Ignorés.
 - Modal détail: actions Watchlist, Vu, Ignorer, Contacté.
 
-### Priorité 4 — Nettoyage tests legacy / release locale
+### Priorité 4 — Nettoyage tests legacy / release locale — FAIT
 
 Objectif: avoir une base fiable avant merge MVP.
 
-À faire:
-- stabiliser `api.test` en ESM sans charger jsdom/fetchers inutilement.
-- stabiliser `parsers.test` ou le remplacer par les tests scorer modernes.
-- documenter commandes Windows.
-- vérifier `.env.example`, port 3001, DB path.
+Livré:
+- Suite backend complète réparée: `16` suites PASS, `115` tests PASS.
+- `api.test.js` rendu autonome: plus de dépendance à `seed.js` qui fait `process.exit()`.
+- Scorer legacy robuste si la table historique `keywords` n’existe pas, avec fallback de mots-clés.
+- Config legacy corrigée: budget/distance lisent `config.geo`.
+- `.env.example` backend nettoyé: suppression des doublons `PORT`/`NODE_ENV`, valeurs MVP Nice/3001.
+- README principal mis à jour sur la branche `feature/ui-hunting-radar` et le statut réel Vinted/Leboncoin.
+- Nouveau guide local: `MVP_LOCAL_RELEASE.md` avec commandes Windows, parcours de test MVP, validations.
 
 ## Recommandation orchestrateur
 

@@ -10,7 +10,7 @@ function unique(values) {
 
 function detectSeries(text) {
   const series = [];
-  if (/\b(team\s*rocket|rocket|(?:dracaufeu|tortank|dracolosse|raichu|alakazam|magneton|hypnomade|flagadoss|arbok|triopikeur|nosferalto|leviator|léviator|mackogneur|rafflesia|smogogo)\s+obscur(?:e|s)?)\b/i.test(text) || (/\bobscur(?:e|s)?\b/i.test(text) && /\/82\b/.test(text))) series.push('rocket');
+  if (/\b(team\s*rocket|rocket|(?:dracaufeu|dracofeu|tortank|dracolosse|raichu|alakazam|magneton|magnéton|hypnomade|flagadoss|arbok|triopikeur|nosferalto|leviator|léviator|mackogneur|rafflesia|rafflésia|smogogo|ossatueur|ramoloss|slowbro)\s+(?:obscur(?:e|s)?|sombre?s?))\b/i.test(text) || (/\bobscur(?:e|s)?\b/i.test(text) && /\/82\b/.test(text))) series.push('rocket');
   if (/\b(jungle)\b|\/64\b|\b(aeromite|aéromite|aquali|vaporeon|voltali|jolteon|pyroli|flareon|ronflex|snorlax|scarabrute|pinsir|insécateur|insecateur|scyther|nidoqueen|kangourex|kangaskhan|rafflesia|vileplume|victreebel|m\.mime|mr\s+mime|ossatueur|marowak|roucarnage|pidgeot)\b/i.test(text)) series.push('jungle');
   if (/\b(fossile|fossil)\b/i.test(text)) series.push('fossil');
   if (/\b(set\s*de\s*base|base\s*set)\b/i.test(text)) series.push('base');

@@ -52,23 +52,67 @@ describe('Smart hunt queries', () => {
       'lot pokemon jungle 64',
       'lot pokemon scarabrute jungle',
     ]));
-    expect(queries.every(query => /\b(lot|collection|classeur|vrac)\b/i.test(query))).toBe(true);
-    expect(queries.every(query => /\bpokemon\b/i.test(query))).toBe(true);
+    expect(queries.every(query => /\b(lot|collection|classeur|vrac|set|extension|cartes?)\b/i.test(query))).toBe(true);
+    expect(queries.every(query => /\b(pokemon|pokémon|carte|cartes|wizards?|wotc|jungle|fossile|fossil|rocket|base|obscur|sombre|dark|holo|rare|set|extension|collection|classeur)\b|\/(82|64|62|102)\b/i.test(query))).toBe(true);
   });
 
-  test('keeps Pokemon domain in Team Rocket lot queries to avoid Vinted clothing lots', () => {
-    const queries = buildHuntQueries({ profile: 'wizards-fr', filters: { series: 'rocket', listingType: 'lot' } });
+  test('uses the requested Team Rocket lot query playbook in priority order without budget keywords', () => {
+    const queries = buildHuntQueries({ profile: 'wizards-fr', filters: { series: 'rocket', listingType: 'lot', budget: 800 } });
 
-    expect(queries).toEqual(expect.arrayContaining([
+    expect(queries.slice(0, 23)).toEqual([
       'lot pokemon team rocket',
-      'lot carte pokemon team rocket',
-      'lot pokemon dracolosse obscur',
-      'lot pokemon dracaufeu obscur',
+      'lot pokémon team rocket',
+      'lot cartes pokemon team rocket',
+      'lot cartes pokémon team rocket',
+      'team rocket pokemon',
+      'team rocket pokémon',
+      'cartes team rocket fr',
+      'team rocket français',
+      'dracaufeu obscur',
+      'dark charizard',
+      'tortank obscur',
+      'dark blastoise',
+      'raichu obscur',
+      'dark raichu',
+      'dracolosse obscur',
+      'dark dragonite',
+      'lot pokemon wizards',
+      'lot pokémon wizards',
+      'lot cartes pokemon anciennes',
+      'lot cartes pokémon anciennes',
+      'classeur cartes pokemon ancien',
+      'cartes pokemon de mon enfance',
+      'collection pokemon ancienne',
+    ]);
+    expect(queries).toEqual(expect.arrayContaining([
+      'collection pokemon team rocket',
+      'lot team rocket français',
+      'cartes pokemon années 2000',
+      'dracofeu obscur',
+      'cartes pokemon sombres',
+      'holo team rocket',
+      '1ère édition team rocket',
     ]));
-    expect(queries).not.toContain('lot dracolosse obscur');
-    expect(queries).not.toContain('lot team rocket edition 1');
-    expect(queries.every(query => /\blot\b/i.test(query))).toBe(true);
-    expect(queries.every(query => /\bpokemon\b/i.test(query))).toBe(true);
+    expect(queries.some(query => /800|budget|prix/i.test(query))).toBe(false);
+    expect(queries.some(query => /^lot dracolosse obscur$/i.test(query))).toBe(false);
+    expect(queries.length).toBeGreaterThanOrEqual(70);
+  });
+
+  test('keeps Pokemon/card domain for every lot query across existing series to avoid Vinted clothing lots', () => {
+    for (const series of ['all', 'base', 'jungle', 'fossil', 'rocket']) {
+      const queries = buildHuntQueries({ profile: 'wizards-fr', filters: { series, listingType: 'lot' } });
+      expect(queries.length).toBeGreaterThanOrEqual(12);
+      expect(queries.every(query => /\b(pokemon|pokémon|carte|cartes|wizards?|wotc|jungle|fossile|fossil|rocket|base|obscur|sombre|dark|holo|rare|set|extension|collection|classeur)\b|\/(82|64|62|102)\b/i.test(query))).toBe(true);
+    }
+  });
+
+  test('builds card-search queries for every existing series without lot intent', () => {
+    for (const series of ['all', 'base', 'jungle', 'fossil', 'rocket']) {
+      const queries = buildHuntQueries({ profile: 'wizards-fr', filters: { series, listingType: 'cards' } });
+      expect(queries.length).toBeGreaterThanOrEqual(10);
+      expect(queries.every(query => /\b(pokemon|pokémon|carte|cartes|wizards?|wotc|jungle|fossile|fossil|rocket|base|obscur|sombre|dark|holo|rare)\b|\/(82|64|62|102)\b/i.test(query))).toBe(true);
+      expect(queries.filter(query => /^lot\b/i.test(query))).toEqual([]);
+    }
   });
 
   test('deduplicates listings by source and external id while preserving query matches', () => {

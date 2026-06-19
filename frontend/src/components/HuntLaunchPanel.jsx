@@ -12,9 +12,9 @@ const SERIES_OPTIONS = [
 ];
 
 const SENSITIVITY = {
-  prudent: { label: 'Prudent', maxResults: 5, hint: 'Moins de bruit, meilleures certitudes.' },
-  balanced: { label: 'Équilibré', maxResults: 10, hint: 'Bon compromis pour le MVP.' },
-  aggressive: { label: 'Agressif', maxResults: 20, hint: 'Plus de pistes, plus de faux positifs.' },
+  prudent: { label: 'Prudent', maxResults: 5, maxQueries: 12, hint: 'Moins de bruit, meilleures certitudes.' },
+  balanced: { label: 'Équilibré', maxResults: 10, maxQueries: 23, hint: 'Bon compromis pour le MVP.' },
+  aggressive: { label: 'Agressif', maxResults: 20, maxQueries: 45, hint: 'Plus de pistes, plus de faux positifs.' },
 };
 
 const statusCopy = {
@@ -159,7 +159,7 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
         sources: ['vinted'],
         maxResults: SENSITIVITY[sensitivity].maxResults,
         saveToDb: true,
-        filters: { series, listingType, budget: Number(budget) || 1500, sensitivity, rescanSeen },
+        filters: { series, listingType, budget: Number(budget) || 1500, sensitivity, maxQueries: SENSITIVITY[sensitivity].maxQueries, rescanSeen },
       };
       let data;
       try {

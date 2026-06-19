@@ -224,6 +224,37 @@ D'autres cartes disponibles dans mon dressing : WIZARD, EX, DP, PLATINE, HGSS, N
     expect(quality.signals).toEqual(expect.arrayContaining(['wizards_detected', 'french_edition', 'lot_detected']));
   });
 
+  test('recognizes Team Rocket dark/sombre and typo variants from the query playbook', () => {
+    const result = splitQualityListings([
+      {
+        title: 'Lot cartes Pokémon anciennes avec Dracofeu sombre',
+        description: 'Collection Wizards FR, cartes sombres anciennes',
+        price: 180,
+        score: 72,
+      },
+      {
+        title: 'Dark Blastoise Team Rocket',
+        description: 'Carte Pokémon Wizards FR',
+        price: 160,
+        score: 70,
+      },
+      {
+        title: 'Cartes Pokémon sombres anciennes',
+        description: 'Lot Team Rocket français',
+        price: 90,
+        score: 68,
+      },
+    ], { minScore: 50, targetSeries: 'rocket', listingType: 'lot', budgetMax: 800, rejectedLimit: 5 });
+
+    expect(result.kept.map(item => item.title)).toEqual([
+      'Lot cartes Pokémon anciennes avec Dracofeu sombre',
+      'Cartes Pokémon sombres anciennes',
+    ]);
+    expect(result.rejected).toEqual([
+      expect.objectContaining({ title: 'Dark Blastoise Team Rocket', rejection_reason: 'listing_type_mismatch' }),
+    ]);
+  });
+
   test('requires explicit Jungle signal when jungle series is targeted', () => {
     const rocketQuality = classifyListingQuality({
       title: 'Dracolosse Obscur Edition 1 22/82',

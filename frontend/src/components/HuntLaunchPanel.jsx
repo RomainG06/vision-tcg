@@ -46,6 +46,7 @@ const REJECTION_LABELS = {
   score_below_threshold: 'Score trop faible',
   over_budget: 'Hors budget',
   series_mismatch: 'Hors série ciblée',
+  listing_type_mismatch: 'Type d’annonce non conforme',
   invalid_listing: 'Annonce invalide',
   quality_filtered: 'Qualité insuffisante',
   unknown: 'Raison inconnue',
@@ -113,8 +114,20 @@ function FunnelMetric({ label, value, highlight = false }) {
   );
 }
 
+const LISTING_TYPE_OPTIONS = {
+  cards: {
+    label: 'Cartes',
+    hint: 'Cartes seules ou annonces sans signal lot explicite.',
+  },
+  lot: {
+    label: 'Lot',
+    hint: 'Strict : seulement lots, collections, classeurs, vrac ou nombre de cartes explicite.',
+  },
+};
+
 function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
   const [series, setSeries] = useState('all');
+  const [listingType, setListingType] = useState('cards');
   const [budget, setBudget] = useState(1500);
   const [sensitivity, setSensitivity] = useState('balanced');
   const [rescanSeen, setRescanSeen] = useState(false);
@@ -140,7 +153,7 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
         sources: ['vinted'],
         maxResults: SENSITIVITY[sensitivity].maxResults,
         saveToDb: true,
-        filters: { series, budget: Number(budget) || 1500, sensitivity, rescanSeen },
+        filters: { series, listingType, budget: Number(budget) || 1500, sensitivity, rescanSeen },
       };
       let data;
       try {
@@ -267,6 +280,27 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
               ))}
             </select>
           </label>
+
+          <div style={styles.field}>
+            <span style={styles.label}>Type d’annonce</span>
+            <div style={styles.segmented}>
+              {Object.entries(LISTING_TYPE_OPTIONS).map(([value, option]) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setListingType(value)}
+                  disabled={isRunning}
+                  style={{
+                    ...styles.segmentButton,
+                    ...(listingType === value ? styles.segmentButtonActive : {}),
+                  }}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            <span style={styles.hint}>{LISTING_TYPE_OPTIONS[listingType].hint}</span>
+          </div>
 
           <label style={styles.field}>
             <span style={styles.label}>Budget max</span>

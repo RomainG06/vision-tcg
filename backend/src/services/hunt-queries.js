@@ -24,7 +24,6 @@ const SERIES_QUERIES = {
     'ronflex jungle',
     'scarabrute jungle',
     'insecateur jungle',
-    'pikachu jungle',
     'aquali jungle',
     'wizards jungle',
     'carte pokemon ancienne jungle',
@@ -52,12 +51,30 @@ const SERIES_QUERIES = {
   ],
 };
 
+function applyListingTypeToQuery(query, listingType) {
+  if (listingType === 'lot') {
+    return /\b(lot|collection|classeur|vrac)\b/i.test(query)
+      ? query
+      : `lot ${query}`;
+  }
+
+  if (listingType === 'cards') {
+    return /\b(carte|cartes)\b/i.test(query)
+      ? query
+      : `carte ${query}`;
+  }
+
+  return query;
+}
+
 export function buildHuntQueries({ profile = 'wizards-fr', filters = {}, maxQueries } = {}) {
   const series = filters.series || 'all';
+  const listingType = filters.listingType || filters.listing_type || filters.type || 'all';
   const baseQueries = SERIES_QUERIES[series] || SERIES_QUERIES.all;
+  const typedQueries = baseQueries.map(query => applyListingTypeToQuery(query, listingType));
   const queries = profile === 'wizards-fr'
-    ? baseQueries
-    : baseQueries.map(query => `${profile} ${query}`);
+    ? typedQueries
+    : typedQueries.map(query => `${profile} ${query}`);
 
   const unique = [...new Set(queries.map(query => query.trim()).filter(Boolean))];
   return Number.isFinite(Number(maxQueries)) && Number(maxQueries) > 0

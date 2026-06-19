@@ -155,6 +155,33 @@ describe('Fetchers', () => {
         'https://www.vinted.fr/items/404-scarabrute-9-64-jungle-fr',
       ]);
     });
+
+    it('strictly opens only Jungle lot-looking grid items when lot type is selected', () => {
+      const items = [
+        {
+          url: 'https://www.vinted.fr/items/501-scarabrute-9-64-jungle-fr',
+          text: 'Scarabrute 9/64 Jungle holo français carte seule',
+        },
+        {
+          url: 'https://www.vinted.fr/items/502-lot-cartes-jungle-fr',
+          text: 'Lot 24 cartes Pokémon Jungle Wizards FR avec Scarabrute 9/64',
+        },
+        {
+          url: 'https://www.vinted.fr/items/503-lot-dp-fr',
+          text: 'Lot 50 cartes Pokémon Diamant & Perle DP01 FR',
+        },
+      ];
+
+      const selected = selectUnseenVintedItems(items, {
+        targetSeries: 'jungle',
+        listingType: 'lot',
+        maxResults: 10,
+      });
+
+      expect(selected.map(item => item.url)).toEqual([
+        'https://www.vinted.fr/items/502-lot-cartes-jungle-fr',
+      ]);
+    });
   });
   
   // TODO: Add integration tests with actual fetchers

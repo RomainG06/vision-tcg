@@ -292,6 +292,53 @@ D'autres cartes disponibles dans mon dressing : WIZARD, EX, DP, PLATINE, HGSS, N
     expect(result.rejected.flatMap(item => item.risks || [])).toContain('modern_detected');
   });
 
+  test('strictly keeps only Jungle lots within budget when lot listing type is selected', () => {
+    const result = splitQualityListings([
+      {
+        title: 'Ronflex 11/64 Jungle holo français',
+        description: 'Carte Pokémon Wizards Jungle - Langue Français - carte seule',
+        price: 55,
+        score: 70,
+      },
+      {
+        title: 'Lot 24 cartes Pokémon Jungle Wizards FR avec Scarabrute 9/64',
+        description: 'Collection française Jungle, plusieurs cartes, bon état',
+        price: 120,
+        score: 76,
+      },
+      {
+        title: 'Lot 50 cartes Pokémon Diamant & Perle FR',
+        description: 'DP01 et DP02, cartes françaises',
+        price: 40,
+        score: 80,
+      },
+      {
+        title: 'Lot 100 cartes Pokémon Jungle Wizards FR',
+        description: 'Collection française Jungle',
+        price: 350,
+        score: 80,
+      },
+    ], {
+      minScore: 50,
+      targetSeries: 'jungle',
+      listingType: 'lot',
+      budgetMax: 300,
+      rejectedLimit: 10,
+    });
+
+    expect(result.kept.map(item => item.title)).toEqual(['Lot 24 cartes Pokémon Jungle Wizards FR avec Scarabrute 9/64']);
+    expect(result.rejected).toEqual(expect.arrayContaining([
+      expect.objectContaining({ title: 'Ronflex 11/64 Jungle holo français', rejection_reason: 'listing_type_mismatch' }),
+      expect.objectContaining({ title: 'Lot 50 cartes Pokémon Diamant & Perle FR', rejection_reason: 'series_mismatch' }),
+      expect.objectContaining({ title: 'Lot 100 cartes Pokémon Jungle Wizards FR', rejection_reason: 'over_budget' }),
+    ]));
+    expect(result.rejected.flatMap(item => item.risks || [])).toEqual(expect.arrayContaining([
+      'listing_type_mismatch',
+      'series_mismatch',
+      'over_budget',
+    ]));
+  });
+
   test('does not use exploration fallback for off-series candidates', () => {
     const candidates = selectExplorationCandidates([
       { title: 'Carte Pokemon holo bon état', description: 'Photo disponible', price: 12, score: 70, score_breakdown: { signals: [] } },

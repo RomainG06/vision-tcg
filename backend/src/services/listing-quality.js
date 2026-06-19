@@ -58,6 +58,7 @@ const RISK_REASON_LABELS = {
   toy_detected: 'Produit dérivé plutôt qu’une carte',
   manual_review_needed: 'Vérification manuelle nécessaire',
   series_mismatch: 'Série ciblée non détectée',
+  listing_type_mismatch: 'Type d’annonce non conforme',
 };
 
 function isSeriesTargeted(targetSeries) {
@@ -67,6 +68,14 @@ function isSeriesTargeted(targetSeries) {
 function matchesTargetSeries(text, targetSeries) {
   if (!isSeriesTargeted(targetSeries)) return true;
   return TARGET_SERIES_PATTERNS[targetSeries].test(text);
+}
+
+function matchesListingType(text, listingType) {
+  if (!listingType || listingType === 'all') return true;
+  const isLot = isLotListingText(text);
+  if (listingType === 'lot') return isLot;
+  if (listingType === 'cards') return !isLot;
+  return true;
 }
 
 function buildDecisionReasons({ signals, noise, reason, price, budgetMax }) {
@@ -79,6 +88,7 @@ function buildDecisionReasons({ signals, noise, reason, price, budgetMax }) {
 
   if (reason === 'missing_wizards_or_french_signal') risks.push('Signal Wizards/FR insuffisant');
   if (reason === 'series_mismatch') risks.push('Série ciblée non détectée');
+  if (reason === 'listing_type_mismatch') risks.push('Type d’annonce non conforme');
   if (reason === 'score_below_threshold') risks.push('Score sous le seuil radar');
   if (reason === 'borderline_target_candidate') risks.push('Signal cible présent mais confiance limitée');
   if (reason === 'exploration_fallback_candidate') {
@@ -98,6 +108,7 @@ function buildDecisionReasons({ signals, noise, reason, price, budgetMax }) {
 function tierFromQuality({ keep, reason, score, noise, signals, budgetRejected }) {
   if (budgetRejected) return 'rejected_budget';
   if (!keep && reason === 'series_mismatch') return 'rejected_series_mismatch';
+  if (!keep && reason === 'listing_type_mismatch') return 'rejected_type_mismatch';
   if (noise.length > 0) return 'rejected_noise';
   if (!keep && reason === 'missing_wizards_or_french_signal') return 'rejected_no_signal';
   if (!keep) return 'rejected_low_score';
@@ -121,10 +132,17 @@ export function classifyListingQuality(listing, options = {}) {
   const budgetRejected = Number.isFinite(Number(budgetMax)) && Number(budgetMax) > 0 && price > Number(budgetMax);
   const text = textOf(listing);
   const seriesMismatch = isSeriesTargeted(options.targetSeries) && !matchesTargetSeries(text, options.targetSeries);
-  let keep = base.keep && !budgetRejected && !seriesMismatch;
-  let reason = budgetRejected ? 'over_budget' : seriesMismatch ? 'series_mismatch' : base.reason;
+  const listingTypeMismatch = !matchesListingType(text, options.listingType || options.listing_type || options.type || 'all');
+  let keep = base.keep && !budgetRejected && !seriesMismatch && !listingTypeMismatch;
+  let reason = budgetRejected
+    ? 'over_budget'
+    : seriesMismatch
+      ? 'series_mismatch'
+      : listingTypeMismatch
+        ? 'listing_type_mismatch'
+        : base.reason;
 
-  if (!keep && options.allowExplorationFallback && !budgetRejected && !seriesMismatch && base.noise.length === 0 && POKEMON_CARD_PATTERN.test(text)) {
+  if (!keep && options.allowExplorationFallback && !budgetRejected && !seriesMismatch && !listingTypeMismatch && base.noise.length === 0 && POKEMON_CARD_PATTERN.test(text)) {
     keep = true;
     reason = 'exploration_fallback_candidate';
   }
@@ -235,7 +253,10 @@ export function selectExplorationCandidates(listings, options = {}) {
     .map((listing) => annotateListingQuality(listing, options))
     .filter((listing) => {
       const text = textOf(listing);
-      return POKEMON_CARD_PATTERN.test(text) && matchesTargetSeries(text, options.targetSeries) && listing.quality.noise.length === 0;
+      return POKEMON_CARD_PATTERN.test(text)
+        && matchesTargetSeries(text, options.targetSeries)
+        && matchesListingType(text, options.listingType || options.listing_type || options.type || 'all')
+        && listing.quality.noise.length === 0;
     })
     .sort((a, b) => Number(b.score || 0) - Number(a.score || 0))
     .slice(0, limit)
@@ -271,6 +292,8 @@ export function formatRejectedListing(listing) {
   const quality = listing.quality || listing.score_breakdown?.quality || {};
   const risks = [...(quality.noise || listing.score_breakdown?.risks || [])];
   if (quality.reason === 'series_mismatch') risks.push('series_mismatch');
+  if (quality.reason === 'listing_type_mismatch') risks.push('listing_type_mismatch');
+  if (quality.reason === 'over_budget') risks.push('over_budget');
 
   return {
     title: listing.title || 'Annonce sans titre',

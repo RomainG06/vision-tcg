@@ -43,6 +43,18 @@ describe('Smart hunt queries', () => {
     expect(queries.every(query => /jungle|64/i.test(query))).toBe(true);
   });
 
+  test('adds lot intent to targeted Jungle queries when lot listing type is selected', () => {
+    const queries = buildHuntQueries({ profile: 'wizards-fr', filters: { series: 'jungle', listingType: 'lot' } });
+
+    expect(queries).toEqual(expect.arrayContaining([
+      'lot pokemon jungle',
+      'lot carte pokemon jungle',
+      'lot jungle 64 pokemon',
+      'lot scarabrute jungle',
+    ]));
+    expect(queries.every(query => /\b(lot|collection|classeur|vrac)\b/i.test(query))).toBe(true);
+  });
+
   test('deduplicates listings by source and external id while preserving query matches', () => {
     const listings = [
       { source: 'vinted', external_id: '1', title: 'Dracolosse Obscur', query: 'team rocket' },

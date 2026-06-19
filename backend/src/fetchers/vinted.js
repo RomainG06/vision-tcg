@@ -16,6 +16,8 @@ const SERIES_PREFILTER_PATTERNS = {
 };
 
 const OFF_TARGET_PREFILTER_PATTERN = /\b(diamant\s*&?\s*perle|diamant\s+et\s+perle|dp\s*0?\d|dp01|dp02|trésors?\s+mystérieux|tresors?\s+mysterieux|sintonia\s+mentale|pokemon\s+go|pokémon\s+go|ecarlate|écarlate|violet|soleil|lune|sun\s*&?\s*moon|epee|épée|bouclier|sword|shield)\b|\/(?:78|123|130|236)\b/i;
+const LOT_PREFILTER_PATTERN = /\b(lot|lots|collection|classeur|vrac|set\s+complet|complete\s+set)\b|\b([2-9]|[1-9]\d+)\s*(cartes?|cards?)\b/i;
+const SINGLE_CARD_PREFILTER_PATTERN = /\b(carte\s+seule|carte\s+unique|à\s+l'unité|a\s+l'unite|unitaire|single\s+card)\b/i;
 
 function itemText(item) {
   return typeof item === 'string'
@@ -27,9 +29,18 @@ function itemUrl(item) {
   return typeof item === 'string' ? item : item.url;
 }
 
-function matchesTargetSeriesPrefilter(item, targetSeries) {
+function matchesListingTypePrefilter(text, listingType) {
+  if (!listingType || listingType === 'all') return true;
+  const isLot = LOT_PREFILTER_PATTERN.test(text) && !SINGLE_CARD_PREFILTER_PATTERN.test(text);
+  if (listingType === 'lot') return isLot;
+  if (listingType === 'cards') return !isLot;
+  return true;
+}
+
+function matchesTargetSeriesPrefilter(item, targetSeries, listingType = 'all') {
   const text = itemText(item);
   const pattern = SERIES_PREFILTER_PATTERNS[targetSeries];
+  if (!matchesListingTypePrefilter(text, listingType)) return false;
   if (!targetSeries || targetSeries === 'all' || !pattern) return true;
   if (OFF_TARGET_PREFILTER_PATTERN.test(text)) return false;
   return pattern.test(text);
@@ -40,6 +51,7 @@ export function selectUnseenVintedItems(items, options = {}) {
     excludeExternalIds = new Set(),
     maxResults = 50,
     targetSeries = 'all',
+    listingType = 'all',
   } = options;
 
   const seen = excludeExternalIds instanceof Set
@@ -56,7 +68,7 @@ export function selectUnseenVintedItems(items, options = {}) {
     deduped.add(String(externalId));
     const normalizedItem = typeof item === 'string' ? { url, text: url } : item;
 
-    if (matchesTargetSeriesPrefilter(item, targetSeries)) {
+    if (matchesTargetSeriesPrefilter(item, targetSeries, listingType)) {
       selected.push(normalizedItem);
       if (selected.length >= maxResults) break;
     }
@@ -92,7 +104,7 @@ export class VintedFetcher extends BaseFetcher {
    * Fetch listings from Vinted
    */
   async fetch(query, options = {}) {
-    const { maxResults = 50, waitForCaptcha = 60, excludeExternalIds = [], scanDepth = Math.max(maxResults * 5, 50), targetSeries = 'all' } = options;
+    const { maxResults = 50, waitForCaptcha = 60, excludeExternalIds = [], scanDepth = Math.max(maxResults * 5, 50), targetSeries = 'all', listingType = 'all' } = options;
     
     try {
       await this.init();
@@ -205,7 +217,7 @@ export class VintedFetcher extends BaseFetcher {
         
         return [...byUrl.values()].slice(0, limit);
       }, scanDepth);
-      const selectedItems = selectUnseenVintedItems(searchItems, { excludeExternalIds, maxResults, targetSeries });
+      const selectedItems = selectUnseenVintedItems(searchItems, { excludeExternalIds, maxResults, targetSeries, listingType });
       const selectedUrls = selectedItems.map(item => item.url);
       
       logger.info(`Found ${searchItems.length} listing URLs on Vinted, ${selectedUrls.length} selected after already-seen + target-series prefilter`);

@@ -149,6 +149,7 @@ export async function startScrape(options = {}) {
               scanDepth,
               excludeExternalIds: [...dynamicExcludeIds],
               targetSeries: filters.series || 'all',
+              listingType: filters.listingType || filters.listing_type || 'cards',
               waitForCaptcha,
               location: 'nice',
               radius: 50,
@@ -212,6 +213,7 @@ export async function startScrape(options = {}) {
         const qualityResult = splitQualityListings(scored, {
           minScore,
           targetSeries: filters.series || 'all',
+          listingType: filters.listingType || filters.listing_type || 'cards',
           allowBorderlineTargets: true,
           candidateScoreFloor: filters.sensitivity === 'prudent' ? 30 : 20,
           rejectedLimit: 20,
@@ -228,6 +230,7 @@ export async function startScrape(options = {}) {
             limit: fallbackLimit,
             minScore,
             targetSeries: filters.series || 'all',
+            listingType: filters.listingType || filters.listing_type || 'cards',
             allowBorderlineTargets: true,
           });
           explorationFallback += qualityListings.length;

@@ -15,8 +15,8 @@ describe('buildActionableScanSummary', () => {
       seenRecorded: 6,
       explorationFallback: 1,
       queryStats: [
-        { source: 'vinted', query: 'pokemon team rocket', raw_found: 5, selected_for_details: 4, fetched_details: 3, cumulative_unique: 3 },
-        { source: 'vinted', query: 'dracaufeu obscur', raw_found: 7, selected_for_details: 4, fetched_details: 4, cumulative_unique: 7, error: 'blocked' },
+        { source: 'vinted', query: 'pokemon team rocket', raw_found: 5, selected_for_details: 4, fetched_details: 3, cumulative_unique: 3, prefilter_summary: { selected: 4, non_pokemon_domain: 1 } },
+        { source: 'vinted', query: 'dracaufeu obscur', raw_found: 7, selected_for_details: 4, fetched_details: 4, cumulative_unique: 7, error: 'blocked', prefilter_summary: { selected: 4, series_mismatch: 3 } },
       ],
       rejectedSamples: [
         { title: 'Carte moderne', rejection_reason: 'series_mismatch', price: 3 },
@@ -45,6 +45,7 @@ describe('buildActionableScanSummary', () => {
       raw_found: 7,
       fetched_details: 4,
       error: 'blocked',
+      prefilter_summary: { selected: 4, series_mismatch: 3 },
     });
     expect(summary.headline).toContain('3 piste');
     expect(summary.alerts).toContain('1 requête en erreur');

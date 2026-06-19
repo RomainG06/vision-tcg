@@ -49,6 +49,7 @@ export function buildActionableScanSummary(input = {}) {
       selected_for_details: clampZero(query.selected_for_details ?? query.raw_found),
       fetched_details: clampZero(query.fetched_details ?? query.raw_found),
       cumulative_unique: clampZero(query.cumulative_unique),
+      prefilter_summary: query.prefilter_summary || query.prefilterSummary || null,
       error: query.error || null,
     }))
     .sort((a, b) => b.raw_found - a.raw_found || b.fetched_details - a.fetched_details || a.query.localeCompare(b.query));

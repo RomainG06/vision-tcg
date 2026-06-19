@@ -116,6 +116,7 @@ export function selectUnseenVintedUrls(urls, options = {}) {
 
 export function summarizeVintedPrefilter(items, options = {}) {
   const counts = {
+    total: Array.isArray(items) ? items.length : 0,
     selected: 0,
     already_seen: 0,
     duplicate: 0,
@@ -152,6 +153,18 @@ export function summarizeVintedPrefilter(items, options = {}) {
   }
 
   return counts;
+}
+
+function attachPrefilterMetadata(listings, metadata = {}) {
+  const result = Array.isArray(listings) ? listings : [];
+  for (const [key, value] of Object.entries(metadata)) {
+    Object.defineProperty(result, key, {
+      value,
+      enumerable: false,
+      configurable: true,
+    });
+  }
+  return result;
 }
 
 /**
@@ -242,7 +255,11 @@ export class VintedFetcher extends BaseFetcher {
       } catch (error) {
         logger.warn('No listings found or page structure changed');
         await this.saveDebugInfo('no_results');
-        return [];
+        return attachPrefilterMetadata([], {
+          prefilter_summary: { total: 0, selected: 0, already_seen: 0, duplicate: 0, invalid_url: 0, listing_type_mismatch: 0, non_pokemon_domain: 0, off_target_modern: 0, series_mismatch: 0 },
+          grid_raw_found: 0,
+          selected_for_details: 0,
+        });
       }
       
       // Scroll a bit before extracting URLs so repeated scans can move beyond the first visible cards.
@@ -302,12 +319,20 @@ export class VintedFetcher extends BaseFetcher {
       } else {
         logger.error('❌ No URLs extracted! Saving debug info...');
         await this.saveDebugInfo('no_urls_extracted');
-        return [];
+        return attachPrefilterMetadata([], {
+          prefilter_summary: prefilterSummary,
+          grid_raw_found: 0,
+          selected_for_details: 0,
+        });
       }
 
       if (selectedUrls.length === 0) {
         logger.info('No unseen Vinted URLs selected from current result window');
-        return [];
+        return attachPrefilterMetadata([], {
+          prefilter_summary: prefilterSummary,
+          grid_raw_found: searchItems.length,
+          selected_for_details: 0,
+        });
       }
       
       // Fetch details for each unseen listing
@@ -390,7 +415,11 @@ export class VintedFetcher extends BaseFetcher {
         }
       }
       
-      return listings;
+      return attachPrefilterMetadata(listings, {
+        prefilter_summary: prefilterSummary,
+        grid_raw_found: searchItems.length,
+        selected_for_details: selectedUrls.length,
+      });
     } catch (error) {
       logger.error('Vinted fetch error:', error);
       throw error;

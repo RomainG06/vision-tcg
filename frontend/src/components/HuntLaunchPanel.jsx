@@ -48,6 +48,11 @@ const REJECTION_LABELS = {
   series_mismatch: 'Hors série ciblée',
   listing_type_mismatch: 'Type d’annonce non conforme',
   non_pokemon_domain: 'Hors domaine Pokémon/cartes',
+  off_target_modern: 'Moderne/off-target',
+  already_seen: 'Déjà vue',
+  duplicate: 'Doublon grille',
+  invalid_url: 'URL invalide',
+  selected: 'Sélectionnée',
   invalid_listing: 'Annonce invalide',
   quality_filtered: 'Qualité insuffisante',
   unknown: 'Raison inconnue',
@@ -436,8 +441,16 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
                   <div key={`${item.source}-${item.query}-${index}`} style={styles.queryItem}>
                     <span style={styles.queryText}>“{item.query}”</span>
                     <span style={styles.queryMeta}>
-                      {item.raw_found ?? 0} brutes · {item.cumulative_unique ?? 0} uniques cumulées{item.error ? ` · erreur: ${item.error}` : ''}
+                      {item.raw_found ?? 0} brutes · {item.selected_for_details ?? 0} sélectionnées · {item.fetched_details ?? 0} détails · {item.cumulative_unique ?? 0} uniques cumulées{item.error ? ` · erreur: ${item.error}` : ''}
                     </span>
+                    {item.prefilter_summary && (
+                      <span style={styles.queryMeta}>
+                        Préfiltre: {Object.entries(item.prefilter_summary)
+                          .filter(([key, value]) => key !== 'total' && Number(value) > 0)
+                          .map(([key, value]) => `${labelFrom(REJECTION_LABELS, key)} ${value}`)
+                          .join(' · ') || 'aucun rejet'}
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>

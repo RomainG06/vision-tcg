@@ -154,6 +154,9 @@ export async function startScrape(options = {}) {
               location: 'nice',
               radius: 50,
             });
+            const prefilterSummary = fetchedListings.prefilter_summary || null;
+            const gridRawFound = Number(fetchedListings.grid_raw_found ?? prefilterSummary?.total ?? fetchedListings.length);
+            const querySelectedForDetails = Number(fetchedListings.selected_for_details ?? prefilterSummary?.selected ?? fetchedListings.length);
             const taggedListings = fetchedListings.map(listing => ({
               ...listing,
               query: currentQuery,
@@ -167,12 +170,15 @@ export async function startScrape(options = {}) {
             queryStats.push({
               source,
               query: currentQuery,
-              raw_found: fetchedListings.length,
-              selected_for_details: fetchedListings.length,
+              raw_found: gridRawFound,
+              selected_for_details: querySelectedForDetails,
               fetched_details: fetchedListings.length,
+              prefilter_summary: prefilterSummary,
               cumulative_unique: dedupeListingsBySourceExternalId(queryRawListings).length,
               error: null,
             });
+            rawFound += gridRawFound;
+            selectedForDetails += querySelectedForDetails;
           } catch (error) {
             logger.error(`Scrape failed for ${source} query="${currentQuery}":`, error);
             queryStats.push({ source, query: currentQuery, raw_found: 0, selected_for_details: 0, fetched_details: 0, cumulative_unique: beforeCount, error: error.message });
@@ -183,8 +189,6 @@ export async function startScrape(options = {}) {
         const rawListings = dedupeListingsBySourceExternalId(queryRawListings);
         const seenDecisions = new Map();
 
-        rawFound += rawListings.length;
-        selectedForDetails += queryRawListings.length;
         fetchedDetails += rawListings.length;
         const budgetMax = getBudgetMax(filters);
         const budgetResult = filterByBudget(rawListings, budgetMax);

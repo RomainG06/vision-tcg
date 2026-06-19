@@ -51,17 +51,27 @@ const SERIES_QUERIES = {
   ],
 };
 
+function normalizePokemonDomainQuery(query) {
+  const trimmed = String(query || '').trim().replace(/\s+/g, ' ');
+  if (!trimmed) return trimmed;
+  if (/\bcarte\s+pokemon\b/i.test(trimmed) || /^pokemon\b/i.test(trimmed)) return trimmed;
+  const withoutPokemon = trimmed.replace(/\bpokemon\b/ig, '').replace(/\s+/g, ' ').trim();
+  return `pokemon ${withoutPokemon || trimmed}`.trim();
+}
+
 function applyListingTypeToQuery(query, listingType) {
+  const pokemonQuery = normalizePokemonDomainQuery(query);
+
   if (listingType === 'lot') {
-    return /\b(lot|collection|classeur|vrac)\b/i.test(query)
-      ? query
-      : `lot ${query}`;
+    return /\b(lot|collection|classeur|vrac)\b/i.test(pokemonQuery)
+      ? pokemonQuery
+      : `lot ${pokemonQuery}`;
   }
 
   if (listingType === 'cards') {
-    return /\b(carte|cartes)\b/i.test(query)
-      ? query
-      : `carte ${query}`;
+    return /\b(carte|cartes)\b/i.test(pokemonQuery)
+      ? pokemonQuery
+      : `carte ${pokemonQuery}`;
   }
 
   return query;

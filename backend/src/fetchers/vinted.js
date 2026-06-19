@@ -16,6 +16,7 @@ const SERIES_PREFILTER_PATTERNS = {
 };
 
 const OFF_TARGET_PREFILTER_PATTERN = /\b(diamant\s*&?\s*perle|diamant\s+et\s+perle|dp\s*0?\d|dp01|dp02|trésors?\s+mystérieux|tresors?\s+mysterieux|sintonia\s+mentale|pokemon\s+go|pokémon\s+go|ecarlate|écarlate|violet|soleil|lune|sun\s*&?\s*moon|epee|épée|bouclier|sword|shield)\b|\/(?:78|123|130|236)\b/i;
+const POKEMON_DOMAIN_PREFILTER_PATTERN = /\b(pokemon|pokémon|cartes?|cards?|wizards?|wotc|holo|rare|tcg|jcc|jungle|fossile|fossil|rocket|obscur(?:e|s)?)\b|\/\s*(?:82|64|62|102)\b/i;
 const LOT_PREFILTER_PATTERN = /\b(lot|lots|collection|classeur|vrac|set\s+complet|complete\s+set)\b|\b([2-9]|[1-9]\d+)\s*(cartes?|cards?)\b/i;
 const SINGLE_CARD_PREFILTER_PATTERN = /\b(carte\s+seule|carte\s+unique|à\s+l'unité|a\s+l'unite|unitaire|single\s+card)\b/i;
 
@@ -52,11 +53,15 @@ function getPrefilterDecision(item, options = {}) {
   const text = itemText(item);
   const pattern = SERIES_PREFILTER_PATTERNS[targetSeries];
   const listingTypeMatches = matchesListingTypePrefilter(text, listingType);
+  const seriesMatches = Boolean(pattern?.test(text));
+  const pokemonDomainMatches = POKEMON_DOMAIN_PREFILTER_PATTERN.test(text) || seriesMatches;
+  const hasActiveHuntIntent = Boolean(query || targetSeries !== 'all' || listingType !== 'all');
 
   if (!listingTypeMatches) return { keep: false, reason: 'listing_type_mismatch' };
   if (OFF_TARGET_PREFILTER_PATTERN.test(text)) return { keep: false, reason: 'off_target_modern' };
-  if (!targetSeries || targetSeries === 'all' || !pattern) return { keep: true, reason: 'type_match' };
-  if (pattern.test(text)) return { keep: true, reason: 'series_grid_match' };
+  if (hasActiveHuntIntent && !pokemonDomainMatches) return { keep: false, reason: 'non_pokemon_domain' };
+  if (!targetSeries || targetSeries === 'all' || !pattern) return { keep: true, reason: pokemonDomainMatches ? 'domain_match' : 'generic_unfiltered' };
+  if (seriesMatches) return { keep: true, reason: 'series_grid_match' };
 
   // For strict Lot hunts, Vinted often hides the exact set in the grid.
   // If the query itself is strongly targeted (e.g. "lot dracolosse obscur")
@@ -116,6 +121,7 @@ export function summarizeVintedPrefilter(items, options = {}) {
     duplicate: 0,
     invalid_url: 0,
     listing_type_mismatch: 0,
+    non_pokemon_domain: 0,
     off_target_modern: 0,
     series_mismatch: 0,
   };

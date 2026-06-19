@@ -202,7 +202,7 @@ describe('Fetchers', () => {
       const selected = selectUnseenVintedItems(items, {
         targetSeries: 'rocket',
         listingType: 'lot',
-        query: 'lot dracolosse obscur',
+        query: 'lot pokemon dracolosse obscur',
         maxResults: 10,
       });
 
@@ -210,6 +210,59 @@ describe('Fetchers', () => {
         'https://www.vinted.fr/items/602-lot-cartes-pokemon-anciennes',
       ]);
       expect(selected[0].prefilter_reason).toBe('trusted_query_lot_candidate');
+    });
+
+    it('never opens Vinted clothing lots such as shorts during Pokemon lot hunts', () => {
+      const items = [
+        {
+          url: 'https://www.vinted.fr/items/801-lot-de-shorts-nike-adidas',
+          text: 'Lot de shorts Nike Adidas taille M vêtements homme été',
+        },
+        {
+          url: 'https://www.vinted.fr/items/802-lot-cartes-pokemon-anciennes',
+          text: 'Lot 40 cartes Pokémon anciennes Wizards FR bon état',
+        },
+      ];
+
+      const selected = selectUnseenVintedItems(items, {
+        targetSeries: 'rocket',
+        listingType: 'lot',
+        query: 'lot pokemon dracolosse obscur',
+        maxResults: 10,
+      });
+      const summary = summarizeVintedPrefilter(items, {
+        targetSeries: 'rocket',
+        listingType: 'lot',
+        query: 'lot pokemon dracolosse obscur',
+      });
+
+      expect(selected.map(item => item.url)).toEqual([
+        'https://www.vinted.fr/items/802-lot-cartes-pokemon-anciennes',
+      ]);
+      expect(summary).toMatchObject({ selected: 1, non_pokemon_domain: 1 });
+    });
+
+    it('does not trust strong Rocket query fallback for non-Pokemon lot URLs or grid text', () => {
+      const items = [
+        {
+          url: 'https://www.vinted.fr/items/811-lot-shorts-homme',
+          text: 'Lot shorts homme sport collection été',
+        },
+      ];
+
+      const selected = selectUnseenVintedItems(items, {
+        targetSeries: 'rocket',
+        listingType: 'lot',
+        query: 'lot pokemon team rocket',
+        maxResults: 10,
+      });
+
+      expect(selected).toEqual([]);
+      expect(summarizeVintedPrefilter(items, {
+        targetSeries: 'rocket',
+        listingType: 'lot',
+        query: 'lot pokemon team rocket',
+      })).toMatchObject({ selected: 0, non_pokemon_domain: 1 });
     });
 
     it('summarizes Vinted prefilter rejection reasons for zero-result diagnosis', () => {

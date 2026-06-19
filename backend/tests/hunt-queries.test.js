@@ -49,10 +49,26 @@ describe('Smart hunt queries', () => {
     expect(queries).toEqual(expect.arrayContaining([
       'lot pokemon jungle',
       'lot carte pokemon jungle',
-      'lot jungle 64 pokemon',
-      'lot scarabrute jungle',
+      'lot pokemon jungle 64',
+      'lot pokemon scarabrute jungle',
     ]));
     expect(queries.every(query => /\b(lot|collection|classeur|vrac)\b/i.test(query))).toBe(true);
+    expect(queries.every(query => /\bpokemon\b/i.test(query))).toBe(true);
+  });
+
+  test('keeps Pokemon domain in Team Rocket lot queries to avoid Vinted clothing lots', () => {
+    const queries = buildHuntQueries({ profile: 'wizards-fr', filters: { series: 'rocket', listingType: 'lot' } });
+
+    expect(queries).toEqual(expect.arrayContaining([
+      'lot pokemon team rocket',
+      'lot carte pokemon team rocket',
+      'lot pokemon dracolosse obscur',
+      'lot pokemon dracaufeu obscur',
+    ]));
+    expect(queries).not.toContain('lot dracolosse obscur');
+    expect(queries).not.toContain('lot team rocket edition 1');
+    expect(queries.every(query => /\blot\b/i.test(query))).toBe(true);
+    expect(queries.every(query => /\bpokemon\b/i.test(query))).toBe(true);
   });
 
   test('deduplicates listings by source and external id while preserving query matches', () => {

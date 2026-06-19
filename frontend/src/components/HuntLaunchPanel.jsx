@@ -47,6 +47,7 @@ const REJECTION_LABELS = {
   over_budget: 'Hors budget',
   series_mismatch: 'Hors série ciblée',
   listing_type_mismatch: 'Type d’annonce non conforme',
+  non_pokemon_domain: 'Hors domaine Pokémon/cartes',
   invalid_listing: 'Annonce invalide',
   quality_filtered: 'Qualité insuffisante',
   unknown: 'Raison inconnue',

@@ -50,6 +50,7 @@ const REJECTION_LABELS = {
   non_pokemon_domain: 'Hors domaine Pokémon/cartes',
   off_target_modern: 'Moderne/off-target',
   already_seen: 'Déjà vue',
+  rescued_seen: 'Déjà vue ré-ouverte',
   duplicate: 'Doublon grille',
   invalid_url: 'URL invalide',
   selected: 'Sélectionnée',

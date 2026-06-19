@@ -43,6 +43,34 @@ describe('Fetchers', () => {
       ]);
     });
 
+    it('can rescue matching already-seen listings when a targeted scan would otherwise select too little', () => {
+      const items = [
+        {
+          url: 'https://www.vinted.fr/items/901-lot-cartes-pokemon-team-rocket',
+          text: 'Lot cartes Pokémon Team Rocket françaises',
+        },
+        {
+          url: 'https://www.vinted.fr/items/902-lot-cartes-pokemon-anciennes',
+          text: 'Lot cartes Pokémon anciennes Wizards FR',
+        },
+      ];
+
+      const selected = selectUnseenVintedItems(items, {
+        excludeExternalIds: new Set(['901', '902']),
+        targetSeries: 'rocket',
+        listingType: 'lot',
+        query: 'lot pokemon team rocket',
+        maxResults: 2,
+        rescueSeenWhenBelow: 2,
+      });
+
+      expect(selected.map(item => item.url)).toEqual([
+        'https://www.vinted.fr/items/901-lot-cartes-pokemon-team-rocket',
+        'https://www.vinted.fr/items/902-lot-cartes-pokemon-anciennes',
+      ]);
+      expect(selected.every(item => item.prefilter_reason === 'seen_rescue')).toBe(true);
+    });
+
     it('prefilters off-series Vinted cards before opening detail pages', () => {
       const items = [
         {

@@ -84,6 +84,7 @@ export function selectUnseenVintedItems(items, options = {}) {
     targetSeries = 'all',
     listingType = 'all',
     query = '',
+    rescueSeenWhenBelow = 0,
   } = options;
 
   const seen = excludeExternalIds instanceof Set
@@ -92,18 +93,30 @@ export function selectUnseenVintedItems(items, options = {}) {
   const selected = [];
   const deduped = new Set();
 
-  for (const item of items) {
+  const trySelect = (item, { allowSeen = false } = {}) => {
     const url = itemUrl(item);
     const externalId = extractVintedExternalId(url);
-    if (!externalId || seen.has(String(externalId)) || deduped.has(String(externalId))) continue;
+    if (!externalId || deduped.has(String(externalId))) return false;
+    const isSeen = seen.has(String(externalId));
+    if (isSeen && !allowSeen) return false;
+
+    const normalizedItem = typeof item === 'string' ? { url, text: url } : item;
+    const decision = getPrefilterDecision(item, { targetSeries, listingType, query });
+    if (!decision.keep) return false;
 
     deduped.add(String(externalId));
-    const normalizedItem = typeof item === 'string' ? { url, text: url } : item;
+    selected.push({ ...normalizedItem, prefilter_reason: allowSeen && isSeen ? 'seen_rescue' : decision.reason });
+    return selected.length >= maxResults;
+  };
 
-    if (matchesTargetSeriesPrefilter(item, targetSeries, listingType, query)) {
-      const decision = getPrefilterDecision(item, { targetSeries, listingType, query });
-      selected.push({ ...normalizedItem, prefilter_reason: decision.reason });
-      if (selected.length >= maxResults) break;
+  for (const item of items) {
+    if (trySelect(item)) break;
+  }
+
+  const rescueThreshold = Number(rescueSeenWhenBelow) || 0;
+  if (rescueThreshold > 0 && selected.length < Math.min(rescueThreshold, maxResults)) {
+    for (const item of items) {
+      if (trySelect(item, { allowSeen: true })) break;
     }
   }
 
@@ -290,11 +303,29 @@ export class VintedFetcher extends BaseFetcher {
         }
         
         const byUrl = new Map();
+        const collectNodeText = (anchor) => {
+          const chunks = [
+            anchor.textContent,
+            anchor.getAttribute('aria-label'),
+            anchor.getAttribute('title'),
+            anchor.querySelector('img')?.getAttribute('alt'),
+          ];
+          let node = anchor;
+          for (let depth = 0; depth < 4 && node; depth++) {
+            chunks.push(node.textContent);
+            chunks.push(node.getAttribute?.('aria-label'));
+            chunks.push(node.getAttribute?.('title'));
+            chunks.push(node.querySelector?.('img')?.getAttribute('alt'));
+            node = node.parentElement;
+          }
+          return [...new Set(chunks.filter(Boolean).map(value => value.trim()).filter(Boolean))].join(' ').trim();
+        };
+
         for (const anchor of items) {
           const url = anchor.href;
           if (!url || !url.includes('/items/') || byUrl.has(url)) continue;
           const container = anchor.closest('article, div.feed-grid__item, [class*="feed-grid__item"], [data-testid*="item"]');
-          const text = `${anchor.textContent || ''} ${container?.textContent || ''}`.trim();
+          const text = `${collectNodeText(anchor)} ${container?.textContent || ''}`.trim();
           byUrl.set(url, { url, text });
         }
 
@@ -307,9 +338,14 @@ export class VintedFetcher extends BaseFetcher {
         
         return [...byUrl.values()].slice(0, limit);
       }, scanDepth);
-      const prefilterOptions = { excludeExternalIds, maxResults, targetSeries, listingType, query };
+      const rescueSeenWhenBelow = listingType === 'lot' && targetSeries !== 'all' ? Math.min(5, maxResults) : 0;
+      const prefilterOptions = { excludeExternalIds, maxResults, targetSeries, listingType, query, rescueSeenWhenBelow };
       const selectedItems = selectUnseenVintedItems(searchItems, prefilterOptions);
       const prefilterSummary = summarizeVintedPrefilter(searchItems, prefilterOptions);
+      const rescuedSeen = selectedItems.filter(item => item.prefilter_reason === 'seen_rescue').length;
+      if (rescuedSeen > 0) {
+        prefilterSummary.rescued_seen = rescuedSeen;
+      }
       const selectedUrls = selectedItems.map(item => item.url);
       
       logger.info(`Found ${searchItems.length} listing URLs on Vinted, ${selectedUrls.length} selected after already-seen + target-series prefilter`);

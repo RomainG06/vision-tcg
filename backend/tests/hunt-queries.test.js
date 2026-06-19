@@ -64,18 +64,16 @@ describe('Smart hunt queries', () => {
       'lot pokémon team rocket',
       'lot cartes pokemon team rocket',
       'lot cartes pokémon team rocket',
-      'team rocket pokemon',
-      'team rocket pokémon',
       'cartes team rocket fr',
-      'team rocket français',
-      'dracaufeu obscur',
-      'dark charizard',
-      'tortank obscur',
-      'dark blastoise',
-      'raichu obscur',
-      'dark raichu',
-      'dracolosse obscur',
-      'dark dragonite',
+      'lot pokemon team rocket français',
+      'lot pokemon dracaufeu obscur',
+      'lot pokemon dark charizard',
+      'lot pokemon tortank obscur',
+      'lot pokemon dark blastoise',
+      'lot pokemon raichu obscur',
+      'lot pokemon dark raichu',
+      'lot pokemon dracolosse obscur',
+      'lot pokemon dark dragonite',
       'lot pokemon wizards',
       'lot pokémon wizards',
       'lot cartes pokemon anciennes',
@@ -83,17 +81,21 @@ describe('Smart hunt queries', () => {
       'classeur cartes pokemon ancien',
       'cartes pokemon de mon enfance',
       'collection pokemon ancienne',
+      'cartes pokemon team rocket',
+      'cartes pokémon team rocket',
     ]);
     expect(queries).toEqual(expect.arrayContaining([
       'collection pokemon team rocket',
       'lot team rocket français',
       'cartes pokemon années 2000',
-      'dracofeu obscur',
+      'lot pokemon dracofeu obscur',
       'cartes pokemon sombres',
-      'holo team rocket',
-      '1ère édition team rocket',
+      'lot pokemon holo team rocket',
+      'lot pokemon 1ère édition team rocket',
     ]));
     expect(queries.some(query => /800|budget|prix/i.test(query))).toBe(false);
+    expect(queries.some(query => /^(dracaufeu|dark charizard|tortank|dark blastoise|raichu|dark raichu|dracolosse|dark dragonite)\b/i.test(query))).toBe(false);
+    expect(queries.every(query => /\b(lot|collection|classeur|cartes|vrac|gros lot)\b/i.test(query))).toBe(true);
     expect(queries.some(query => /^lot dracolosse obscur$/i.test(query))).toBe(false);
     expect(queries.length).toBeGreaterThanOrEqual(70);
   });

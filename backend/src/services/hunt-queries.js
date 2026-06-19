@@ -445,9 +445,24 @@ const QUERY_PLAYBOOKS = {
   },
 };
 
+function hasLotSearchIntent(query = '') {
+  return /\b(lot|lots|collection|classeur|vrac|cartes|cards|gros\s+lot)\b/i.test(query);
+}
+
+function normalizeLotSearchIntent(query = '') {
+  const trimmed = String(query || '').trim().replace(/\s+/g, ' ');
+  if (!trimmed || hasLotSearchIntent(trimmed)) return trimmed;
+  const withoutPokemonPrefix = trimmed
+    .replace(/^pok[eé]mon\s+/i, '')
+    .replace(/\bpok[eé]mon\b/ig, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return `lot pokemon ${withoutPokemonPrefix || trimmed}`.trim();
+}
+
 function queriesFor(series, listingType) {
   const playbook = QUERY_PLAYBOOKS[series] || QUERY_PLAYBOOKS.all;
-  if (listingType === 'lot') return playbook.lot || playbook.all || [];
+  if (listingType === 'lot') return (playbook.lot || playbook.all || []).map(normalizeLotSearchIntent);
   if (listingType === 'cards') return playbook.cards || playbook.all || [];
   return playbook.all || [...(playbook.cards || []), ...(playbook.lot || [])];
 }

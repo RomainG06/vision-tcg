@@ -211,6 +211,19 @@ D'autres cartes disponibles dans mon dressing : WIZARD, EX, DP, PLATINE, HGSS, N
     expect(result.rejected[0].risks).toContain('series_mismatch');
   });
 
+  test('recognizes French obscure card names as Team Rocket signals even without collector number', () => {
+    const quality = classifyListingQuality({
+      title: 'Lot cartes Pokémon anciennes avec Dracolosse obscur',
+      description: 'Collection Wizards FR, plusieurs cartes Team Rocket',
+      price: 120,
+      score: 72,
+    }, { minScore: 50, targetSeries: 'rocket', listingType: 'lot', budgetMax: 800 });
+
+    expect(quality.keep).toBe(true);
+    expect(quality.reason).toBe('candidate_ok');
+    expect(quality.signals).toEqual(expect.arrayContaining(['wizards_detected', 'french_edition', 'lot_detected']));
+  });
+
   test('requires explicit Jungle signal when jungle series is targeted', () => {
     const rocketQuality = classifyListingQuality({
       title: 'Dracolosse Obscur Edition 1 22/82',

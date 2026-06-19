@@ -7,7 +7,7 @@ export function extractVintedExternalId(url) {
 }
 
 const SERIES_PREFILTER_PATTERNS = {
-  rocket: /\b(team\s*rocket|rocket|dark\s+(?:charizard|blastoise|dragonite|raichu|alakazam|magneton|hypno|slowbro|arbok|dugtrio|golbat|gyarados|machamp|vileplume|weezing))\b|\bobscur(?:e|s)?\b(?=.*\/82\b)/i,
+  rocket: /\b(team\s*rocket|rocket|dark\s+(?:charizard|blastoise|dragonite|raichu|alakazam|magneton|hypno|slowbro|arbok|dugtrio|golbat|gyarados|machamp|vileplume|weezing)|(?:dracaufeu|tortank|dracolosse|raichu|alakazam|magneton|hypnomade|flagadoss|arbok|triopikeur|nosferalto|leviator|léviator|mackogneur|rafflesia|smogogo)\s+obscur(?:e|s)?)\b|\bobscur(?:e|s)?\b(?=.*\/82\b)/i,
   // Vinted grid titles often show only the card name + collector number, not the series name.
   // These are still target-series clues, not a permission to open arbitrary cards.
   jungle: /\b(jungle)\b|\/64\b|\b(aeromite|aéromite|aquali|vaporeon|voltali|jolteon|pyroli|flareon|ronflex|snorlax|scarabrute|pinsir|insécateur|insecateur|scyther|nidoqueen|kangourex|kangaskhan|electhor|électhor|rafflesia|vileplume|victreebel|m\.mime|mr\s+mime|ossatueur|marowak|roucarnage|pidgeot)\b/i,
@@ -37,13 +37,39 @@ function matchesListingTypePrefilter(text, listingType) {
   return true;
 }
 
-function matchesTargetSeriesPrefilter(item, targetSeries, listingType = 'all') {
+function queryStronglyTargetsSeries(query = '', targetSeries = 'all') {
+  const pattern = SERIES_PREFILTER_PATTERNS[targetSeries];
+  if (!query || !targetSeries || targetSeries === 'all' || !pattern) return false;
+  return pattern.test(query);
+}
+
+function getPrefilterDecision(item, options = {}) {
+  const {
+    targetSeries = 'all',
+    listingType = 'all',
+    query = '',
+  } = options;
   const text = itemText(item);
   const pattern = SERIES_PREFILTER_PATTERNS[targetSeries];
-  if (!matchesListingTypePrefilter(text, listingType)) return false;
-  if (!targetSeries || targetSeries === 'all' || !pattern) return true;
-  if (OFF_TARGET_PREFILTER_PATTERN.test(text)) return false;
-  return pattern.test(text);
+  const listingTypeMatches = matchesListingTypePrefilter(text, listingType);
+
+  if (!listingTypeMatches) return { keep: false, reason: 'listing_type_mismatch' };
+  if (OFF_TARGET_PREFILTER_PATTERN.test(text)) return { keep: false, reason: 'off_target_modern' };
+  if (!targetSeries || targetSeries === 'all' || !pattern) return { keep: true, reason: 'type_match' };
+  if (pattern.test(text)) return { keep: true, reason: 'series_grid_match' };
+
+  // For strict Lot hunts, Vinted often hides the exact set in the grid.
+  // If the query itself is strongly targeted (e.g. "lot dracolosse obscur")
+  // and the grid item is clearly a lot, open it for detail scoring instead of dropping it blind.
+  if (listingType === 'lot' && queryStronglyTargetsSeries(query, targetSeries)) {
+    return { keep: true, reason: 'trusted_query_lot_candidate' };
+  }
+
+  return { keep: false, reason: 'series_mismatch' };
+}
+
+function matchesTargetSeriesPrefilter(item, targetSeries, listingType = 'all', query = '') {
+  return getPrefilterDecision(item, { targetSeries, listingType, query }).keep;
 }
 
 export function selectUnseenVintedItems(items, options = {}) {
@@ -52,6 +78,7 @@ export function selectUnseenVintedItems(items, options = {}) {
     maxResults = 50,
     targetSeries = 'all',
     listingType = 'all',
+    query = '',
   } = options;
 
   const seen = excludeExternalIds instanceof Set
@@ -68,8 +95,9 @@ export function selectUnseenVintedItems(items, options = {}) {
     deduped.add(String(externalId));
     const normalizedItem = typeof item === 'string' ? { url, text: url } : item;
 
-    if (matchesTargetSeriesPrefilter(item, targetSeries, listingType)) {
-      selected.push(normalizedItem);
+    if (matchesTargetSeriesPrefilter(item, targetSeries, listingType, query)) {
+      const decision = getPrefilterDecision(item, { targetSeries, listingType, query });
+      selected.push({ ...normalizedItem, prefilter_reason: decision.reason });
       if (selected.length >= maxResults) break;
     }
   }
@@ -79,6 +107,45 @@ export function selectUnseenVintedItems(items, options = {}) {
 
 export function selectUnseenVintedUrls(urls, options = {}) {
   return selectUnseenVintedItems(urls, options).map(item => item.url);
+}
+
+export function summarizeVintedPrefilter(items, options = {}) {
+  const counts = {
+    selected: 0,
+    already_seen: 0,
+    duplicate: 0,
+    invalid_url: 0,
+    listing_type_mismatch: 0,
+    off_target_modern: 0,
+    series_mismatch: 0,
+  };
+  const seen = options.excludeExternalIds instanceof Set
+    ? options.excludeExternalIds
+    : new Set(Array.from(options.excludeExternalIds || []).map(String));
+  const deduped = new Set();
+
+  for (const item of items) {
+    const url = itemUrl(item);
+    const externalId = extractVintedExternalId(url);
+    if (!externalId) {
+      counts.invalid_url++;
+      continue;
+    }
+    if (seen.has(String(externalId))) {
+      counts.already_seen++;
+      continue;
+    }
+    if (deduped.has(String(externalId))) {
+      counts.duplicate++;
+      continue;
+    }
+    deduped.add(String(externalId));
+    const decision = getPrefilterDecision(item, options);
+    if (decision.keep) counts.selected++;
+    else counts[decision.reason] = (counts[decision.reason] || 0) + 1;
+  }
+
+  return counts;
 }
 
 /**
@@ -217,10 +284,13 @@ export class VintedFetcher extends BaseFetcher {
         
         return [...byUrl.values()].slice(0, limit);
       }, scanDepth);
-      const selectedItems = selectUnseenVintedItems(searchItems, { excludeExternalIds, maxResults, targetSeries, listingType });
+      const prefilterOptions = { excludeExternalIds, maxResults, targetSeries, listingType, query };
+      const selectedItems = selectUnseenVintedItems(searchItems, prefilterOptions);
+      const prefilterSummary = summarizeVintedPrefilter(searchItems, prefilterOptions);
       const selectedUrls = selectedItems.map(item => item.url);
       
       logger.info(`Found ${searchItems.length} listing URLs on Vinted, ${selectedUrls.length} selected after already-seen + target-series prefilter`);
+      logger.info(`Prefilter summary: ${JSON.stringify(prefilterSummary)}`);
       if (searchItems.length > 0) {
         logger.debug(`First URL: ${searchItems[0].url}`);
       } else {

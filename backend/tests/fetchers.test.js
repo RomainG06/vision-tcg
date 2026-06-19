@@ -1,5 +1,5 @@
 import { BaseFetcher } from '../src/fetchers/base.js';
-import { extractVintedExternalId, selectUnseenVintedItems, selectUnseenVintedUrls } from '../src/fetchers/vinted.js';
+import { extractVintedExternalId, selectUnseenVintedItems, selectUnseenVintedUrls, summarizeVintedPrefilter } from '../src/fetchers/vinted.js';
 
 describe('Fetchers', () => {
   describe('BaseFetcher', () => {
@@ -181,6 +181,64 @@ describe('Fetchers', () => {
       expect(selected.map(item => item.url)).toEqual([
         'https://www.vinted.fr/items/502-lot-cartes-jungle-fr',
       ]);
+    });
+
+    it('opens lot-looking candidates from strong Team Rocket queries even when Vinted grid hides Rocket terms', () => {
+      const items = [
+        {
+          url: 'https://www.vinted.fr/items/601-carte-dracolosse-obscur',
+          text: 'Dracolosse obscur 22/82 carte seule excellent état',
+        },
+        {
+          url: 'https://www.vinted.fr/items/602-lot-cartes-pokemon-anciennes',
+          text: 'Lot 40 cartes Pokémon anciennes Wizards FR bon état',
+        },
+        {
+          url: 'https://www.vinted.fr/items/603-lot-cartes-dp',
+          text: 'Lot 40 cartes Pokémon Diamant & Perle DP01 FR',
+        },
+      ];
+
+      const selected = selectUnseenVintedItems(items, {
+        targetSeries: 'rocket',
+        listingType: 'lot',
+        query: 'lot dracolosse obscur',
+        maxResults: 10,
+      });
+
+      expect(selected.map(item => item.url)).toEqual([
+        'https://www.vinted.fr/items/602-lot-cartes-pokemon-anciennes',
+      ]);
+      expect(selected[0].prefilter_reason).toBe('trusted_query_lot_candidate');
+    });
+
+    it('summarizes Vinted prefilter rejection reasons for zero-result diagnosis', () => {
+      const items = [
+        {
+          url: 'https://www.vinted.fr/items/701-single-rocket-card',
+          text: 'Dracolosse obscur carte seule',
+        },
+        {
+          url: 'https://www.vinted.fr/items/702-modern-lot',
+          text: 'Lot 40 cartes Pokémon Diamant & Perle DP01 FR',
+        },
+        {
+          url: 'https://www.vinted.fr/items/703-random-card',
+          text: 'Carte Pokémon ancienne Wizards FR',
+        },
+      ];
+
+      const summary = summarizeVintedPrefilter(items, {
+        targetSeries: 'rocket',
+        listingType: 'lot',
+        query: 'lot dracolosse obscur',
+      });
+
+      expect(summary).toMatchObject({
+        selected: 0,
+        listing_type_mismatch: 2,
+        off_target_modern: 1,
+      });
     });
   });
   

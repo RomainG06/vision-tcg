@@ -99,12 +99,9 @@ router.post('/scrape', async (req, res) => {
           let rawListings = [];
           
           if (source === 'leboncoin') {
-            const location = profile.search.locations?.[0];
             const { fetchLeboncoin } = await import('../fetchers/leboncoin.js');
             rawListings = await fetchLeboncoin(keyword, {
               maxResults: resultsLimit,
-              location: location?.name || 'nice',
-              radius: location?.radius_km || 50
             });
           } else if (source === 'vinted') {
             const { fetchVinted } = await import('../fetchers/vinted.js');

@@ -151,8 +151,6 @@ export async function startScrape(options = {}) {
               targetSeries: filters.series || 'all',
               listingType: filters.listingType || filters.listing_type || 'cards',
               waitForCaptcha,
-              location: 'nice',
-              radius: 50,
             });
             const prefilterSummary = fetchedListings.prefilter_summary || null;
             const gridRawFound = Number(fetchedListings.grid_raw_found ?? prefilterSummary?.total ?? fetchedListings.length);

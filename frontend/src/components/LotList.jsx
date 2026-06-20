@@ -191,6 +191,11 @@ function LotList({ listings, onUpdate, onDelete, highlightedIds = [] }) {
                       </span>
                     </div>
                   )}
+                  {listing.has_price_drop && (
+                    <div style={styles.priceDropBadge}>
+                      ↓ Prix en baisse : -{listing.price_drop_amount}€ ({listing.price_drop_percent}%)
+                    </div>
+                  )}
                 </div>
 
                 {/* Location + Distance */}
@@ -587,6 +592,16 @@ const styles = {
     fontSize: theme.typography.sizes.bodySm,
     fontWeight: theme.typography.weights.semibold,
     color: theme.colors.text.tertiary,
+  },
+  priceDropBadge: {
+    marginTop: theme.spacing.sm,
+    padding: `${theme.spacing.xs} ${theme.spacing.sm}`,
+    borderRadius: theme.borders.radiusMd,
+    background: `${theme.accents.successGreen}14`,
+    color: theme.accents.successGreen,
+    border: `${theme.borders.widthThin} solid ${theme.accents.successGreen}44`,
+    fontSize: theme.typography.sizes.bodySm,
+    fontWeight: theme.typography.weights.semibold,
   },
   location: {
     color: theme.colors.text.secondary,

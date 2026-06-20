@@ -82,6 +82,13 @@ export async function fetchStats() {
   return response.json();
 }
 
+export async function fetchAlerts({ limit = 5 } = {}) {
+  const response = await fetch(`${API_URL}/api/alerts?limit=${limit}`);
+  if (!response.ok) throw new Error('Failed to fetch alerts');
+
+  return response.json();
+}
+
 /**
  * Fetch scrape runs history
  */

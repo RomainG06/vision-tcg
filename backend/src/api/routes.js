@@ -2,6 +2,8 @@ import express from 'express';
 import { logger } from '../utils/logger.js';
 import { ListingRepository } from '../repositories/listing-repository.js';
 import { ScrapeRunRepository } from '../repositories/scrape-run-repository.js';
+import { ListingHistoryRepository } from '../repositories/listing-history-repository.js';
+import { AlertRepository } from '../repositories/alert-repository.js';
 import { getDatabaseInfo } from '../db/database.js';
 import { createScrapeJobManager, ScrapeAlreadyRunningError } from '../services/scrape-job-manager.js';
 import { assertValidListingStatus, normalizeListingStatus } from '../services/listing-status.js';
@@ -11,6 +13,8 @@ const router = express.Router();
 // Initialize repositories
 const listingRepo = new ListingRepository();
 const scrapeRunRepo = new ScrapeRunRepository();
+const listingHistoryRepo = new ListingHistoryRepository();
+const alertRepo = new AlertRepository();
 const scrapeJobManager = createScrapeJobManager({
   startScrape: async (payload) => {
     const { startScrape } = await import('../services/scrape-service.js');
@@ -78,8 +82,22 @@ function mapListing(listing) {
     risk_reasons: scoreBreakdown.quality?.risk_reasons || [],
     explanation: listing.notes || null, // Map 'notes' to 'explanation'
     
+    // History / alerts MVP
+    history: listing.history || null,
+    has_price_drop: Boolean(listing.history?.price_drop_amount > 0),
+    price_drop_amount: listing.history?.price_drop_amount || 0,
+    price_drop_percent: listing.history?.price_drop_percent || 0,
+
     // Metadata
     scraped_at: listing.scraped_at
+  };
+}
+
+function withHistory(listing) {
+  if (!listing) return null;
+  return {
+    ...listing,
+    history: listingHistoryRepo.getListingHistory(listing.id),
   };
 }
 
@@ -96,6 +114,7 @@ router.get('/docs', (req, res) => {
       { method: 'GET', path: '/api/docs', description: 'This documentation' },
       { method: 'GET', path: '/api/listings', description: 'List all listings with filters' },
       { method: 'GET', path: '/api/listings/:id', description: 'Get single listing' },
+      { method: 'GET', path: '/api/listings/:id/history', description: 'Get listing price/history tracking' },
       { method: 'PATCH', path: '/api/listings/:id', description: 'Update listing' },
       { method: 'PATCH', path: '/api/listings/:id/status', description: 'Update listing status' },
       { method: 'POST', path: '/api/listings/:id/watchlist', description: 'Mark listing as interesting' },
@@ -103,6 +122,7 @@ router.get('/docs', (req, res) => {
       { method: 'DELETE', path: '/api/listings/:id', description: 'Delete listing' },
       { method: 'POST', path: '/api/scrape/start', description: 'Start a marketplace scrape and save results' },
       { method: 'GET', path: '/api/jobs/status', description: 'Get current scrape job status' },
+      { method: 'GET', path: '/api/alerts', description: 'Get recent high-score and price-drop alerts' },
       { method: 'GET', path: '/api/scrape-runs', description: 'Get scrape runs history' },
       { method: 'GET', path: '/api/stats', description: 'Get statistics' },
       { method: 'GET', path: '/api/debug/db', description: 'Debug database path/count (dev)' }
@@ -174,7 +194,7 @@ router.get('/listings', (req, res) => {
       offset: req.query.offset ? parseInt(req.query.offset) : 0
     };
     
-    const listings = listingRepo.findAll(filters);
+    const listings = listingRepo.findAll(filters).map(withHistory);
     const total = listingRepo.count(filters);
     
     res.json({
@@ -192,6 +212,52 @@ router.get('/listings', (req, res) => {
 });
 
 /**
+ * GET /api/alerts
+ * Simple MVP alerts: high score and price drop.
+ */
+router.get('/alerts', (req, res) => {
+  try {
+    const alerts = alertRepo.findRecent({
+      type: req.query.type,
+      unreadOnly: req.query.unread === 'true',
+      limit: req.query.limit ? parseInt(req.query.limit) : 20,
+    });
+
+    res.json({
+      alerts,
+      summary: alertRepo.getSummary(),
+      history: listingHistoryRepo.getSummary(),
+    });
+  } catch (error) {
+    logger.error('Error fetching alerts:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * GET /api/listings/:id/history
+ * Price/history details for a listing.
+ */
+router.get('/listings/:id/history', (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const listing = listingRepo.findById(id);
+
+    if (!listing) {
+      return res.status(404).json({ error: 'Listing not found' });
+    }
+
+    res.json({
+      history: listingHistoryRepo.getListingHistory(id),
+      price_events: listingHistoryRepo.getPriceEvents(id),
+    });
+  } catch (error) {
+    logger.error(`Error fetching listing history ${req.params.id}:`, error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
  * GET /api/listings/:id
  * Get a single listing by ID
  */
@@ -204,7 +270,7 @@ router.get('/listings/:id', (req, res) => {
       return res.status(404).json({ error: 'Listing not found' });
     }
     
-    res.json(mapListing(listing));
+    res.json(mapListing(withHistory(listing)));
   } catch (error) {
     logger.error(`Error fetching listing ${req.params.id}:`, error);
     res.status(500).json({ error: 'Internal server error' });
@@ -239,7 +305,7 @@ router.patch('/listings/:id', (req, res) => {
       return res.status(404).json({ error: 'Listing not found' });
     }
     
-    res.json(mapListing(updated));
+    res.json(mapListing(withHistory(updated)));
   } catch (error) {
     logger.error(`Error updating listing ${req.params.id}:`, error);
     res.status(500).json({ error: 'Internal server error' });
@@ -266,7 +332,7 @@ router.patch('/listings/:id/status', (req, res) => {
       return res.status(404).json({ error: 'Listing not found' });
     }
 
-    res.json(mapListing(updated));
+    res.json(mapListing(withHistory(updated)));
   } catch (error) {
     logger.error(`Error updating listing status ${req.params.id}:`, error);
     res.status(500).json({ error: 'Internal server error' });
@@ -289,7 +355,7 @@ router.post('/listings/:id/watchlist', (req, res) => {
       return res.status(404).json({ error: 'Listing not found' });
     }
 
-    res.json(mapListing(updated));
+    res.json(mapListing(withHistory(updated)));
   } catch (error) {
     logger.error(`Error adding listing ${req.params.id} to watchlist:`, error);
     res.status(500).json({ error: 'Internal server error' });
@@ -375,6 +441,8 @@ router.get('/stats', (req, res) => {
       avgScore: Math.round(listingRepo.getAverageScore() * 10) / 10,
       avgPrice: Math.round(listingRepo.getAveragePrice() * 100) / 100,
       highScore: listingRepo.countHighScore(),
+      alerts: alertRepo.getSummary(),
+      history: listingHistoryRepo.getSummary(),
       bySource: listingRepo.countBySource()
     };
     

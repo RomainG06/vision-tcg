@@ -1,4 +1,6 @@
 import { all, get, run } from '../db/database.js';
+import { ListingHistoryRepository } from './listing-history-repository.js';
+import { AlertRepository } from './alert-repository.js';
 
 /**
  * Repository for listings table
@@ -100,6 +102,7 @@ export class ListingRepository {
    * @returns {number} Inserted/updated row ID
    */
   upsert(listing) {
+    const previousListing = this.findBySourceAndExternalId(listing.source, listing.external_id);
     const {
       scrape_run_id,
       source,
@@ -122,7 +125,7 @@ export class ListingRepository {
       notes
     } = listing;
     
-    const result = run(`
+    run(`
       INSERT INTO listings (
         scrape_run_id, source, external_id, url, title, description,
         price, location, lat, lon, distance_km, images,
@@ -144,11 +147,17 @@ export class ListingRepository {
         score_breakdown = excluded.score_breakdown
     `, [
       scrape_run_id, source, external_id, url, title, description,
-      price, location, lat, lon, distance_km, images,
-      posted_at, scraped_at, raw_html, status || 'new', score, score_breakdown, notes
+      price, location ?? null, lat ?? null, lon ?? null, distance_km ?? null, images ?? null,
+      posted_at ?? null, scraped_at, raw_html ?? null, status || 'new', score ?? 0, score_breakdown ?? null, notes ?? null
     ]);
-    
-    return result;
+
+    const savedListing = this.findBySourceAndExternalId(source, external_id);
+    const historyRepo = new ListingHistoryRepository();
+    const alertRepo = new AlertRepository();
+    const history = historyRepo.recordDetection(savedListing, previousListing);
+    alertRepo.evaluateListing({ listing: savedListing, previousListing, history });
+
+    return savedListing?.id || null;
   }
   
   /**

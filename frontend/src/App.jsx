@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import FilterBar from './components/FilterBar';
 import LotList from './components/LotList';
 import HuntLaunchPanel from './components/HuntLaunchPanel';
-import { fetchListings, fetchStats, updateListing, deleteListing, deleteAllListings } from './services/api';
+import { fetchListings, fetchStats, fetchAlerts, updateListing, deleteListing, deleteAllListings } from './services/api';
 import theme from './theme';
 import TcgIcon from './components/TcgIcon';
 
@@ -10,6 +10,7 @@ function App() {
   const [listings, setListings] = useState([]);
   const [filteredListings, setFilteredListings] = useState([]);
   const [stats, setStats] = useState(null);
+  const [alertsData, setAlertsData] = useState({ alerts: [], summary: null, history: null });
   const [filters, setFilters] = useState({
     status: 'all',
     sortBy: 'date',
@@ -36,12 +37,14 @@ function App() {
   const loadData = async ({ showLoading = true } = {}) => {
     try {
       if (showLoading) setLoading(true);
-      const [listingsData, statsData] = await Promise.all([
+      const [listingsData, statsData, alertsPayload] = await Promise.all([
         fetchListings({ limit: 500 }),
         fetchStats(),
+        fetchAlerts({ limit: 5 }),
       ]);
       setListings(listingsData);
       setStats(statsData);
+      setAlertsData(alertsPayload);
       return listingsData;
     } catch (err) {
       setError(err.message);
@@ -121,8 +124,9 @@ function App() {
       );
       
       // Reload stats to reflect new counts
-      const statsData = await fetchStats();
+      const [statsData, alertsPayload] = await Promise.all([fetchStats(), fetchAlerts({ limit: 5 })]);
       setStats(statsData);
+      setAlertsData(alertsPayload);
       return updated;
     } catch (err) {
       console.error('Failed to update listing:', err);
@@ -138,8 +142,9 @@ function App() {
         ...prev,
         highlightedIds: prev.highlightedIds.filter(highlightedId => highlightedId !== id),
       } : prev);
-      const statsData = await fetchStats();
+      const [statsData, alertsPayload] = await Promise.all([fetchStats(), fetchAlerts({ limit: 5 })]);
       setStats(statsData);
+      setAlertsData(alertsPayload);
     } catch (err) {
       console.error('Failed to delete listing:', err);
       throw err;
@@ -156,8 +161,9 @@ function App() {
       setListings([]);
       setFilteredListings([]);
       setLastHunt(null);
-      const statsData = await fetchStats();
+      const [statsData, alertsPayload] = await Promise.all([fetchStats(), fetchAlerts({ limit: 5 })]);
       setStats(statsData);
+      setAlertsData(alertsPayload);
       setNotice(`${result.deleted ?? total} annonces supprimées du dashboard.`);
       setTimeout(() => setNotice(null), 3500);
     } catch (err) {
@@ -254,6 +260,8 @@ function App() {
           </div>
         )}
 
+        <AlertsPanel alertsData={alertsData} />
+
         <div style={styles.dashboardActions}>
           <div style={styles.dashboardActionsText}>
             Nettoyage local : supprime les annonces affichées sans effacer la mémoire anti-rescan.
@@ -280,6 +288,51 @@ function App() {
         />
       </div>
     </div>
+  );
+}
+
+function AlertsPanel({ alertsData }) {
+  const alerts = alertsData?.alerts || [];
+  const summary = alertsData?.summary || {};
+  const history = alertsData?.history || {};
+
+  if (alerts.length === 0 && !summary.unread && !history.tracked) return null;
+
+  return (
+    <section style={styles.alertsPanel}>
+      <div style={styles.alertsHeader}>
+        <div>
+          <div style={styles.alertsEyebrow}>Historique & alertes simples</div>
+          <h2 style={styles.alertsTitle}>Alertes radar</h2>
+        </div>
+        <div style={styles.alertsSummary}>
+          <span style={styles.alertSummaryChip}>{summary.high_score || 0} score élevé</span>
+          <span style={styles.alertSummaryChip}>{summary.price_drop || 0} prix en baisse</span>
+          <span style={styles.alertSummaryChip}>{history.tracked || 0} suivies</span>
+        </div>
+      </div>
+
+      {alerts.length > 0 ? (
+        <div style={styles.alertsList}>
+          {alerts.map((alert) => (
+            <div key={alert.id} style={styles.alertItem}>
+              <span style={{
+                ...styles.alertType,
+                ...(alert.type === 'price_drop' ? styles.alertTypePriceDrop : styles.alertTypeHighScore),
+              }}>
+                {alert.type === 'price_drop' ? 'Prix en baisse' : 'Score élevé'}
+              </span>
+              <div style={styles.alertContent}>
+                <strong>{alert.title}</strong>
+                <span>{alert.message}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div style={styles.alertsEmpty}>Aucune alerte récente. Les prochains scores élevés ou baisses de prix apparaîtront ici.</div>
+      )}
+    </section>
   );
 }
 
@@ -400,6 +453,83 @@ const styles = {
     fontWeight: theme.typography.weights.bold,
     color: theme.accents.hunterGold,
     textShadow: `0 0 16px ${theme.accents.hunterGold}80`,
+  },
+  alertsPanel: {
+    marginBottom: theme.spacing.xl,
+    padding: theme.spacing.xl,
+    borderRadius: theme.borders.radiusLg,
+    border: `${theme.borders.widthThin} solid ${theme.accents.manaCyan}44`,
+    background: `linear-gradient(135deg, ${theme.colors.primary.deepDark}, ${theme.colors.primary.slate}55)`,
+    boxShadow: theme.shadows.md,
+  },
+  alertsHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: theme.spacing.lg,
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
+    marginBottom: theme.spacing.lg,
+  },
+  alertsEyebrow: {
+    color: theme.accents.manaCyan,
+    fontSize: theme.typography.sizes.bodySm,
+    textTransform: 'uppercase',
+    letterSpacing: '0.08em',
+    fontWeight: theme.typography.weights.semibold,
+  },
+  alertsTitle: {
+    margin: `${theme.spacing.xs} 0 0`,
+    fontSize: theme.typography.sizes.headingMd,
+  },
+  alertsSummary: {
+    display: 'flex',
+    gap: theme.spacing.sm,
+    flexWrap: 'wrap',
+  },
+  alertSummaryChip: {
+    padding: `${theme.spacing.xs} ${theme.spacing.sm}`,
+    borderRadius: '999px',
+    background: `${theme.accents.manaCyan}14`,
+    color: theme.colors.text.secondary,
+    border: `${theme.borders.widthThin} solid ${theme.accents.manaCyan}33`,
+    fontSize: theme.typography.sizes.bodySm,
+  },
+  alertsList: {
+    display: 'grid',
+    gap: theme.spacing.sm,
+  },
+  alertItem: {
+    display: 'flex',
+    gap: theme.spacing.md,
+    alignItems: 'center',
+    padding: theme.spacing.md,
+    borderRadius: theme.borders.radiusMd,
+    background: `${theme.colors.primary.obsidian}88`,
+    border: `${theme.borders.widthThin} solid ${theme.colors.primary.slate}`,
+  },
+  alertType: {
+    flex: '0 0 auto',
+    padding: `${theme.spacing.xs} ${theme.spacing.sm}`,
+    borderRadius: '999px',
+    fontSize: theme.typography.sizes.bodySm,
+    fontWeight: theme.typography.weights.bold,
+  },
+  alertTypeHighScore: {
+    color: theme.accents.hunterGold,
+    background: `${theme.accents.hunterGold}16`,
+  },
+  alertTypePriceDrop: {
+    color: theme.accents.successGreen,
+    background: `${theme.accents.successGreen}16`,
+  },
+  alertContent: {
+    display: 'grid',
+    gap: theme.spacing.xs,
+    color: theme.colors.text.secondary,
+  },
+  alertsEmpty: {
+    color: theme.colors.text.tertiary,
+    fontSize: theme.typography.sizes.bodySm,
   },
   dashboardActions: {
     display: 'flex',

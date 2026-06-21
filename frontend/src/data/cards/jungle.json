@@ -1,0 +1,1854 @@
+[
+  {
+    "id": "jungle-1",
+    "tcgApiId": "base2-1",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Mélodelfe",
+    "englishName": "Clefable",
+    "number": "1/64",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Mélodelfe",
+      "Clefable",
+      "Mélodelfe jungle",
+      "Clefable jungle",
+      "Mélodelfe 1/64",
+      "Clefable 1/64"
+    ],
+    "aliases": [
+      "Mélodelfe",
+      "Clefable",
+      "Mélodelfe jungle",
+      "Clefable jungle",
+      "Mélodelfe 1/64",
+      "Clefable 1/64"
+    ]
+  },
+  {
+    "id": "jungle-2",
+    "tcgApiId": "base2-2",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Électrode",
+    "englishName": "Electrode",
+    "number": "2/64",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Électrode",
+      "Electrode",
+      "Électrode jungle",
+      "Electrode jungle",
+      "Électrode 2/64",
+      "Electrode 2/64"
+    ],
+    "aliases": [
+      "Électrode",
+      "Electrode",
+      "Électrode jungle",
+      "Electrode jungle",
+      "Électrode 2/64",
+      "Electrode 2/64"
+    ]
+  },
+  {
+    "id": "jungle-3",
+    "tcgApiId": "base2-3",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Pyroli",
+    "englishName": "Flareon",
+    "number": "3/64",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Pyroli",
+      "Flareon",
+      "Pyroli jungle",
+      "Flareon jungle",
+      "Pyroli 3/64",
+      "Flareon 3/64"
+    ],
+    "aliases": [
+      "Pyroli",
+      "Flareon",
+      "Pyroli jungle",
+      "Flareon jungle",
+      "Pyroli 3/64",
+      "Flareon 3/64"
+    ]
+  },
+  {
+    "id": "jungle-4",
+    "tcgApiId": "base2-4",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Voltali",
+    "englishName": "Jolteon",
+    "number": "4/64",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Voltali",
+      "Jolteon",
+      "Voltali jungle",
+      "Jolteon jungle",
+      "Voltali 4/64",
+      "Jolteon 4/64"
+    ],
+    "aliases": [
+      "Voltali",
+      "Jolteon",
+      "Voltali jungle",
+      "Jolteon jungle",
+      "Voltali 4/64",
+      "Jolteon 4/64"
+    ]
+  },
+  {
+    "id": "jungle-5",
+    "tcgApiId": "base2-5",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Kangourex",
+    "englishName": "Kangaskhan",
+    "number": "5/64",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Kangourex",
+      "Kangaskhan",
+      "Kangourex jungle",
+      "Kangaskhan jungle",
+      "Kangourex 5/64",
+      "Kangaskhan 5/64"
+    ],
+    "aliases": [
+      "Kangourex",
+      "Kangaskhan",
+      "Kangourex jungle",
+      "Kangaskhan jungle",
+      "Kangourex 5/64",
+      "Kangaskhan 5/64"
+    ]
+  },
+  {
+    "id": "jungle-6",
+    "tcgApiId": "base2-6",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "M. Mime",
+    "englishName": "Mr. Mime",
+    "number": "6/64",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "M. Mime",
+      "Mr. Mime",
+      "M. Mime jungle",
+      "Mr. Mime jungle",
+      "M. Mime 6/64",
+      "Mr. Mime 6/64"
+    ],
+    "aliases": [
+      "M. Mime",
+      "Mr. Mime",
+      "M. Mime jungle",
+      "Mr. Mime jungle",
+      "M. Mime 6/64",
+      "Mr. Mime 6/64"
+    ]
+  },
+  {
+    "id": "jungle-7",
+    "tcgApiId": "base2-7",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Nidoqueen",
+    "englishName": "Nidoqueen",
+    "number": "7/64",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Nidoqueen",
+      "Nidoqueen jungle",
+      "Nidoqueen 7/64"
+    ],
+    "aliases": [
+      "Nidoqueen",
+      "Nidoqueen jungle",
+      "Nidoqueen 7/64"
+    ]
+  },
+  {
+    "id": "jungle-8",
+    "tcgApiId": "base2-8",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Roucarnage",
+    "englishName": "Pidgeot",
+    "number": "8/64",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Roucarnage",
+      "Pidgeot",
+      "Roucarnage jungle",
+      "Pidgeot jungle",
+      "Roucarnage 8/64",
+      "Pidgeot 8/64"
+    ],
+    "aliases": [
+      "Roucarnage",
+      "Pidgeot",
+      "Roucarnage jungle",
+      "Pidgeot jungle",
+      "Roucarnage 8/64",
+      "Pidgeot 8/64"
+    ]
+  },
+  {
+    "id": "jungle-9",
+    "tcgApiId": "base2-9",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Scarabrute",
+    "englishName": "Pinsir",
+    "number": "9/64",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Scarabrute",
+      "Pinsir",
+      "Scarabrute jungle",
+      "Pinsir jungle",
+      "Scarabrute 9/64",
+      "Pinsir 9/64"
+    ],
+    "aliases": [
+      "Scarabrute",
+      "Pinsir",
+      "Scarabrute jungle",
+      "Pinsir jungle",
+      "Scarabrute 9/64",
+      "Pinsir 9/64"
+    ]
+  },
+  {
+    "id": "jungle-10",
+    "tcgApiId": "base2-10",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Insécateur",
+    "englishName": "Scyther",
+    "number": "10/64",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Insécateur",
+      "Scyther",
+      "Insécateur jungle",
+      "Scyther jungle",
+      "Insécateur 10/64",
+      "Scyther 10/64"
+    ],
+    "aliases": [
+      "Insécateur",
+      "Scyther",
+      "Insécateur jungle",
+      "Scyther jungle",
+      "Insécateur 10/64",
+      "Scyther 10/64"
+    ]
+  },
+  {
+    "id": "jungle-11",
+    "tcgApiId": "base2-11",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Ronflex",
+    "englishName": "Snorlax",
+    "number": "11/64",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Ronflex",
+      "Snorlax",
+      "Ronflex jungle",
+      "Snorlax jungle",
+      "Ronflex 11/64",
+      "Snorlax 11/64"
+    ],
+    "aliases": [
+      "Ronflex",
+      "Snorlax",
+      "Ronflex jungle",
+      "Snorlax jungle",
+      "Ronflex 11/64",
+      "Snorlax 11/64"
+    ]
+  },
+  {
+    "id": "jungle-12",
+    "tcgApiId": "base2-12",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Aquali",
+    "englishName": "Vaporeon",
+    "number": "12/64",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Aquali",
+      "Vaporeon",
+      "Aquali jungle",
+      "Vaporeon jungle",
+      "Aquali 12/64",
+      "Vaporeon 12/64"
+    ],
+    "aliases": [
+      "Aquali",
+      "Vaporeon",
+      "Aquali jungle",
+      "Vaporeon jungle",
+      "Aquali 12/64",
+      "Vaporeon 12/64"
+    ]
+  },
+  {
+    "id": "jungle-13",
+    "tcgApiId": "base2-13",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Aéromite",
+    "englishName": "Venomoth",
+    "number": "13/64",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Aéromite",
+      "Venomoth",
+      "Aéromite jungle",
+      "Venomoth jungle",
+      "Aéromite 13/64",
+      "Venomoth 13/64"
+    ],
+    "aliases": [
+      "Aéromite",
+      "Venomoth",
+      "Aéromite jungle",
+      "Venomoth jungle",
+      "Aéromite 13/64",
+      "Venomoth 13/64"
+    ]
+  },
+  {
+    "id": "jungle-14",
+    "tcgApiId": "base2-14",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Empiflor",
+    "englishName": "Victreebel",
+    "number": "14/64",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Empiflor",
+      "Victreebel",
+      "Empiflor jungle",
+      "Victreebel jungle",
+      "Empiflor 14/64",
+      "Victreebel 14/64"
+    ],
+    "aliases": [
+      "Empiflor",
+      "Victreebel",
+      "Empiflor jungle",
+      "Victreebel jungle",
+      "Empiflor 14/64",
+      "Victreebel 14/64"
+    ]
+  },
+  {
+    "id": "jungle-15",
+    "tcgApiId": "base2-15",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Rafflesia",
+    "englishName": "Vileplume",
+    "number": "15/64",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Rafflesia",
+      "Vileplume",
+      "Rafflesia jungle",
+      "Vileplume jungle",
+      "Rafflesia 15/64",
+      "Vileplume 15/64"
+    ],
+    "aliases": [
+      "Rafflesia",
+      "Vileplume",
+      "Rafflesia jungle",
+      "Vileplume jungle",
+      "Rafflesia 15/64",
+      "Vileplume 15/64"
+    ]
+  },
+  {
+    "id": "jungle-16",
+    "tcgApiId": "base2-16",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Grodoudou",
+    "englishName": "Wigglytuff",
+    "number": "16/64",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Grodoudou",
+      "Wigglytuff",
+      "Grodoudou jungle",
+      "Wigglytuff jungle",
+      "Grodoudou 16/64",
+      "Wigglytuff 16/64"
+    ],
+    "aliases": [
+      "Grodoudou",
+      "Wigglytuff",
+      "Grodoudou jungle",
+      "Wigglytuff jungle",
+      "Grodoudou 16/64",
+      "Wigglytuff 16/64"
+    ]
+  },
+  {
+    "id": "jungle-17",
+    "tcgApiId": "base2-17",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Mélodelfe",
+    "englishName": "Clefable",
+    "number": "17/64",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Mélodelfe",
+      "Clefable",
+      "Mélodelfe jungle",
+      "Clefable jungle",
+      "Mélodelfe 17/64",
+      "Clefable 17/64"
+    ],
+    "aliases": [
+      "Mélodelfe",
+      "Clefable",
+      "Mélodelfe jungle",
+      "Clefable jungle",
+      "Mélodelfe 17/64",
+      "Clefable 17/64"
+    ]
+  },
+  {
+    "id": "jungle-18",
+    "tcgApiId": "base2-18",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Électrode",
+    "englishName": "Electrode",
+    "number": "18/64",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Électrode",
+      "Electrode",
+      "Électrode jungle",
+      "Electrode jungle",
+      "Électrode 18/64",
+      "Electrode 18/64"
+    ],
+    "aliases": [
+      "Électrode",
+      "Electrode",
+      "Électrode jungle",
+      "Electrode jungle",
+      "Électrode 18/64",
+      "Electrode 18/64"
+    ]
+  },
+  {
+    "id": "jungle-19",
+    "tcgApiId": "base2-19",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Pyroli",
+    "englishName": "Flareon",
+    "number": "19/64",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Pyroli",
+      "Flareon",
+      "Pyroli jungle",
+      "Flareon jungle",
+      "Pyroli 19/64",
+      "Flareon 19/64"
+    ],
+    "aliases": [
+      "Pyroli",
+      "Flareon",
+      "Pyroli jungle",
+      "Flareon jungle",
+      "Pyroli 19/64",
+      "Flareon 19/64"
+    ]
+  },
+  {
+    "id": "jungle-20",
+    "tcgApiId": "base2-20",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Voltali",
+    "englishName": "Jolteon",
+    "number": "20/64",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Voltali",
+      "Jolteon",
+      "Voltali jungle",
+      "Jolteon jungle",
+      "Voltali 20/64",
+      "Jolteon 20/64"
+    ],
+    "aliases": [
+      "Voltali",
+      "Jolteon",
+      "Voltali jungle",
+      "Jolteon jungle",
+      "Voltali 20/64",
+      "Jolteon 20/64"
+    ]
+  },
+  {
+    "id": "jungle-21",
+    "tcgApiId": "base2-21",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Kangourex",
+    "englishName": "Kangaskhan",
+    "number": "21/64",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Kangourex",
+      "Kangaskhan",
+      "Kangourex jungle",
+      "Kangaskhan jungle",
+      "Kangourex 21/64",
+      "Kangaskhan 21/64"
+    ],
+    "aliases": [
+      "Kangourex",
+      "Kangaskhan",
+      "Kangourex jungle",
+      "Kangaskhan jungle",
+      "Kangourex 21/64",
+      "Kangaskhan 21/64"
+    ]
+  },
+  {
+    "id": "jungle-22",
+    "tcgApiId": "base2-22",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "M. Mime",
+    "englishName": "Mr. Mime",
+    "number": "22/64",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "M. Mime",
+      "Mr. Mime",
+      "M. Mime jungle",
+      "Mr. Mime jungle",
+      "M. Mime 22/64",
+      "Mr. Mime 22/64"
+    ],
+    "aliases": [
+      "M. Mime",
+      "Mr. Mime",
+      "M. Mime jungle",
+      "Mr. Mime jungle",
+      "M. Mime 22/64",
+      "Mr. Mime 22/64"
+    ]
+  },
+  {
+    "id": "jungle-23",
+    "tcgApiId": "base2-23",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Nidoqueen",
+    "englishName": "Nidoqueen",
+    "number": "23/64",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Nidoqueen",
+      "Nidoqueen jungle",
+      "Nidoqueen 23/64"
+    ],
+    "aliases": [
+      "Nidoqueen",
+      "Nidoqueen jungle",
+      "Nidoqueen 23/64"
+    ]
+  },
+  {
+    "id": "jungle-24",
+    "tcgApiId": "base2-24",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Roucarnage",
+    "englishName": "Pidgeot",
+    "number": "24/64",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Roucarnage",
+      "Pidgeot",
+      "Roucarnage jungle",
+      "Pidgeot jungle",
+      "Roucarnage 24/64",
+      "Pidgeot 24/64"
+    ],
+    "aliases": [
+      "Roucarnage",
+      "Pidgeot",
+      "Roucarnage jungle",
+      "Pidgeot jungle",
+      "Roucarnage 24/64",
+      "Pidgeot 24/64"
+    ]
+  },
+  {
+    "id": "jungle-25",
+    "tcgApiId": "base2-25",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Scarabrute",
+    "englishName": "Pinsir",
+    "number": "25/64",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Scarabrute",
+      "Pinsir",
+      "Scarabrute jungle",
+      "Pinsir jungle",
+      "Scarabrute 25/64",
+      "Pinsir 25/64"
+    ],
+    "aliases": [
+      "Scarabrute",
+      "Pinsir",
+      "Scarabrute jungle",
+      "Pinsir jungle",
+      "Scarabrute 25/64",
+      "Pinsir 25/64"
+    ]
+  },
+  {
+    "id": "jungle-26",
+    "tcgApiId": "base2-26",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Insécateur",
+    "englishName": "Scyther",
+    "number": "26/64",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Insécateur",
+      "Scyther",
+      "Insécateur jungle",
+      "Scyther jungle",
+      "Insécateur 26/64",
+      "Scyther 26/64"
+    ],
+    "aliases": [
+      "Insécateur",
+      "Scyther",
+      "Insécateur jungle",
+      "Scyther jungle",
+      "Insécateur 26/64",
+      "Scyther 26/64"
+    ]
+  },
+  {
+    "id": "jungle-27",
+    "tcgApiId": "base2-27",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Ronflex",
+    "englishName": "Snorlax",
+    "number": "27/64",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Ronflex",
+      "Snorlax",
+      "Ronflex jungle",
+      "Snorlax jungle",
+      "Ronflex 27/64",
+      "Snorlax 27/64"
+    ],
+    "aliases": [
+      "Ronflex",
+      "Snorlax",
+      "Ronflex jungle",
+      "Snorlax jungle",
+      "Ronflex 27/64",
+      "Snorlax 27/64"
+    ]
+  },
+  {
+    "id": "jungle-28",
+    "tcgApiId": "base2-28",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Aquali",
+    "englishName": "Vaporeon",
+    "number": "28/64",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Aquali",
+      "Vaporeon",
+      "Aquali jungle",
+      "Vaporeon jungle",
+      "Aquali 28/64",
+      "Vaporeon 28/64"
+    ],
+    "aliases": [
+      "Aquali",
+      "Vaporeon",
+      "Aquali jungle",
+      "Vaporeon jungle",
+      "Aquali 28/64",
+      "Vaporeon 28/64"
+    ]
+  },
+  {
+    "id": "jungle-29",
+    "tcgApiId": "base2-29",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Aéromite",
+    "englishName": "Venomoth",
+    "number": "29/64",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Aéromite",
+      "Venomoth",
+      "Aéromite jungle",
+      "Venomoth jungle",
+      "Aéromite 29/64",
+      "Venomoth 29/64"
+    ],
+    "aliases": [
+      "Aéromite",
+      "Venomoth",
+      "Aéromite jungle",
+      "Venomoth jungle",
+      "Aéromite 29/64",
+      "Venomoth 29/64"
+    ]
+  },
+  {
+    "id": "jungle-30",
+    "tcgApiId": "base2-30",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Empiflor",
+    "englishName": "Victreebel",
+    "number": "30/64",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Empiflor",
+      "Victreebel",
+      "Empiflor jungle",
+      "Victreebel jungle",
+      "Empiflor 30/64",
+      "Victreebel 30/64"
+    ],
+    "aliases": [
+      "Empiflor",
+      "Victreebel",
+      "Empiflor jungle",
+      "Victreebel jungle",
+      "Empiflor 30/64",
+      "Victreebel 30/64"
+    ]
+  },
+  {
+    "id": "jungle-31",
+    "tcgApiId": "base2-31",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Rafflesia",
+    "englishName": "Vileplume",
+    "number": "31/64",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Rafflesia",
+      "Vileplume",
+      "Rafflesia jungle",
+      "Vileplume jungle",
+      "Rafflesia 31/64",
+      "Vileplume 31/64"
+    ],
+    "aliases": [
+      "Rafflesia",
+      "Vileplume",
+      "Rafflesia jungle",
+      "Vileplume jungle",
+      "Rafflesia 31/64",
+      "Vileplume 31/64"
+    ]
+  },
+  {
+    "id": "jungle-32",
+    "tcgApiId": "base2-32",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Grodoudou",
+    "englishName": "Wigglytuff",
+    "number": "32/64",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Grodoudou",
+      "Wigglytuff",
+      "Grodoudou jungle",
+      "Wigglytuff jungle",
+      "Grodoudou 32/64",
+      "Wigglytuff 32/64"
+    ],
+    "aliases": [
+      "Grodoudou",
+      "Wigglytuff",
+      "Grodoudou jungle",
+      "Wigglytuff jungle",
+      "Grodoudou 32/64",
+      "Wigglytuff 32/64"
+    ]
+  },
+  {
+    "id": "jungle-33",
+    "tcgApiId": "base2-33",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Papilusion",
+    "englishName": "Butterfree",
+    "number": "33/64",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Papilusion",
+      "Butterfree",
+      "Papilusion jungle",
+      "Butterfree jungle",
+      "Papilusion 33/64",
+      "Butterfree 33/64"
+    ],
+    "aliases": [
+      "Papilusion",
+      "Butterfree",
+      "Papilusion jungle",
+      "Butterfree jungle",
+      "Papilusion 33/64",
+      "Butterfree 33/64"
+    ]
+  },
+  {
+    "id": "jungle-34",
+    "tcgApiId": "base2-34",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Dodrio",
+    "englishName": "Dodrio",
+    "number": "34/64",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Dodrio",
+      "Dodrio jungle",
+      "Dodrio 34/64"
+    ],
+    "aliases": [
+      "Dodrio",
+      "Dodrio jungle",
+      "Dodrio 34/64"
+    ]
+  },
+  {
+    "id": "jungle-35",
+    "tcgApiId": "base2-35",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Noadkoko",
+    "englishName": "Exeggutor",
+    "number": "35/64",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Noadkoko",
+      "Exeggutor",
+      "Noadkoko jungle",
+      "Exeggutor jungle",
+      "Noadkoko 35/64",
+      "Exeggutor 35/64"
+    ],
+    "aliases": [
+      "Noadkoko",
+      "Exeggutor",
+      "Noadkoko jungle",
+      "Exeggutor jungle",
+      "Noadkoko 35/64",
+      "Exeggutor 35/64"
+    ]
+  },
+  {
+    "id": "jungle-36",
+    "tcgApiId": "base2-36",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Rapasdepic",
+    "englishName": "Fearow",
+    "number": "36/64",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Rapasdepic",
+      "Fearow",
+      "Rapasdepic jungle",
+      "Fearow jungle",
+      "Rapasdepic 36/64",
+      "Fearow 36/64"
+    ],
+    "aliases": [
+      "Rapasdepic",
+      "Fearow",
+      "Rapasdepic jungle",
+      "Fearow jungle",
+      "Rapasdepic 36/64",
+      "Fearow 36/64"
+    ]
+  },
+  {
+    "id": "jungle-37",
+    "tcgApiId": "base2-37",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Ortide",
+    "englishName": "Gloom",
+    "number": "37/64",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Ortide",
+      "Gloom",
+      "Ortide jungle",
+      "Gloom jungle",
+      "Ortide 37/64",
+      "Gloom 37/64"
+    ],
+    "aliases": [
+      "Ortide",
+      "Gloom",
+      "Ortide jungle",
+      "Gloom jungle",
+      "Ortide 37/64",
+      "Gloom 37/64"
+    ]
+  },
+  {
+    "id": "jungle-38",
+    "tcgApiId": "base2-38",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Excelangue",
+    "englishName": "Lickitung",
+    "number": "38/64",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Excelangue",
+      "Lickitung",
+      "Excelangue jungle",
+      "Lickitung jungle",
+      "Excelangue 38/64",
+      "Lickitung 38/64"
+    ],
+    "aliases": [
+      "Excelangue",
+      "Lickitung",
+      "Excelangue jungle",
+      "Lickitung jungle",
+      "Excelangue 38/64",
+      "Lickitung 38/64"
+    ]
+  },
+  {
+    "id": "jungle-39",
+    "tcgApiId": "base2-39",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Ossatueur",
+    "englishName": "Marowak",
+    "number": "39/64",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Ossatueur",
+      "Marowak",
+      "Ossatueur jungle",
+      "Marowak jungle",
+      "Ossatueur 39/64",
+      "Marowak 39/64"
+    ],
+    "aliases": [
+      "Ossatueur",
+      "Marowak",
+      "Ossatueur jungle",
+      "Marowak jungle",
+      "Ossatueur 39/64",
+      "Marowak 39/64"
+    ]
+  },
+  {
+    "id": "jungle-40",
+    "tcgApiId": "base2-40",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Nidorina",
+    "englishName": "Nidorina",
+    "number": "40/64",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Nidorina",
+      "Nidorina jungle",
+      "Nidorina 40/64"
+    ],
+    "aliases": [
+      "Nidorina",
+      "Nidorina jungle",
+      "Nidorina 40/64"
+    ]
+  },
+  {
+    "id": "jungle-41",
+    "tcgApiId": "base2-41",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Parasect",
+    "englishName": "Parasect",
+    "number": "41/64",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Parasect",
+      "Parasect jungle",
+      "Parasect 41/64"
+    ],
+    "aliases": [
+      "Parasect",
+      "Parasect jungle",
+      "Parasect 41/64"
+    ]
+  },
+  {
+    "id": "jungle-42",
+    "tcgApiId": "base2-42",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Persian",
+    "englishName": "Persian",
+    "number": "42/64",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Persian",
+      "Persian jungle",
+      "Persian 42/64"
+    ],
+    "aliases": [
+      "Persian",
+      "Persian jungle",
+      "Persian 42/64"
+    ]
+  },
+  {
+    "id": "jungle-43",
+    "tcgApiId": "base2-43",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Colossinge",
+    "englishName": "Primeape",
+    "number": "43/64",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Colossinge",
+      "Primeape",
+      "Colossinge jungle",
+      "Primeape jungle",
+      "Colossinge 43/64",
+      "Primeape 43/64"
+    ],
+    "aliases": [
+      "Colossinge",
+      "Primeape",
+      "Colossinge jungle",
+      "Primeape jungle",
+      "Colossinge 43/64",
+      "Primeape 43/64"
+    ]
+  },
+  {
+    "id": "jungle-44",
+    "tcgApiId": "base2-44",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Rapidash",
+    "englishName": "Rapidash",
+    "number": "44/64",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Rapidash",
+      "Rapidash jungle",
+      "Rapidash 44/64"
+    ],
+    "aliases": [
+      "Rapidash",
+      "Rapidash jungle",
+      "Rapidash 44/64"
+    ]
+  },
+  {
+    "id": "jungle-45",
+    "tcgApiId": "base2-45",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Rhinoféros",
+    "englishName": "Rhydon",
+    "number": "45/64",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Rhinoféros",
+      "Rhydon",
+      "Rhinoféros jungle",
+      "Rhydon jungle",
+      "Rhinoféros 45/64",
+      "Rhydon 45/64"
+    ],
+    "aliases": [
+      "Rhinoféros",
+      "Rhydon",
+      "Rhinoféros jungle",
+      "Rhydon jungle",
+      "Rhinoféros 45/64",
+      "Rhydon 45/64"
+    ]
+  },
+  {
+    "id": "jungle-46",
+    "tcgApiId": "base2-46",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Poissoroy",
+    "englishName": "Seaking",
+    "number": "46/64",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Poissoroy",
+      "Seaking",
+      "Poissoroy jungle",
+      "Seaking jungle",
+      "Poissoroy 46/64",
+      "Seaking 46/64"
+    ],
+    "aliases": [
+      "Poissoroy",
+      "Seaking",
+      "Poissoroy jungle",
+      "Seaking jungle",
+      "Poissoroy 46/64",
+      "Seaking 46/64"
+    ]
+  },
+  {
+    "id": "jungle-47",
+    "tcgApiId": "base2-47",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Tauros",
+    "englishName": "Tauros",
+    "number": "47/64",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Tauros",
+      "Tauros jungle",
+      "Tauros 47/64"
+    ],
+    "aliases": [
+      "Tauros",
+      "Tauros jungle",
+      "Tauros 47/64"
+    ]
+  },
+  {
+    "id": "jungle-48",
+    "tcgApiId": "base2-48",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Boustiflor",
+    "englishName": "Weepinbell",
+    "number": "48/64",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Boustiflor",
+      "Weepinbell",
+      "Boustiflor jungle",
+      "Weepinbell jungle",
+      "Boustiflor 48/64",
+      "Weepinbell 48/64"
+    ],
+    "aliases": [
+      "Boustiflor",
+      "Weepinbell",
+      "Boustiflor jungle",
+      "Weepinbell jungle",
+      "Boustiflor 48/64",
+      "Weepinbell 48/64"
+    ]
+  },
+  {
+    "id": "jungle-49",
+    "tcgApiId": "base2-49",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Chétiflor",
+    "englishName": "Bellsprout",
+    "number": "49/64",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Chétiflor",
+      "Bellsprout",
+      "Chétiflor jungle",
+      "Bellsprout jungle",
+      "Chétiflor 49/64",
+      "Bellsprout 49/64"
+    ],
+    "aliases": [
+      "Chétiflor",
+      "Bellsprout",
+      "Chétiflor jungle",
+      "Bellsprout jungle",
+      "Chétiflor 49/64",
+      "Bellsprout 49/64"
+    ]
+  },
+  {
+    "id": "jungle-50",
+    "tcgApiId": "base2-50",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Osselait",
+    "englishName": "Cubone",
+    "number": "50/64",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Osselait",
+      "Cubone",
+      "Osselait jungle",
+      "Cubone jungle",
+      "Osselait 50/64",
+      "Cubone 50/64"
+    ],
+    "aliases": [
+      "Osselait",
+      "Cubone",
+      "Osselait jungle",
+      "Cubone jungle",
+      "Osselait 50/64",
+      "Cubone 50/64"
+    ]
+  },
+  {
+    "id": "jungle-51",
+    "tcgApiId": "base2-51",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Évoli",
+    "englishName": "Eevee",
+    "number": "51/64",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Évoli",
+      "Eevee",
+      "Évoli jungle",
+      "Eevee jungle",
+      "Évoli 51/64",
+      "Eevee 51/64"
+    ],
+    "aliases": [
+      "Évoli",
+      "Eevee",
+      "Évoli jungle",
+      "Eevee jungle",
+      "Évoli 51/64",
+      "Eevee 51/64"
+    ]
+  },
+  {
+    "id": "jungle-52",
+    "tcgApiId": "base2-52",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Noeunoeuf",
+    "englishName": "Exeggcute",
+    "number": "52/64",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Noeunoeuf",
+      "Exeggcute",
+      "Noeunoeuf jungle",
+      "Exeggcute jungle",
+      "Noeunoeuf 52/64",
+      "Exeggcute 52/64"
+    ],
+    "aliases": [
+      "Noeunoeuf",
+      "Exeggcute",
+      "Noeunoeuf jungle",
+      "Exeggcute jungle",
+      "Noeunoeuf 52/64",
+      "Exeggcute 52/64"
+    ]
+  },
+  {
+    "id": "jungle-53",
+    "tcgApiId": "base2-53",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Poissirène",
+    "englishName": "Goldeen",
+    "number": "53/64",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Poissirène",
+      "Goldeen",
+      "Poissirène jungle",
+      "Goldeen jungle",
+      "Poissirène 53/64",
+      "Goldeen 53/64"
+    ],
+    "aliases": [
+      "Poissirène",
+      "Goldeen",
+      "Poissirène jungle",
+      "Goldeen jungle",
+      "Poissirène 53/64",
+      "Goldeen 53/64"
+    ]
+  },
+  {
+    "id": "jungle-54",
+    "tcgApiId": "base2-54",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Rondoudou",
+    "englishName": "Jigglypuff",
+    "number": "54/64",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Rondoudou",
+      "Jigglypuff",
+      "Rondoudou jungle",
+      "Jigglypuff jungle",
+      "Rondoudou 54/64",
+      "Jigglypuff 54/64"
+    ],
+    "aliases": [
+      "Rondoudou",
+      "Jigglypuff",
+      "Rondoudou jungle",
+      "Jigglypuff jungle",
+      "Rondoudou 54/64",
+      "Jigglypuff 54/64"
+    ]
+  },
+  {
+    "id": "jungle-55",
+    "tcgApiId": "base2-55",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Férosinge",
+    "englishName": "Mankey",
+    "number": "55/64",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Férosinge",
+      "Mankey",
+      "Férosinge jungle",
+      "Mankey jungle",
+      "Férosinge 55/64",
+      "Mankey 55/64"
+    ],
+    "aliases": [
+      "Férosinge",
+      "Mankey",
+      "Férosinge jungle",
+      "Mankey jungle",
+      "Férosinge 55/64",
+      "Mankey 55/64"
+    ]
+  },
+  {
+    "id": "jungle-56",
+    "tcgApiId": "base2-56",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Miaouss",
+    "englishName": "Meowth",
+    "number": "56/64",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Miaouss",
+      "Meowth",
+      "Miaouss jungle",
+      "Meowth jungle",
+      "Miaouss 56/64",
+      "Meowth 56/64"
+    ],
+    "aliases": [
+      "Miaouss",
+      "Meowth",
+      "Miaouss jungle",
+      "Meowth jungle",
+      "Miaouss 56/64",
+      "Meowth 56/64"
+    ]
+  },
+  {
+    "id": "jungle-57",
+    "tcgApiId": "base2-57",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Nidoran♀",
+    "englishName": "Nidoran ♀",
+    "number": "57/64",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Nidoran♀",
+      "Nidoran ♀",
+      "Nidoran♀ jungle",
+      "Nidoran ♀ jungle",
+      "Nidoran♀ 57/64",
+      "Nidoran ♀ 57/64"
+    ],
+    "aliases": [
+      "Nidoran♀",
+      "Nidoran ♀",
+      "Nidoran♀ jungle",
+      "Nidoran ♀ jungle",
+      "Nidoran♀ 57/64",
+      "Nidoran ♀ 57/64"
+    ]
+  },
+  {
+    "id": "jungle-58",
+    "tcgApiId": "base2-58",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Mystherbe",
+    "englishName": "Oddish",
+    "number": "58/64",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Mystherbe",
+      "Oddish",
+      "Mystherbe jungle",
+      "Oddish jungle",
+      "Mystherbe 58/64",
+      "Oddish 58/64"
+    ],
+    "aliases": [
+      "Mystherbe",
+      "Oddish",
+      "Mystherbe jungle",
+      "Oddish jungle",
+      "Mystherbe 58/64",
+      "Oddish 58/64"
+    ]
+  },
+  {
+    "id": "jungle-59",
+    "tcgApiId": "base2-59",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Paras",
+    "englishName": "Paras",
+    "number": "59/64",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Paras",
+      "Paras jungle",
+      "Paras 59/64"
+    ],
+    "aliases": [
+      "Paras",
+      "Paras jungle",
+      "Paras 59/64"
+    ]
+  },
+  {
+    "id": "jungle-60",
+    "tcgApiId": "base2-60",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Pikachu",
+    "englishName": "Pikachu",
+    "number": "60/64",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Pikachu",
+      "Pikachu jungle",
+      "Pikachu 60/64"
+    ],
+    "aliases": [
+      "Pikachu",
+      "Pikachu jungle",
+      "Pikachu 60/64"
+    ]
+  },
+  {
+    "id": "jungle-61",
+    "tcgApiId": "base2-61",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Rhinocorne",
+    "englishName": "Rhyhorn",
+    "number": "61/64",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Rhinocorne",
+      "Rhyhorn",
+      "Rhinocorne jungle",
+      "Rhyhorn jungle",
+      "Rhinocorne 61/64",
+      "Rhyhorn 61/64"
+    ],
+    "aliases": [
+      "Rhinocorne",
+      "Rhyhorn",
+      "Rhinocorne jungle",
+      "Rhyhorn jungle",
+      "Rhinocorne 61/64",
+      "Rhyhorn 61/64"
+    ]
+  },
+  {
+    "id": "jungle-62",
+    "tcgApiId": "base2-62",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Piafabec",
+    "englishName": "Spearow",
+    "number": "62/64",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Piafabec",
+      "Spearow",
+      "Piafabec jungle",
+      "Spearow jungle",
+      "Piafabec 62/64",
+      "Spearow 62/64"
+    ],
+    "aliases": [
+      "Piafabec",
+      "Spearow",
+      "Piafabec jungle",
+      "Spearow jungle",
+      "Piafabec 62/64",
+      "Spearow 62/64"
+    ]
+  },
+  {
+    "id": "jungle-63",
+    "tcgApiId": "base2-63",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Mimitoss",
+    "englishName": "Venonat",
+    "number": "63/64",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Mimitoss",
+      "Venonat",
+      "Mimitoss jungle",
+      "Venonat jungle",
+      "Mimitoss 63/64",
+      "Venonat 63/64"
+    ],
+    "aliases": [
+      "Mimitoss",
+      "Venonat",
+      "Mimitoss jungle",
+      "Venonat jungle",
+      "Mimitoss 63/64",
+      "Venonat 63/64"
+    ]
+  },
+  {
+    "id": "jungle-64",
+    "tcgApiId": "base2-64",
+    "setId": "jungle",
+    "setLabel": "Jungle",
+    "name": "Poké Ball",
+    "englishName": "Poké Ball",
+    "number": "64/64",
+    "rarity": "Common",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Poké Ball",
+      "Poké Ball jungle",
+      "Poké Ball 64/64"
+    ],
+    "aliases": [
+      "Poké Ball",
+      "Poké Ball jungle",
+      "Poké Ball 64/64"
+    ]
+  }
+]

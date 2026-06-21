@@ -6,6 +6,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "validate:cards": "node scripts/validate-card-data.mjs",
     "lint": "eslint src/ --ext .jsx,.js"
   },
   "dependencies": {

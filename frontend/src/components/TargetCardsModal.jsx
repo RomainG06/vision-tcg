@@ -1,86 +1,21 @@
 import { useEffect, useMemo, useState } from 'react';
 import theme from '../theme';
 import TcgIcon from './TcgIcon';
-
-export const TARGET_SERIES_OPTIONS = [
-  { value: 'base', label: 'Set de Base' },
-  { value: 'jungle', label: 'Jungle' },
-  { value: 'fossil', label: 'Fossile' },
-  { value: 'rocket', label: 'Team Rocket' },
-];
-
-export const SERIES_CARD_TARGETS = {
-  base: [
-    card('base-charizard', 'Dracaufeu', '4/102', ['dracaufeu', 'charizard base set', 'dracaufeu set de base']),
-    card('base-blastoise', 'Tortank', '2/102', ['tortank', 'blastoise base set', 'tortank set de base']),
-    card('base-venusaur', 'Florizarre', '15/102', ['florizarre', 'venusaur base set', 'florizarre set de base']),
-    card('base-raichu', 'Raichu', '14/102', ['raichu', 'raichu set de base']),
-    card('base-gyarados', 'Léviator', '6/102', ['léviator', 'leviator', 'gyarados base set']),
-    card('base-mewtwo', 'Mewtwo', '10/102', ['mewtwo', 'mewtwo set de base']),
-    card('base-alakazam', 'Alakazam', '1/102', ['alakazam', 'alakazam set de base']),
-    card('base-chansey', 'Leveinard', '3/102', ['leveinard', 'chansey base set']),
-    card('base-machamp', 'Mackogneur', '8/102', ['mackogneur', 'machamp base set']),
-    card('base-zapdos', 'Électhor', '16/102', ['électhor', 'electhor', 'zapdos base set']),
-  ],
-  jungle: [
-    card('jungle-snorlax', 'Ronflex', '11/64', ['ronflex jungle', 'snorlax jungle']),
-    card('jungle-vaporeon', 'Aquali', '12/64', ['aquali jungle', 'vaporeon jungle']),
-    card('jungle-jolteon', 'Voltali', '4/64', ['voltali jungle', 'jolteon jungle']),
-    card('jungle-flareon', 'Pyroli', '3/64', ['pyroli jungle', 'flareon jungle']),
-    card('jungle-nidoqueen', 'Nidoqueen', '7/64', ['nidoqueen jungle']),
-    card('jungle-pinsir', 'Scarabrute', '9/64', ['scarabrute jungle', 'pinsir jungle']),
-    card('jungle-scyther', 'Insécateur', '10/64', ['insécateur jungle', 'insecateur jungle', 'scyther jungle']),
-    card('jungle-kangaskhan', 'Kangourex', '5/64', ['kangourex jungle', 'kangaskhan jungle']),
-    card('jungle-clefable', 'Mélodelfe', '1/64', ['mélodelfe jungle', 'melodelfe jungle', 'clefable jungle']),
-    card('jungle-wigglytuff', 'Grodoudou', '16/64', ['grodoudou jungle', 'wigglytuff jungle']),
-  ],
-  fossil: [
-    card('fossil-dragonite', 'Dracolosse', '4/62', ['dracolosse fossile', 'dragonite fossil']),
-    card('fossil-articuno', 'Artikodin', '2/62', ['artikodin fossile', 'articuno fossil']),
-    card('fossil-zapdos', 'Électhor', '15/62', ['électhor fossile', 'electhor fossile', 'zapdos fossil']),
-    card('fossil-moltres', 'Sulfura', '12/62', ['sulfura fossile', 'moltres fossil']),
-    card('fossil-gengar', 'Ectoplasma', '5/62', ['ectoplasma fossile', 'gengar fossil']),
-    card('fossil-lapras', 'Lokhlass', '10/62', ['lokhlass fossile', 'lapras fossil']),
-    card('fossil-hypno', 'Hypnomade', '8/62', ['hypnomade fossile', 'hypno fossil']),
-    card('fossil-aerodactyl', 'Ptéra', '1/62', ['ptéra fossile', 'ptera fossile', 'aerodactyl fossil']),
-    card('fossil-magneton', 'Magnéton', '11/62', ['magnéton fossile', 'magneton fossile']),
-    card('fossil-kabutops', 'Kabutops', '9/62', ['kabutops fossile', 'kabutops fossil']),
-  ],
-  rocket: [
-    card('rocket-dark-charizard', 'Dracaufeu Obscur', '4/82', ['dracaufeu obscur', 'dracaufeu sombre', 'dark charizard']),
-    card('rocket-dark-blastoise', 'Tortank Obscur', '3/82', ['tortank obscur', 'tortank sombre', 'dark blastoise']),
-    card('rocket-dark-raichu', 'Raichu Obscur', '83/82', ['raichu obscur', 'raichu sombre', 'dark raichu']),
-    card('rocket-dark-dragonite', 'Dracolosse Obscur', '5/82', ['dracolosse obscur', 'dracolosse sombre', 'dark dragonite']),
-    card('rocket-dark-machamp', 'Mackogneur Obscur', '10/82', ['mackogneur obscur', 'dark machamp']),
-    card('rocket-dark-alakazam', 'Alakazam Obscur', '1/82', ['alakazam obscur', 'dark alakazam']),
-    card('rocket-dark-golbat', 'Nosferalto Obscur', '7/82', ['nosferalto obscur', 'dark golbat']),
-    card('rocket-dark-hypno', 'Hypnomade Obscur', '9/82', ['hypnomade obscur', 'dark hypno']),
-    card('rocket-dark-magneton', 'Magnéton Obscur', '11/82', ['magnéton obscur', 'magneton obscur', 'dark magneton']),
-    card('rocket-dark-vileplume', 'Rafflesia Obscur', '13/82', ['rafflesia obscur', 'rafflésia obscur', 'dark vileplume']),
-  ],
-};
-
-function card(id, name, number, queryTerms) {
-  return { id, name, number, rarity: 'Holo', queryTerms, aliases: queryTerms };
-}
+import { getCardsForSeries, getTargetSeriesLabel } from '../data/cardTargets';
 
 function sameSelection(a = [], b = []) {
   return a.map(item => item.id).sort().join('|') === b.map(item => item.id).sort().join('|');
 }
 
 export default function TargetCardsModal({ isOpen, selectedSeries, selectedTargets = [], onClose, onApply }) {
-  const initialSeries = selectedSeries === 'all' ? 'rocket' : selectedSeries;
-  const [draftSeries, setDraftSeries] = useState(initialSeries);
   const [draftTargets, setDraftTargets] = useState(selectedTargets);
   const [search, setSearch] = useState('');
-  const [seriesChanged, setSeriesChanged] = useState(false);
+  const seriesLabel = getTargetSeriesLabel(selectedSeries);
 
   useEffect(() => {
     if (!isOpen) return;
-    setDraftSeries(selectedSeries === 'all' ? 'rocket' : selectedSeries);
     setDraftTargets(selectedTargets);
     setSearch('');
-    setSeriesChanged(false);
   }, [isOpen, selectedSeries, selectedTargets]);
 
   useEffect(() => {
@@ -92,7 +27,7 @@ export default function TargetCardsModal({ isOpen, selectedSeries, selectedTarge
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [isOpen, onClose]);
 
-  const cards = SERIES_CARD_TARGETS[draftSeries] || [];
+  const cards = getCardsForSeries(selectedSeries);
   const filteredCards = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return cards;
@@ -112,7 +47,7 @@ export default function TargetCardsModal({ isOpen, selectedSeries, selectedTarge
   };
 
   const apply = () => {
-    onApply?.({ series: draftSeries, targets: draftTargets });
+    onApply?.({ series: selectedSeries, targets: draftTargets });
   };
 
   return (
@@ -136,25 +71,11 @@ export default function TargetCardsModal({ isOpen, selectedSeries, selectedTarge
         </div>
 
         <div style={styles.section}>
-          <span style={styles.label}>Série</span>
-          <div className="target-series-grid" style={styles.seriesGrid}>
-            {TARGET_SERIES_OPTIONS.map(option => (
-              <button
-                key={option.value}
-                type="button"
-                style={{ ...styles.seriesButton, ...(draftSeries === option.value ? styles.seriesButtonActive : {}) }}
-                onClick={() => {
-                  if (option.value === draftSeries) return;
-                  setDraftSeries(option.value);
-                  setDraftTargets([]);
-                  setSeriesChanged(true);
-                }}
-              >
-                {option.label}
-              </button>
-            ))}
+          <span style={styles.label}>Série sélectionnée</span>
+          <div style={styles.lockedSeriesBox}>
+            <strong>{seriesLabel}</strong>
+            <span>{cards.length} cartes disponibles dans cette série.</span>
           </div>
-          {seriesChanged && <span style={styles.notice}>La sélection précédente a été réinitialisée car la série a changé.</span>}
         </div>
 
         <label style={styles.section}>
@@ -201,7 +122,7 @@ export default function TargetCardsModal({ isOpen, selectedSeries, selectedTarge
           <button type="button" style={styles.resetButton} onClick={() => setDraftTargets([])} disabled={draftTargets.length === 0}>Tout désélectionner</button>
           <div style={styles.footerRight}>
             <button type="button" style={styles.secondaryButton} onClick={onClose}>Annuler</button>
-            <button type="button" style={styles.primaryButton} onClick={apply} disabled={sameSelection(selectedTargets, draftTargets) && selectedSeries === draftSeries}>Valider la cible</button>
+            <button type="button" style={styles.primaryButton} onClick={apply} disabled={sameSelection(selectedTargets, draftTargets)}>Valider la cible</button>
           </div>
         </footer>
       </section>
@@ -279,29 +200,17 @@ const styles = {
     textTransform: 'uppercase',
     letterSpacing: '.5px',
   },
-  seriesGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(4, 1fr)',
-    gap: theme.spacing.sm,
-  },
-  seriesButton: {
-    padding: `${theme.spacing.sm} ${theme.spacing.md}`,
-    border: `1px solid ${theme.colors.primary.slate}`,
+  lockedSeriesBox: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: theme.spacing.md,
+    alignItems: 'center',
+    padding: theme.spacing.md,
+    border: `1px solid ${theme.accents.manaCyan}35`,
     borderRadius: theme.borders.radiusMd,
-    background: 'rgba(10,14,39,.35)',
+    background: `${theme.accents.manaCyan}0D`,
     color: theme.colors.text.secondary,
-    cursor: 'pointer',
-    fontWeight: theme.typography.weights.semibold,
-  },
-  seriesButtonActive: {
-    color: theme.accents.hunterGold,
-    borderColor: `${theme.accents.hunterGold}99`,
-    background: `${theme.accents.hunterGold}14`,
-    boxShadow: `0 0 18px ${theme.accents.hunterGold}18`,
-  },
-  notice: {
-    color: theme.accents.warningOrange,
-    fontSize: theme.typography.sizes.bodySm,
+    flexWrap: 'wrap',
   },
   searchInput: {
     width: '100%',

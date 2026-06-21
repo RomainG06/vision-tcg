@@ -2,6 +2,7 @@ import { useState } from 'react';
 import theme from '../theme';
 import TcgIcon from './TcgIcon';
 import TargetCardsModal from './TargetCardsModal';
+import { canSelectCardsForSeries } from '../data/cardTargets';
 import { fetchScrapeRuns, startScrape } from '../services/api';
 
 const SERIES_OPTIONS = [
@@ -151,6 +152,7 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
   const copy = statusCopy[status];
   const isRunning = status === 'running';
   const selectedSeriesLabel = SERIES_OPTIONS.find(option => option.value === series)?.label || 'Toutes Wizards FR';
+  const canSelectTargetCards = canSelectCardsForSeries(series);
   const selectedTargetsPreview = targetCards.slice(0, 3).map(target => target.name).join(', ');
   const targetCardQueries = targetCards.flatMap(card => card.queryTerms || [card.name]);
   const priceMinValue = Math.max(0, Number(priceMin) || 0);
@@ -327,30 +329,32 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
             </select>
           </label>
 
-          <div style={styles.targetBox}>
-            <div>
-              <span style={styles.label}>Cibles de chasse</span>
-              {targetCards.length > 0 ? (
-                <div style={styles.targetSummary}>
-                  <strong>{selectedSeriesLabel} · {targetCards.length} carte{targetCards.length > 1 ? 's' : ''} ciblée{targetCards.length > 1 ? 's' : ''}</strong>
-                  <span>{selectedTargetsPreview}{targetCards.length > 3 ? ` +${targetCards.length - 3} autres` : ''}</span>
-                </div>
-              ) : (
-                <div style={styles.targetSummary}>
-                  <strong>Aucune carte ciblée</strong>
-                  <span>Optionnel : cible des Pokémon précis pour générer des requêtes plus pertinentes.</span>
-                </div>
-              )}
+          {canSelectTargetCards && (
+            <div style={styles.targetBox}>
+              <div>
+                <span style={styles.label}>Cibles de chasse</span>
+                {targetCards.length > 0 ? (
+                  <div style={styles.targetSummary}>
+                    <strong>{selectedSeriesLabel} · {targetCards.length} carte{targetCards.length > 1 ? 's' : ''} ciblée{targetCards.length > 1 ? 's' : ''}</strong>
+                    <span>{selectedTargetsPreview}{targetCards.length > 3 ? ` +${targetCards.length - 3} autres` : ''}</span>
+                  </div>
+                ) : (
+                  <div style={styles.targetSummary}>
+                    <strong>Aucune carte ciblée</strong>
+                    <span>Optionnel : cible des Pokémon précis de {selectedSeriesLabel} pour générer des requêtes plus pertinentes.</span>
+                  </div>
+                )}
+              </div>
+              <div style={styles.targetActions}>
+                <button type="button" style={styles.targetButton} onClick={() => setTargetModalOpen(true)} disabled={isRunning}>
+                  {targetCards.length > 0 ? 'Modifier' : 'Choisir des cartes'}
+                </button>
+                {targetCards.length > 0 && (
+                  <button type="button" style={styles.targetClearButton} onClick={() => setTargetCards([])} disabled={isRunning}>Effacer</button>
+                )}
+              </div>
             </div>
-            <div style={styles.targetActions}>
-              <button type="button" style={styles.targetButton} onClick={() => setTargetModalOpen(true)} disabled={isRunning}>
-                {targetCards.length > 0 ? 'Modifier' : 'Choisir des cartes'}
-              </button>
-              {targetCards.length > 0 && (
-                <button type="button" style={styles.targetClearButton} onClick={() => setTargetCards([])} disabled={isRunning}>Effacer</button>
-              )}
-            </div>
-          </div>
+          )}
 
           <div style={styles.field}>
             <span style={styles.label}>Type d’annonce</span>
@@ -597,17 +601,19 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
         </div>
       </div>
 
-      <TargetCardsModal
-        isOpen={targetModalOpen}
-        selectedSeries={series}
-        selectedTargets={targetCards}
-        onClose={() => setTargetModalOpen(false)}
-        onApply={({ series: nextSeries, targets }) => {
-          setSeries(nextSeries);
-          setTargetCards(targets);
-          setTargetModalOpen(false);
-        }}
-      />
+      {canSelectTargetCards && (
+        <TargetCardsModal
+          isOpen={targetModalOpen}
+          selectedSeries={series}
+          selectedTargets={targetCards}
+          onClose={() => setTargetModalOpen(false)}
+          onApply={({ series: nextSeries, targets }) => {
+            setSeries(nextSeries);
+            setTargetCards(targets);
+            setTargetModalOpen(false);
+          }}
+        />
+      )}
     </section>
   );
 }

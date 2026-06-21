@@ -92,6 +92,27 @@ function rotateQueries(queries = [], offset = 0) {
   return [...queries.slice(normalizedOffset), ...queries.slice(0, normalizedOffset)];
 }
 
+const SCAN_MODE_PRESETS = {
+  quick: {
+    scanDepthMultiplier: 5,
+    minScanDepth: 50,
+    maxScrollPasses: 8,
+    allowSeenRescue: false,
+  },
+  deep: {
+    scanDepthMultiplier: 12,
+    minScanDepth: 150,
+    maxScrollPasses: 24,
+    allowSeenRescue: true,
+  },
+};
+
+function getScanModePreset(filters = {}) {
+  const requested = filters.scanMode || filters.scan_mode || filters.mode || 'quick';
+  const scanMode = SCAN_MODE_PRESETS[requested] ? requested : 'quick';
+  return { scanMode, ...SCAN_MODE_PRESETS[scanMode] };
+}
+
 export async function startScrape(options = {}) {
   const {
     profile = 'wizards-fr',
@@ -103,8 +124,15 @@ export async function startScrape(options = {}) {
     smartQueries = true,
     maxQueries = filters.maxQueries || filters.max_queries,
     rescanSeen = filters.rescanSeen || filters.rescan_seen || false,
-    allowSeenRescue = Boolean(filters.allowSeenRescue || filters.allow_seen_rescue || filters.seenRescue || filters.seen_rescue),
   } = options;
+  const scanModePreset = getScanModePreset(filters);
+  const allowSeenRescue = Boolean(
+    filters.allowSeenRescue
+    || filters.allow_seen_rescue
+    || filters.seenRescue
+    || filters.seen_rescue
+    || scanModePreset.allowSeenRescue
+  );
 
   const enabledSources = sources.filter(source => FETCHERS[source]);
   if (enabledSources.length === 0) {
@@ -127,7 +155,7 @@ export async function startScrape(options = {}) {
     source: enabledSources.join(','),
     query,
     status: 'running',
-    metadata: JSON.stringify({ profile, filters, maxResults, queries: executionQueries, smartQueries, queryRotationOffset, queryRotationSeed }),
+    metadata: JSON.stringify({ profile, filters, maxResults, queries: executionQueries, smartQueries, scanMode: scanModePreset.scanMode, queryRotationOffset, queryRotationSeed }),
   });
 
   const startedAt = new Date().toISOString();
@@ -159,7 +187,14 @@ export async function startScrape(options = {}) {
         knownBeforeScan += savedExternalIds.length;
         seenExcluded += seenExternalIds.length;
         const queryRawListings = [];
-        const scanDepth = Math.max(maxResults * 8, 80);
+        const configuredScanDepth = Number(filters.scanDepth ?? filters.scan_depth);
+        const configuredScrollPasses = Number(filters.maxScrollPasses ?? filters.max_scroll_passes);
+        const scanDepth = Number.isFinite(configuredScanDepth) && configuredScanDepth > 0
+          ? configuredScanDepth
+          : Math.max(maxResults * scanModePreset.scanDepthMultiplier, scanModePreset.minScanDepth);
+        const maxScrollPasses = Number.isFinite(configuredScrollPasses) && configuredScrollPasses > 0
+          ? configuredScrollPasses
+          : scanModePreset.maxScrollPasses;
         const perQueryLimit = Math.max(maxResults, Math.ceil(maxResults * 1.5));
         const dynamicExcludeIds = new Set(excludeExternalIds.map(String));
         const budgetRange = getBudgetRange(filters);
@@ -177,6 +212,8 @@ export async function startScrape(options = {}) {
               budget: budgetRange,
               minPrice: budgetRange.min,
               maxPrice: budgetRange.max,
+              order: filters.order || filters.sort || 'newest_first',
+              maxScrollPasses,
               waitForCaptcha,
             });
             const prefilterSummary = fetchedListings.prefilter_summary || null;
@@ -204,6 +241,9 @@ export async function startScrape(options = {}) {
               raw_found: gridRawFound,
               selected_for_details: querySelectedForDetails,
               fetched_details: fetchedListings.length,
+              scan_mode: scanModePreset.scanMode,
+              scan_depth: scanDepth,
+              max_scroll_passes: maxScrollPasses,
               prefilter_summary: prefilterSummary,
               cumulative_unique: dedupeListingsBySourceExternalId(queryRawListings).length,
               error: null,
@@ -353,7 +393,7 @@ export async function startScrape(options = {}) {
       status,
       results_count: allListings.length,
       errors_count: errors.length,
-      metadata: JSON.stringify({ profile, filters, maxResults, queries: executionQueries, smartQueries, queryRotationOffset, queryRotationSeed, rescanSeen, saved, updated, selectedForDetails, fetchedDetails, budgetFiltered, qualityFiltered, explorationFallback, knownBeforeScan, seenExcluded, seenRecorded, rejectedSamples, queryStats, actionableSummary, errors }),
+      metadata: JSON.stringify({ profile, filters, maxResults, queries: executionQueries, smartQueries, scanMode: scanModePreset.scanMode, queryRotationOffset, queryRotationSeed, rescanSeen, saved, updated, selectedForDetails, fetchedDetails, budgetFiltered, qualityFiltered, explorationFallback, knownBeforeScan, seenExcluded, seenRecorded, rejectedSamples, queryStats, actionableSummary, errors }),
     });
 
     return {
@@ -370,6 +410,7 @@ export async function startScrape(options = {}) {
         selected_for_details: selectedForDetails,
         fetched_details: fetchedDetails,
         queries_count: executionQueries.length,
+        scan_mode: scanModePreset.scanMode,
         query_rotation_offset: queryRotationOffset,
         query_stats: queryStats,
         found: allListings.length,

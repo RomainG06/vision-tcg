@@ -16,6 +16,7 @@ const SERIES_PREFILTER_PATTERNS = {
 };
 
 const OFF_TARGET_PREFILTER_PATTERN = /\b(diamant\s*&?\s*perle|diamant\s+et\s+perle|dp\s*0?\d|dp01|dp02|trésors?\s+mystérieux|tresors?\s+mysterieux|sintonia\s+mentale|pokemon\s+go|pokémon\s+go|ecarlate|écarlate|violet|soleil|lune|sun\s*&?\s*moon|epee|épée|bouclier|sword|shield)\b|\/(?:78|123|130|236)\b/i;
+const PROMOTED_PREFILTER_PATTERN = /\b(sponsoris[ée]e?s?|sponsored|publicit[ée]|advertisement|annonce\s+sponsoris[ée]e?|article\s+boost[ée]|boosted\s+item|dressing\s+en\s+vitrine|vitrine\s+vendeur|vitrine\s+du\s+vendeur|wardrobe\s+spotlight|showcase)\b/i;
 const POKEMON_DOMAIN_PREFILTER_PATTERN = /\b(pokemon|pokémon|wizards?|wotc|tcg|jcc|base\s*set|set\s*de\s*base|jungle|fossile|fossil|team\s*rocket|rocket|obscur(?:e|s)?|dracaufeu|charizard|tortank|blastoise|florizarre|venusaur|mewtwo|raichu|dracolosse|dragonite)\b|\/\s*(?:82|64|62|102)\b/i;
 const LOT_PREFILTER_PATTERN = /\b(lot|lots|collection|classeur|vrac|set\s+complet|complete\s+set)\b|\b([2-9]|[1-9]\d+)\s*(cartes?|cards?)\b/i;
 const SINGLE_CARD_PREFILTER_PATTERN = /\b(carte\s+seule|carte\s+unique|à\s+l'unité|a\s+l'unite|unitaire|single\s+card)\b/i;
@@ -88,6 +89,7 @@ function getPrefilterDecision(item, options = {}) {
   const pokemonDomainMatches = POKEMON_DOMAIN_PREFILTER_PATTERN.test(text) || seriesMatches;
   const hasActiveHuntIntent = Boolean(query || targetSeries !== 'all' || listingType !== 'all');
 
+  if (PROMOTED_PREFILTER_PATTERN.test(text)) return { keep: false, reason: 'promoted_listing' };
   if (!listingTypeMatches) return { keep: false, reason: 'listing_type_mismatch' };
   if (OFF_TARGET_PREFILTER_PATTERN.test(text)) return { keep: false, reason: 'off_target_modern' };
   if (hasActiveHuntIntent && !pokemonDomainMatches) return { keep: false, reason: 'non_pokemon_domain' };
@@ -240,12 +242,54 @@ export class VintedFetcher extends BaseFetcher {
     this._fastPageConfigured = false;
   }
 
+  getPriceRangeOptions(options = {}) {
+    const budget = typeof options.budget === 'object' && options.budget !== null
+      ? options.budget
+      : {};
+    const min = Number(options.priceFrom ?? options.price_from ?? options.minPrice ?? options.min_price ?? budget.min ?? budget.minPrice ?? budget.min_price);
+    const max = Number(options.priceTo ?? options.price_to ?? options.maxPrice ?? options.max_price ?? budget.max ?? budget.maxPrice ?? budget.max_price);
+
+    return {
+      min: Number.isFinite(min) && min > 0 ? min : null,
+      max: Number.isFinite(max) && max > 0 ? max : null,
+    };
+  }
+
+  withVintedPriceParams(urlLike, options = {}) {
+    const url = new URL(urlLike, this.baseUrl);
+    const { min, max } = this.getPriceRangeOptions(options);
+
+    if (min !== null) url.searchParams.set('price_from', String(min));
+    if (max !== null) url.searchParams.set('price_to', String(max));
+
+    return url;
+  }
+
   /**
    * Build search URL
    */
-  buildSearchUrl(query) {
-    const searchQuery = encodeURIComponent(query);
-    return `${this.baseUrl}/catalog?search_text=${searchQuery}&order=newest_first`;
+  buildSearchUrl(query, options = {}) {
+    // Use generic catalog route; clothing category route introduces noisy bias.
+    const url = new URL('/catalog', this.baseUrl);
+    url.searchParams.set('search_text', query);
+    url.searchParams.set('order', options.order || options.sort || 'newest_first');
+
+    return this.withVintedPriceParams(url, options).toString();
+  }
+
+  async ensurePriceFiltersInUrl(options = {}) {
+    const { min, max } = this.getPriceRangeOptions(options);
+    if (min === null && max === null) return;
+
+    const currentUrl = new URL(this.page.url());
+    const hasMin = min === null || currentUrl.searchParams.get('price_from') === String(min);
+    const hasMax = max === null || currentUrl.searchParams.get('price_to') === String(max);
+    if (hasMin && hasMax) return;
+
+    const fixedUrl = this.withVintedPriceParams(currentUrl, options).toString();
+    logger.warn(`Vinted a retiré la fourchette prix de l'URL, re-navigation rapide avec filtres: ${fixedUrl}`);
+    await this.page.goto(fixedUrl, { waitUntil: 'domcontentloaded', timeout: 12000 });
+    await this.randomDelay(400, 800);
   }
 
   /**
@@ -351,6 +395,7 @@ export class VintedFetcher extends BaseFetcher {
         waitUntil: 'domcontentloaded',
         timeout: 12000,
       });
+      await this.ensurePriceFiltersInUrl(options);
 
       // CAPTCHA check juste après l'arrivée sur la page de recherche.
       if (await this.detectCaptcha()) {
@@ -394,6 +439,7 @@ export class VintedFetcher extends BaseFetcher {
             already_seen: 0,
             duplicate: 0,
             invalid_url: 0,
+            promoted_listing: 0,
             listing_type_mismatch: 0,
             non_pokemon_domain: 0,
             off_target_modern: 0,

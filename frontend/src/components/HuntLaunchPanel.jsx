@@ -19,6 +19,11 @@ const SENSITIVITY = {
   aggressive: { label: 'Agressif', maxResults: 20, maxQueries: 45, hint: 'Plus de pistes, plus de faux positifs.' },
 };
 
+const SCAN_MODES = {
+  quick: { label: 'Rapide', hint: 'Analyse les nouvelles annonces avec moins de profondeur. Idéal pour une chasse quotidienne.' },
+  deep: { label: 'Approfondi', hint: 'Reparcourt plus largement les annonces pour détecter les opportunités manquées. Plus lent.' },
+};
+
 const statusCopy = {
   idle: {
     badge: 'Radar prêt',
@@ -142,6 +147,7 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
   const [listingType, setListingType] = useState('cards');
   const [priceMin, setPriceMin] = useState(0);
   const [priceMax, setPriceMax] = useState(1500);
+  const [scanMode, setScanMode] = useState('quick');
   const [sensitivity, setSensitivity] = useState('balanced');
   const [rescanSeen, setRescanSeen] = useState(false);
   const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
@@ -183,6 +189,8 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
           },
           minPrice: normalizedPriceMin,
           maxPrice: normalizedPriceMax,
+          scanMode,
+          order: 'newest_first',
           sensitivity,
           maxQueries: SENSITIVITY[sensitivity].maxQueries,
           rescanSeen,
@@ -248,6 +256,7 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
         fetchedDetails: data.stats?.fetched_details ?? actionableSummary?.funnel?.details_fetched ?? 0,
         queriesCount: data.stats?.queries_count ?? data.queries?.length ?? 0,
         queryStats: actionableSummary?.query_performance ?? data.query_stats ?? data.stats?.query_stats ?? [],
+        scanMode: data.stats?.scan_mode ?? scanMode,
         rejectedSamples: data.rejected_samples ?? [],
         actionable: actionableSummary,
         rescanSeen: data.stats?.rescan_seen ?? rescanSeen,
@@ -329,6 +338,27 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
               ))}
             </select>
           </label>
+
+          <div style={styles.field}>
+            <span style={styles.label}>Mode de scan</span>
+            <div style={styles.scanModeGrid}>
+              {Object.entries(SCAN_MODES).map(([value, option]) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setScanMode(value)}
+                  disabled={isRunning}
+                  style={{
+                    ...styles.segmentButton,
+                    ...(scanMode === value ? styles.segmentButtonActive : {}),
+                  }}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            <span style={styles.hint}>{SCAN_MODES[scanMode].hint}</span>
+          </div>
 
           {canSelectTargetCards && (
             <div style={styles.targetBox}>
@@ -773,6 +803,11 @@ const styles = {
   segmented: {
     display: 'grid',
     gridTemplateColumns: 'repeat(3, 1fr)',
+    gap: theme.spacing.sm,
+  },
+  scanModeGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
     gap: theme.spacing.sm,
   },
   segmentButton: {

@@ -40,6 +40,19 @@ describe('Fetchers', () => {
       expect(url.searchParams.get('order')).toBe('newest_first');
     });
 
+    it('keeps Vinted price range with alias payloads and configurable order', () => {
+      const fetcher = new VintedFetcher();
+      const url = new URL(fetcher.buildSearchUrl('pokemon wizards', {
+        min_price: 25,
+        max_price: 150,
+        order: 'price_low_to_high',
+      }));
+
+      expect(url.searchParams.get('price_from')).toBe('25');
+      expect(url.searchParams.get('price_to')).toBe('150');
+      expect(url.searchParams.get('order')).toBe('price_low_to_high');
+    });
+
     it('extracts Vinted external ids from item URLs', () => {
       expect(extractVintedExternalId('https://www.vinted.fr/items/123456-pokemon-team-rocket')).toBe('123456');
       expect(extractVintedExternalId('https://www.vinted.fr/items/987654')).toBe('987654');

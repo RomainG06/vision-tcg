@@ -224,10 +224,26 @@ export class VintedFetcher extends BaseFetcher {
   /**
    * Build search URL
    */
-  buildSearchUrl(query) {
+  buildSearchUrl(query, options = {}) {
     // Use generic catalog route; clothing category route introduces noisy bias.
-    const searchQuery = encodeURIComponent(query);
-    return `${this.baseUrl}/catalog?search_text=${searchQuery}&order=newest_first`;
+    const url = new URL('/catalog', this.baseUrl);
+    url.searchParams.set('search_text', query);
+    url.searchParams.set('order', 'newest_first');
+
+    const budget = typeof options.budget === 'object' && options.budget !== null
+      ? options.budget
+      : {};
+    const min = Number(options.priceFrom ?? options.price_from ?? options.minPrice ?? options.min_price ?? budget.min ?? budget.minPrice ?? budget.min_price);
+    const max = Number(options.priceTo ?? options.price_to ?? options.maxPrice ?? options.max_price ?? budget.max ?? budget.maxPrice ?? budget.max_price);
+
+    if (Number.isFinite(min) && min > 0) {
+      url.searchParams.set('price_from', String(min));
+    }
+    if (Number.isFinite(max) && max > 0) {
+      url.searchParams.set('price_to', String(max));
+    }
+
+    return url.toString();
   }
 
   /**

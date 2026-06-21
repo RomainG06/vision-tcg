@@ -162,6 +162,7 @@ export async function startScrape(options = {}) {
         const scanDepth = Math.max(maxResults * 8, 80);
         const perQueryLimit = Math.max(maxResults, Math.ceil(maxResults * 1.5));
         const dynamicExcludeIds = new Set(excludeExternalIds.map(String));
+        const budgetRange = getBudgetRange(filters);
 
         for (const currentQuery of executionQueries) {
           const beforeCount = queryRawListings.length;
@@ -173,6 +174,9 @@ export async function startScrape(options = {}) {
               targetSeries: filters.series || 'all',
               listingType: filters.listingType || filters.listing_type || 'cards',
               allowSeenRescue,
+              budget: budgetRange,
+              minPrice: budgetRange.min,
+              maxPrice: budgetRange.max,
               waitForCaptcha,
             });
             const prefilterSummary = fetchedListings.prefilter_summary || null;
@@ -217,7 +221,6 @@ export async function startScrape(options = {}) {
         const seenDecisions = new Map();
 
         fetchedDetails += rawListings.length;
-        const budgetRange = getBudgetRange(filters);
         const budgetResult = filterByBudget(rawListings, budgetRange);
         if (budgetResult.rejected.length > 0) {
           budgetFiltered += budgetResult.rejected.length;

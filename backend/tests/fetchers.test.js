@@ -28,6 +28,18 @@ describe('Fetchers', () => {
       expect(url).toContain('order=newest_first');
     });
 
+    it('adds Vinted price range filters to search URL when provided', () => {
+      const fetcher = new VintedFetcher();
+      const url = new URL(fetcher.buildSearchUrl('lot pokemon jungle', {
+        budget: { min: 50, max: 300 },
+      }));
+
+      expect(url.searchParams.get('search_text')).toBe('lot pokemon jungle');
+      expect(url.searchParams.get('price_from')).toBe('50');
+      expect(url.searchParams.get('price_to')).toBe('300');
+      expect(url.searchParams.get('order')).toBe('newest_first');
+    });
+
     it('extracts Vinted external ids from item URLs', () => {
       expect(extractVintedExternalId('https://www.vinted.fr/items/123456-pokemon-team-rocket')).toBe('123456');
       expect(extractVintedExternalId('https://www.vinted.fr/items/987654')).toBe('987654');

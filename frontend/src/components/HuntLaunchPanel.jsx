@@ -138,7 +138,8 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
   const [targetCards, setTargetCards] = useState([]);
   const [targetModalOpen, setTargetModalOpen] = useState(false);
   const [listingType, setListingType] = useState('cards');
-  const [budget, setBudget] = useState(1500);
+  const [priceMin, setPriceMin] = useState(0);
+  const [priceMax, setPriceMax] = useState(1500);
   const [sensitivity, setSensitivity] = useState('balanced');
   const [rescanSeen, setRescanSeen] = useState(false);
   const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
@@ -152,6 +153,10 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
   const selectedSeriesLabel = SERIES_OPTIONS.find(option => option.value === series)?.label || 'Toutes Wizards FR';
   const selectedTargetsPreview = targetCards.slice(0, 3).map(target => target.name).join(', ');
   const targetCardQueries = targetCards.flatMap(card => card.queryTerms || [card.name]);
+  const priceMinValue = Math.max(0, Number(priceMin) || 0);
+  const priceMaxValue = Math.max(1, Number(priceMax) || 1500);
+  const normalizedPriceMin = Math.min(priceMinValue, priceMaxValue);
+  const normalizedPriceMax = Math.max(priceMinValue, priceMaxValue);
 
   const startHunt = async () => {
     setStatus('running');
@@ -169,7 +174,12 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
         filters: {
           series,
           listingType,
-          budget: Number(budget) || 1500,
+          budget: {
+            min: normalizedPriceMin,
+            max: normalizedPriceMax,
+          },
+          minPrice: normalizedPriceMin,
+          maxPrice: normalizedPriceMax,
           sensitivity,
           maxQueries: SENSITIVITY[sensitivity].maxQueries,
           rescanSeen,
@@ -363,18 +373,36 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
             <span style={styles.hint}>{LISTING_TYPE_OPTIONS[listingType].hint}</span>
           </div>
 
-          <label style={styles.field}>
-            <span style={styles.label}>Budget max</span>
-            <input
-              type="number"
-              value={budget}
-              onChange={(e) => setBudget(e.target.value)}
-              min="1"
-              max="1500"
-              style={styles.input}
-              disabled={isRunning}
-            />
-          </label>
+          <div style={styles.field}>
+            <span style={styles.label}>Fourchette de prix</span>
+            <div style={styles.priceRangeGrid}>
+              <label style={styles.priceRangeField}>
+                <span>Min</span>
+                <input
+                  type="number"
+                  value={priceMin}
+                  onChange={(e) => setPriceMin(e.target.value)}
+                  min="0"
+                  max="1500"
+                  style={styles.input}
+                  disabled={isRunning}
+                />
+              </label>
+              <label style={styles.priceRangeField}>
+                <span>Max</span>
+                <input
+                  type="number"
+                  value={priceMax}
+                  onChange={(e) => setPriceMax(e.target.value)}
+                  min="1"
+                  max="1500"
+                  style={styles.input}
+                  disabled={isRunning}
+                />
+              </label>
+            </div>
+            <span style={styles.hint}>Le radar garde les prix inconnus, mais filtre les prix connus hors fourchette.</span>
+          </div>
 
           <div style={styles.field}>
             <span style={styles.label}>Sensibilité radar</span>
@@ -722,6 +750,19 @@ const styles = {
   },
   select: inputBase(),
   input: inputBase(),
+  priceRangeGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+    gap: theme.spacing.md,
+  },
+  priceRangeField: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing.xs,
+    color: theme.colors.text.tertiary,
+    fontSize: theme.typography.sizes.bodySm,
+    fontWeight: theme.typography.weights.semibold,
+  },
   segmented: {
     display: 'grid',
     gridTemplateColumns: 'repeat(3, 1fr)',

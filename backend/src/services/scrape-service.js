@@ -46,11 +46,17 @@ function scoreRawListing(rawListing) {
   };
 }
 
-function getBudgetMax(filters = {}) {
+function getBudgetRange(filters = {}) {
   if (typeof filters.budget === 'object' && filters.budget !== null) {
-    return filters.budget.max;
+    return {
+      min: filters.budget.min ?? filters.budget.minPrice ?? filters.budget.min_price,
+      max: filters.budget.max ?? filters.budget.maxPrice ?? filters.budget.max_price,
+    };
   }
-  return filters.budget ?? filters.maxBudget ?? filters.max_price ?? filters.maxPrice;
+  return {
+    min: filters.minBudget ?? filters.min_price ?? filters.minPrice,
+    max: filters.budget ?? filters.maxBudget ?? filters.max_price ?? filters.maxPrice,
+  };
 }
 
 function listingExternalId(listing) {
@@ -211,8 +217,8 @@ export async function startScrape(options = {}) {
         const seenDecisions = new Map();
 
         fetchedDetails += rawListings.length;
-        const budgetMax = getBudgetMax(filters);
-        const budgetResult = filterByBudget(rawListings, budgetMax);
+        const budgetRange = getBudgetRange(filters);
+        const budgetResult = filterByBudget(rawListings, budgetRange);
         if (budgetResult.rejected.length > 0) {
           budgetFiltered += budgetResult.rejected.length;
           for (const listing of budgetResult.rejected) {
@@ -230,7 +236,7 @@ export async function startScrape(options = {}) {
             signals: [],
             risks: ['over_budget'],
           })));
-          errors.push({ source, type: 'budget_filtered', count: budgetResult.rejected.length, budget: Number(budgetMax) });
+          errors.push({ source, type: 'budget_filtered', count: budgetResult.rejected.length, budget: budgetRange });
         }
 
         const scored = budgetResult.kept.map(scoreRawListing);

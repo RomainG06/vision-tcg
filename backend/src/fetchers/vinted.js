@@ -16,7 +16,7 @@ const SERIES_PREFILTER_PATTERNS = {
 };
 
 const OFF_TARGET_PREFILTER_PATTERN = /\b(diamant\s*&?\s*perle|diamant\s+et\s+perle|dp\s*0?\d|dp01|dp02|trésors?\s+mystérieux|tresors?\s+mysterieux|sintonia\s+mentale|pokemon\s+go|pokémon\s+go|ecarlate|écarlate|violet|soleil|lune|sun\s*&?\s*moon|epee|épée|bouclier|sword|shield)\b|\/(?:78|123|130|236)\b/i;
-const POKEMON_DOMAIN_PREFILTER_PATTERN = /\b(pokemon|pokémon|cartes?|cards?|wizards?|wotc|holo|rare|tcg|jcc|jungle|fossile|fossil|rocket|obscur(?:e|s)?)\b|\/\s*(?:82|64|62|102)\b/i;
+const POKEMON_DOMAIN_PREFILTER_PATTERN = /\b(pokemon|pokémon|wizards?|wotc|tcg|jcc|base\s*set|set\s*de\s*base|jungle|fossile|fossil|team\s*rocket|rocket|obscur(?:e|s)?|dracaufeu|charizard|tortank|blastoise|florizarre|venusaur|mewtwo|raichu|dracolosse|dragonite)\b|\/\s*(?:82|64|62|102)\b/i;
 const LOT_PREFILTER_PATTERN = /\b(lot|lots|collection|classeur|vrac|set\s+complet|complete\s+set)\b|\b([2-9]|[1-9]\d+)\s*(cartes?|cards?)\b/i;
 const SINGLE_CARD_PREFILTER_PATTERN = /\b(carte\s+seule|carte\s+unique|à\s+l'unité|a\s+l'unite|unitaire|single\s+card)\b/i;
 
@@ -28,6 +28,37 @@ function itemText(item) {
 
 function itemUrl(item) {
   return typeof item === 'string' ? item : item.url;
+}
+
+function parseGridPrice(text = '') {
+  const match = String(text).match(/(?:€|eur|euro)\s*([0-9]+(?:[.,][0-9]{1,2})?)|([0-9]+(?:[.,][0-9]{1,2})?)\s*(?:€|eur|euro)/i);
+  const value = match?.[1] || match?.[2] || null;
+  if (!value) return 0;
+  return Number.parseFloat(String(value).replace(',', '.')) || 0;
+}
+
+function buildFallbackListing(url, gridItem = {}) {
+  const text = String(gridItem.text || '').trim();
+  const externalId = extractVintedExternalId(url);
+  return {
+    source: 'vinted',
+    external_id: externalId,
+    url,
+    title: text || url,
+    description: text,
+    price: parseGridPrice(text),
+    location: '',
+    lat: null,
+    lon: null,
+    distance_km: null,
+    image_url: null,
+    posted_at: new Date().toISOString(),
+    is_wizards: false,
+    is_french: false,
+    is_lot: false,
+    card_count_estimate: null,
+    score: null,
+  };
 }
 
 function matchesListingTypePrefilter(text, listingType) {
@@ -189,57 +220,66 @@ export class VintedFetcher extends BaseFetcher {
     super('vinted');
     this.baseUrl = 'https://www.vinted.fr';
   }
-  
+
   /**
    * Build search URL
    */
   buildSearchUrl(query) {
-    // Vinted uses simple search parameter in path
+    // Use generic catalog route; clothing category route introduces noisy bias.
     const searchQuery = encodeURIComponent(query);
-    return `${this.baseUrl}/vetements?search_text=${searchQuery}&order=newest_first`;
+    return `${this.baseUrl}/catalog?search_text=${searchQuery}&order=newest_first`;
   }
-  
+
   /**
    * Fetch listings from Vinted
    */
   async fetch(query, options = {}) {
-    const { maxResults = 50, waitForCaptcha = 60, excludeExternalIds = [], scanDepth = Math.max(maxResults * 5, 50), targetSeries = 'all', listingType = 'all' } = options;
-    
+    const {
+      maxResults = 50,
+      waitForCaptcha = 60,
+      excludeExternalIds = [],
+      scanDepth = Math.max(maxResults * 5, 50),
+      targetSeries = 'all',
+      listingType = 'all',
+      allowSeenRescue = false,
+      maxScrollPasses = 18,
+    } = options;
+
     try {
       await this.init();
-      
+
       // Step 1: Visit homepage first (more human-like)
       logger.info('Visiting Vinted homepage first...');
       await this.page.goto(this.baseUrl, { waitUntil: 'networkidle2', timeout: 30000 });
       await this.randomDelay(2000, 4000);
-      
+
       // Step 2: Navigate to search
       const searchUrl = this.buildSearchUrl(query, options);
       logger.info(`Navigating to: ${searchUrl}`);
-      
+
       await this.page.goto(searchUrl, { waitUntil: 'networkidle2', timeout: 30000 });
       await this.randomDelay(2000, 3000);
-      
+
       // Check for CAPTCHA
       if (await this.detectCaptcha()) {
         const debugInfo = await this.saveDebugInfo('captcha');
         logger.warn(`⏳ CAPTCHA détecté ! Tu as ${waitForCaptcha} secondes pour le résoudre manuellement...`);
         logger.warn(`   Screenshots sauvegardés : ${debugInfo?.screenshotPath}`);
         logger.warn(`   Le script attend... résous le CAPTCHA dans le navigateur ouvert.`);
-        
+
         // Wait for user to solve CAPTCHA
         await new Promise(resolve => setTimeout(resolve, waitForCaptcha * 1000));
-        
+
         // Check again after waiting
         if (await this.detectCaptcha()) {
           logger.error('❌ CAPTCHA toujours présent après attente');
           throw new Error(`CAPTCHA not resolved after ${waitForCaptcha}s. Debug info: ${JSON.stringify(debugInfo)}`);
         }
-        
+
         logger.info('✅ CAPTCHA résolu ! Sauvegarde des cookies...');
         await this.saveCookiesAfterCaptcha();
       }
-      
+
       // Wait for listings to load
       try {
         // Try multiple selectors
@@ -249,7 +289,7 @@ export class VintedFetcher extends BaseFetcher {
           'article[data-testid*="item"]',
           '.new-item-box'
         ];
-        
+
         let selectorFound = null;
         for (const selector of selectors) {
           try {
@@ -261,7 +301,7 @@ export class VintedFetcher extends BaseFetcher {
             logger.debug(`Selector ${selector} not found`);
           }
         }
-        
+
         if (!selectorFound) {
           throw new Error('No valid selector found');
         }
@@ -272,36 +312,12 @@ export class VintedFetcher extends BaseFetcher {
           prefilter_summary: { total: 0, selected: 0, already_seen: 0, duplicate: 0, invalid_url: 0, listing_type_mismatch: 0, non_pokemon_domain: 0, off_target_modern: 0, series_mismatch: 0 },
           grid_raw_found: 0,
           selected_for_details: 0,
+          selected_external_ids: [],
         });
       }
-      
-      // Scroll a bit before extracting URLs so repeated scans can move beyond the first visible cards.
-      await this.page.evaluate(async () => {
-        for (let i = 0; i < 4; i++) {
-          window.scrollBy(0, Math.round(window.innerHeight * 0.85));
-          await new Promise(resolve => setTimeout(resolve, 500));
-        }
-      });
-      await this.randomDelay(800, 1400);
 
-      // Extract listing URLs - try multiple strategies
-      const searchItems = await this.page.evaluate((limit) => {
-        // Strategy 1: article links
-        let items = Array.from(document.querySelectorAll('article a[href*="/items/"]'));
-        console.log(`Strategy 1 (article a): Found ${items.length} links`);
-        
-        // Strategy 2: any link with /items/
-        if (items.length === 0) {
-          items = Array.from(document.querySelectorAll('a[href*="/items/"]'));
-          console.log(`Strategy 2 (a[href*="/items/"]): Found ${items.length} links`);
-        }
-        
-        // Strategy 3: feed-grid items
-        if (items.length === 0) {
-          items = Array.from(document.querySelectorAll('.feed-grid a, [class*="feed"] a'));
-          console.log(`Strategy 3 (feed-grid): Found ${items.length} links`);
-        }
-        
+      // Extract listing URLs using incremental scroll, so scans can go beyond first viewport cards.
+      const searchItems = await this.page.evaluate(async (limit, maxPasses) => {
         const byUrl = new Map();
         const collectNodeText = (anchor) => {
           const chunks = [
@@ -321,24 +337,57 @@ export class VintedFetcher extends BaseFetcher {
           return [...new Set(chunks.filter(Boolean).map(value => value.trim()).filter(Boolean))].join(' ').trim();
         };
 
-        for (const anchor of items) {
-          const url = anchor.href;
-          if (!url || !url.includes('/items/') || byUrl.has(url)) continue;
-          const container = anchor.closest('article, div.feed-grid__item, [class*="feed-grid__item"], [data-testid*="item"]');
-          const text = `${collectNodeText(anchor)} ${container?.textContent || ''}`.trim();
-          byUrl.set(url, { url, text });
+        const collectItems = () => {
+          // Strategy 1: article links
+          let items = Array.from(document.querySelectorAll('article a[href*="/items/"]'));
+
+          // Strategy 2: any link with /items/
+          if (items.length === 0) {
+            items = Array.from(document.querySelectorAll('a[href*="/items/"]'));
+          }
+
+          // Strategy 3: feed-grid items
+          if (items.length === 0) {
+            items = Array.from(document.querySelectorAll('.feed-grid a, [class*="feed"] a'));
+          }
+
+          for (const anchor of items) {
+            const url = anchor.href;
+            if (!url || !url.includes('/items/') || byUrl.has(url)) continue;
+            const container = anchor.closest('article, div.feed-grid__item, [class*="feed-grid__item"], [data-testid*="item"]');
+            const text = `${collectNodeText(anchor)} ${container?.textContent || ''}`.trim();
+            byUrl.set(url, { url, text });
+          }
+        };
+
+        const sleep = (delayMs) => new Promise(resolve => setTimeout(resolve, delayMs));
+        let stagnantPasses = 0;
+        for (let pass = 0; pass < maxPasses && byUrl.size < limit; pass++) {
+          const before = byUrl.size;
+          collectItems();
+          const after = byUrl.size;
+          if (after === before) stagnantPasses += 1;
+          else stagnantPasses = 0;
+          if (stagnantPasses >= 3) break;
+
+          window.scrollBy(0, Math.round(window.innerHeight * 0.9));
+          await sleep(450 + Math.floor(Math.random() * 250));
         }
 
+        collectItems();
+
         const urls = [...byUrl.keys()];
-        
+
         console.log(`Total unique URLs: ${urls.length}`);
         if (urls.length > 0) {
           console.log(`First URL sample: ${urls[0]}`);
         }
-        
+
         return [...byUrl.values()].slice(0, limit);
-      }, scanDepth);
-      const rescueSeenWhenBelow = listingType === 'lot' && targetSeries !== 'all' ? Math.min(5, maxResults) : 0;
+      }, scanDepth, Math.max(3, Number(maxScrollPasses) || 18));
+      const rescueSeenWhenBelow = allowSeenRescue && listingType === 'lot' && targetSeries !== 'all'
+        ? Math.min(5, maxResults)
+        : 0;
       const prefilterOptions = { excludeExternalIds, maxResults, targetSeries, listingType, query, rescueSeenWhenBelow };
       const selectedItems = selectUnseenVintedItems(searchItems, prefilterOptions);
       const prefilterSummary = summarizeVintedPrefilter(searchItems, prefilterOptions);
@@ -347,7 +396,11 @@ export class VintedFetcher extends BaseFetcher {
         prefilterSummary.rescued_seen = rescuedSeen;
       }
       const selectedUrls = selectedItems.map(item => item.url);
-      
+      const selectedExternalIds = selectedUrls
+        .map(url => extractVintedExternalId(url))
+        .filter(Boolean);
+      const selectedItemByUrl = new Map(selectedItems.map(item => [item.url, item]));
+
       logger.info(`Found ${searchItems.length} listing URLs on Vinted, ${selectedUrls.length} selected after already-seen + target-series prefilter`);
       logger.info(`Prefilter summary: ${JSON.stringify(prefilterSummary)}`);
       if (searchItems.length > 0) {
@@ -359,6 +412,7 @@ export class VintedFetcher extends BaseFetcher {
           prefilter_summary: prefilterSummary,
           grid_raw_found: 0,
           selected_for_details: 0,
+          selected_external_ids: selectedExternalIds,
         });
       }
 
@@ -368,29 +422,31 @@ export class VintedFetcher extends BaseFetcher {
           prefilter_summary: prefilterSummary,
           grid_raw_found: searchItems.length,
           selected_for_details: 0,
+          selected_external_ids: selectedExternalIds,
         });
       }
-      
+
       // Fetch details for each unseen listing
       const listings = [];
       for (const url of selectedUrls) {
+        const selectedItem = selectedItemByUrl.get(url) || null;
         try {
           logger.debug(`Fetching listing: ${url}`);
           await this.page.goto(url, { waitUntil: 'networkidle2', timeout: 20000 });
           await this.randomDelay(500, 1500);
-          
+
           // Extract data directly from the page instead of parsing HTML
           const listing = await this.page.evaluate((url) => {
             // Extract ID from URL
             const urlMatch = url.match(/items\/(\d+)/);
             const externalId = urlMatch ? urlMatch[1] : null;
-            
+
             // Title - try multiple selectors
             const title = document.querySelector('h1[itemprop="name"]')?.textContent?.trim()
               || document.querySelector('h1.details-list__item-title')?.textContent?.trim()
               || document.querySelector('h1')?.textContent?.trim()
               || 'No title';
-            
+
             // Price - try multiple selectors
             const priceEl = document.querySelector('[data-testid="item-price"]')
               || document.querySelector('.details-list__item-price')
@@ -398,27 +454,27 @@ export class VintedFetcher extends BaseFetcher {
               || document.querySelector('h3');
             const priceText = priceEl?.textContent?.trim() || '0';
             const price = parseFloat(priceText.replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
-            
+
             // Description
             const description = document.querySelector('[itemprop="description"]')?.textContent?.trim()
               || document.querySelector('.details-list__item-description')?.textContent?.trim()
               || '';
-            
+
             // Location
             const location = document.querySelector('.details-list__item-location')?.textContent?.trim()
               || document.querySelector('[data-testid="item-location"]')?.textContent?.trim()
               || '';
-            
+
             // Image
             const imageEl = document.querySelector('.details-list__item-photo img')
               || document.querySelector('[itemprop="image"]')
               || document.querySelector('img[alt*="photo"]');
             const imageUrl = imageEl?.src || imageEl?.getAttribute('src') || null;
-            
+
             // Posted date
             const dateEl = document.querySelector('time');
             const postedAt = dateEl?.getAttribute('datetime') || new Date().toISOString();
-            
+
             return {
               source: 'vinted',
               external_id: externalId,
@@ -439,22 +495,28 @@ export class VintedFetcher extends BaseFetcher {
               score: null
             };
           }, url);
-          
-          if (listing && listing.title !== 'No title') {
-            listings.push(listing);
-            logger.info(`✅ Parsed: ${listing.title} - ${listing.price}€`);
+
+          const isParsed = Boolean(listing && listing.title !== 'No title');
+          const finalListing = isParsed ? listing : buildFallbackListing(url, selectedItem || {});
+
+          listings.push(finalListing);
+          if (isParsed) {
+            logger.info(`✅ Parsed: ${finalListing.title} - ${finalListing.price}€`);
           } else {
-            logger.warn(`⚠️  Failed to parse listing properly: ${url}`);
+            logger.warn(`⚠️  Failed to parse listing properly, using grid fallback: ${url}`);
           }
         } catch (error) {
-          logger.error(`Failed to fetch listing ${url}:`, error.message);
+          const fallbackListing = buildFallbackListing(url, selectedItem || {});
+          listings.push(fallbackListing);
+          logger.warn(`⚠️  Failed to fetch listing ${url}, using grid fallback: ${error.message}`);
         }
       }
-      
+
       return attachPrefilterMetadata(listings, {
         prefilter_summary: prefilterSummary,
         grid_raw_found: searchItems.length,
         selected_for_details: selectedUrls.length,
+        selected_external_ids: selectedExternalIds,
       });
     } catch (error) {
       logger.error('Vinted fetch error:', error);

@@ -79,6 +79,13 @@ function markSeenDecision(repo, listing, defaults) {
   return 1;
 }
 
+function rotateQueries(queries = [], offset = 0) {
+  if (!Array.isArray(queries) || queries.length <= 1) return Array.isArray(queries) ? [...queries] : [];
+  const normalizedOffset = Math.abs(Number(offset) || 0) % queries.length;
+  if (normalizedOffset === 0) return [...queries];
+  return [...queries.slice(normalizedOffset), ...queries.slice(0, normalizedOffset)];
+}
+
 export async function startScrape(options = {}) {
   const {
     profile = 'wizards-fr',
@@ -90,6 +97,7 @@ export async function startScrape(options = {}) {
     smartQueries = true,
     maxQueries = filters.maxQueries || filters.max_queries,
     rescanSeen = filters.rescanSeen || filters.rescan_seen || false,
+    allowSeenRescue = Boolean(filters.allowSeenRescue || filters.allow_seen_rescue || filters.seenRescue || filters.seen_rescue),
   } = options;
 
   const enabledSources = sources.filter(source => FETCHERS[source]);
@@ -100,12 +108,20 @@ export async function startScrape(options = {}) {
   const queries = smartQueries
     ? buildHuntQueries({ profile, filters, maxQueries })
     : [buildHuntQuery({ profile, filters })];
-  const query = queries[0];
+  const shouldRotateQueries = smartQueries && filters.rotateQueries !== false && filters.rotate_queries !== false;
+  const queryRotationSeed = Number(filters.queryRotationSeed ?? filters.query_rotation_seed ?? Date.now());
+  const queryRotationOffset = shouldRotateQueries && queries.length > 1
+    ? Math.abs(queryRotationSeed) % queries.length
+    : 0;
+  const executionQueries = shouldRotateQueries
+    ? rotateQueries(queries, queryRotationOffset)
+    : [...queries];
+  const query = executionQueries[0];
   const runId = scrapeRunRepo.create({
     source: enabledSources.join(','),
     query,
     status: 'running',
-    metadata: JSON.stringify({ profile, filters, maxResults, queries, smartQueries }),
+    metadata: JSON.stringify({ profile, filters, maxResults, queries: executionQueries, smartQueries, queryRotationOffset, queryRotationSeed }),
   });
 
   const startedAt = new Date().toISOString();
@@ -128,7 +144,7 @@ export async function startScrape(options = {}) {
   try {
     for (const source of enabledSources) {
       try {
-        logger.info(`Starting smart scrape: ${source} queries=${queries.length} maxResults=${maxResults}`);
+        logger.info(`Starting smart scrape: ${source} queries=${executionQueries.length} maxResults=${maxResults}`);
         const savedExternalIds = saveToDb ? listingRepo.findExternalIdsBySource(source) : [];
         const seenExternalIds = saveToDb && !rescanSeen
           ? seenListingRepo.findExcludedExternalIdsBySource(source, { targetSeries: filters.series || 'all' })
@@ -141,7 +157,7 @@ export async function startScrape(options = {}) {
         const perQueryLimit = Math.max(maxResults, Math.ceil(maxResults * 1.5));
         const dynamicExcludeIds = new Set(excludeExternalIds.map(String));
 
-        for (const currentQuery of queries) {
+        for (const currentQuery of executionQueries) {
           const beforeCount = queryRawListings.length;
           try {
             const fetchedListings = await FETCHERS[source](currentQuery, {
@@ -150,6 +166,7 @@ export async function startScrape(options = {}) {
               excludeExternalIds: [...dynamicExcludeIds],
               targetSeries: filters.series || 'all',
               listingType: filters.listingType || filters.listing_type || 'cards',
+              allowSeenRescue,
               waitForCaptcha,
             });
             const prefilterSummary = fetchedListings.prefilter_summary || null;
@@ -161,6 +178,12 @@ export async function startScrape(options = {}) {
               matched_query: currentQuery,
             }));
             queryRawListings.push(...taggedListings);
+            const selectedExternalIds = Array.isArray(fetchedListings.selected_external_ids)
+              ? fetchedListings.selected_external_ids
+              : [];
+            for (const id of selectedExternalIds) {
+              if (id) dynamicExcludeIds.add(String(id));
+            }
             for (const listing of fetchedListings) {
               const id = listing.external_id || listing.id;
               if (id) dynamicExcludeIds.add(String(id));
@@ -297,7 +320,7 @@ export async function startScrape(options = {}) {
     }
 
     const queryErrorCount = errors.filter(error => error.type === 'query_error').length;
-    const totalQueryAttempts = enabledSources.length * queries.length;
+    const totalQueryAttempts = enabledSources.length * executionQueries.length;
     const allQueriesFailed = totalQueryAttempts > 0 && queryErrorCount >= totalQueryAttempts;
     const status = allQueriesFailed ? 'failed' : 'completed';
     const actionableSummary = buildActionableScanSummary({
@@ -321,14 +344,14 @@ export async function startScrape(options = {}) {
       status,
       results_count: allListings.length,
       errors_count: errors.length,
-      metadata: JSON.stringify({ profile, filters, maxResults, queries, smartQueries, rescanSeen, saved, updated, selectedForDetails, fetchedDetails, budgetFiltered, qualityFiltered, explorationFallback, knownBeforeScan, seenExcluded, seenRecorded, rejectedSamples, queryStats, actionableSummary, errors }),
+      metadata: JSON.stringify({ profile, filters, maxResults, queries: executionQueries, smartQueries, queryRotationOffset, queryRotationSeed, rescanSeen, saved, updated, selectedForDetails, fetchedDetails, budgetFiltered, qualityFiltered, explorationFallback, knownBeforeScan, seenExcluded, seenRecorded, rejectedSamples, queryStats, actionableSummary, errors }),
     });
 
     return {
       run_id: runId,
       status,
       query,
-      queries,
+      queries: executionQueries,
       sources: enabledSources,
       started_at: startedAt,
       completed_at: new Date().toISOString(),
@@ -337,7 +360,8 @@ export async function startScrape(options = {}) {
         raw_found: rawFound,
         selected_for_details: selectedForDetails,
         fetched_details: fetchedDetails,
-        queries_count: queries.length,
+        queries_count: executionQueries.length,
+        query_rotation_offset: queryRotationOffset,
         query_stats: queryStats,
         found: allListings.length,
         filtered: allListings.length,
@@ -348,6 +372,7 @@ export async function startScrape(options = {}) {
         known_before_scan: knownBeforeScan,
         seen_excluded: seenExcluded,
         rescan_seen: Boolean(rescanSeen),
+        seen_rescue_enabled: Boolean(allowSeenRescue),
         seen_recorded: seenRecorded,
         saved,
         updated,

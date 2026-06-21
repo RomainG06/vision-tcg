@@ -1,24 +1,33 @@
 import { BaseFetcher } from '../src/fetchers/base.js';
-import { extractVintedExternalId, selectUnseenVintedItems, selectUnseenVintedUrls, summarizeVintedPrefilter } from '../src/fetchers/vinted.js';
+import { VintedFetcher, extractVintedExternalId, selectUnseenVintedItems, selectUnseenVintedUrls, summarizeVintedPrefilter } from '../src/fetchers/vinted.js';
 
 describe('Fetchers', () => {
   describe('BaseFetcher', () => {
     let fetcher;
-    
+
     beforeEach(() => {
       fetcher = new BaseFetcher('test');
     });
-    
+
     it('should initialize with source name', () => {
       expect(fetcher.source).toBe('test');
     });
-    
+
     it('should throw error if fetch not implemented', async () => {
       await expect(fetcher.fetch('test')).rejects.toThrow('fetch() must be implemented');
     });
   });
-  
+
   describe('Vinted smart selection', () => {
+    it('builds search URLs on catalog route instead of clothing route', () => {
+      const fetcher = new VintedFetcher();
+      const url = fetcher.buildSearchUrl('lot pokemon dracaufeu obscur');
+
+      expect(url).toContain('/catalog?search_text=');
+      expect(url).not.toContain('/vetements?search_text=');
+      expect(url).toContain('order=newest_first');
+    });
+
     it('extracts Vinted external ids from item URLs', () => {
       expect(extractVintedExternalId('https://www.vinted.fr/items/123456-pokemon-team-rocket')).toBe('123456');
       expect(extractVintedExternalId('https://www.vinted.fr/items/987654')).toBe('987654');
@@ -293,6 +302,49 @@ describe('Fetchers', () => {
       })).toMatchObject({ selected: 0, non_pokemon_domain: 1 });
     });
 
+    it('rejects non-Pokemon trading cards even when grid text contains generic card terms', () => {
+      const items = [
+        {
+          url: 'https://www.vinted.fr/items/901-batman-trading-cards-1989-second-series',
+          text: '133 cartes 1989 Second Series DC Comics Batman Trading Cards',
+        },
+      ];
+
+      const selected = selectUnseenVintedItems(items, {
+        targetSeries: 'all',
+        listingType: 'all',
+        query: 'lot pokemon dracaufeu obscur',
+        maxResults: 10,
+      });
+
+      expect(selected).toEqual([]);
+      expect(summarizeVintedPrefilter(items, {
+        targetSeries: 'all',
+        listingType: 'all',
+        query: 'lot pokemon dracaufeu obscur',
+      })).toMatchObject({ selected: 0, non_pokemon_domain: 1 });
+    });
+
+    it('keeps a selected Vinted listing even if the detail page cannot be parsed', () => {
+      const fallback = {
+        url: 'https://www.vinted.fr/items/5933355587-lot-carte-pokemon-team-rocket-wizards',
+        text: 'Lot carte Pokemon Team Rocket Wizards FR - 120 €',
+      };
+
+      const selected = selectUnseenVintedItems([fallback], {
+        targetSeries: 'rocket',
+        listingType: 'lot',
+        query: 'lot pokemon team rocket wizards',
+        maxResults: 10,
+      });
+
+      expect(selected).toHaveLength(1);
+      expect(selected[0]).toMatchObject({
+        url: fallback.url,
+        prefilter_reason: 'series_grid_match',
+      });
+    });
+
     it('summarizes Vinted prefilter rejection reasons for zero-result diagnosis', () => {
       const items = [
         {
@@ -322,7 +374,7 @@ describe('Fetchers', () => {
       });
     });
   });
-  
+
   // TODO: Add integration tests with actual fetchers
   // These would require mocking browser or using real browser in CI
 });

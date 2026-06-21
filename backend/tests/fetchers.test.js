@@ -261,6 +261,36 @@ describe('Fetchers', () => {
       expect(selected[0].prefilter_reason).toBe('trusted_query_lot_candidate');
     });
 
+    it('rejects Vinted promoted wardrobe/showcase slots before detail scraping', () => {
+      const items = [
+        {
+          url: 'https://www.vinted.fr/items/821-vitrine-vendeur-chaussures',
+          text: 'Dressing en vitrine Sponsorisé Découvre les articles de ce membre',
+        },
+        {
+          url: 'https://www.vinted.fr/items/822-lot-cartes-pokemon-team-rocket',
+          text: 'Lot cartes Pokémon Team Rocket Wizards FR - 120 €',
+        },
+      ];
+
+      const selected = selectUnseenVintedItems(items, {
+        targetSeries: 'rocket',
+        listingType: 'lot',
+        query: 'lot pokemon team rocket',
+        maxResults: 10,
+      });
+      const summary = summarizeVintedPrefilter(items, {
+        targetSeries: 'rocket',
+        listingType: 'lot',
+        query: 'lot pokemon team rocket',
+      });
+
+      expect(selected.map(item => item.url)).toEqual([
+        'https://www.vinted.fr/items/822-lot-cartes-pokemon-team-rocket',
+      ]);
+      expect(summary).toMatchObject({ selected: 1, promoted_listing: 1 });
+    });
+
     it('never opens Vinted clothing lots such as shorts during Pokemon lot hunts', () => {
       const items = [
         {

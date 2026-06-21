@@ -16,6 +16,7 @@ const SERIES_PREFILTER_PATTERNS = {
 };
 
 const OFF_TARGET_PREFILTER_PATTERN = /\b(diamant\s*&?\s*perle|diamant\s+et\s+perle|dp\s*0?\d|dp01|dp02|trésors?\s+mystérieux|tresors?\s+mysterieux|sintonia\s+mentale|pokemon\s+go|pokémon\s+go|ecarlate|écarlate|violet|soleil|lune|sun\s*&?\s*moon|epee|épée|bouclier|sword|shield)\b|\/(?:78|123|130|236)\b/i;
+const PROMOTED_PREFILTER_PATTERN = /\b(sponsoris[ée]e?s?|sponsored|publicit[ée]|advertisement|annonce\s+sponsoris[ée]e?|article\s+boost[ée]|boosted\s+item|dressing\s+en\s+vitrine|vitrine\s+vendeur|vitrine\s+du\s+vendeur|wardrobe\s+spotlight|showcase)\b/i;
 const POKEMON_DOMAIN_PREFILTER_PATTERN = /\b(pokemon|pokémon|wizards?|wotc|tcg|jcc|base\s*set|set\s*de\s*base|jungle|fossile|fossil|team\s*rocket|rocket|obscur(?:e|s)?|dracaufeu|charizard|tortank|blastoise|florizarre|venusaur|mewtwo|raichu|dracolosse|dragonite)\b|\/\s*(?:82|64|62|102)\b/i;
 const LOT_PREFILTER_PATTERN = /\b(lot|lots|collection|classeur|vrac|set\s+complet|complete\s+set)\b|\b([2-9]|[1-9]\d+)\s*(cartes?|cards?)\b/i;
 const SINGLE_CARD_PREFILTER_PATTERN = /\b(carte\s+seule|carte\s+unique|à\s+l'unité|a\s+l'unite|unitaire|single\s+card)\b/i;
@@ -88,6 +89,7 @@ function getPrefilterDecision(item, options = {}) {
   const pokemonDomainMatches = POKEMON_DOMAIN_PREFILTER_PATTERN.test(text) || seriesMatches;
   const hasActiveHuntIntent = Boolean(query || targetSeries !== 'all' || listingType !== 'all');
 
+  if (PROMOTED_PREFILTER_PATTERN.test(text)) return { keep: false, reason: 'promoted_listing' };
   if (!listingTypeMatches) return { keep: false, reason: 'listing_type_mismatch' };
   if (OFF_TARGET_PREFILTER_PATTERN.test(text)) return { keep: false, reason: 'off_target_modern' };
   if (hasActiveHuntIntent && !pokemonDomainMatches) return { keep: false, reason: 'non_pokemon_domain' };
@@ -165,6 +167,7 @@ export function summarizeVintedPrefilter(items, options = {}) {
     already_seen: 0,
     duplicate: 0,
     invalid_url: 0,
+    promoted_listing: 0,
     listing_type_mismatch: 0,
     non_pokemon_domain: 0,
     off_target_modern: 0,
@@ -325,7 +328,7 @@ export class VintedFetcher extends BaseFetcher {
         logger.warn('No listings found or page structure changed');
         await this.saveDebugInfo('no_results');
         return attachPrefilterMetadata([], {
-          prefilter_summary: { total: 0, selected: 0, already_seen: 0, duplicate: 0, invalid_url: 0, listing_type_mismatch: 0, non_pokemon_domain: 0, off_target_modern: 0, series_mismatch: 0 },
+          prefilter_summary: { total: 0, selected: 0, already_seen: 0, duplicate: 0, invalid_url: 0, promoted_listing: 0, listing_type_mismatch: 0, non_pokemon_domain: 0, off_target_modern: 0, series_mismatch: 0 },
           grid_raw_found: 0,
           selected_for_details: 0,
           selected_external_ids: [],

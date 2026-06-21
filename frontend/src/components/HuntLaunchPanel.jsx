@@ -55,6 +55,7 @@ const REJECTION_LABELS = {
   rescued_seen: 'Déjà vue ré-ouverte',
   duplicate: 'Doublon grille',
   invalid_url: 'URL invalide',
+  promoted_listing: 'Vitrine/sponsorisé Vinted',
   selected: 'Sélectionnée',
   invalid_listing: 'Annonce invalide',
   quality_filtered: 'Qualité insuffisante',

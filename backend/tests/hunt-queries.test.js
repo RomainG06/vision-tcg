@@ -116,7 +116,7 @@ describe('Smart hunt queries', () => {
     }
   });
 
-  test('prioritizes selected card targets before the default series playbook', () => {
+  test('uses only selected card target queries when cards are selected', () => {
     const queries = buildHuntQueries({
       profile: 'wizards-fr',
       filters: {
@@ -127,8 +127,8 @@ describe('Smart hunt queries', () => {
       maxQueries: 5,
     });
 
-    expect(queries.slice(0, 3)).toEqual(['dracolosse obscur', 'dark dragonite', 'raichu obscur']);
-    expect(queries).toContain('carte pokemon team rocket');
+    expect(queries).toEqual(['dracolosse obscur', 'dark dragonite', 'raichu obscur']);
+    expect(queries).not.toContain('carte pokemon team rocket');
     expect(new Set(queries).size).toBe(queries.length);
   });
 

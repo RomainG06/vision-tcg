@@ -424,9 +424,10 @@ export function buildHuntQueries({ profile = 'wizards-fr', filters = {}, maxQuer
   const listingType = filters.listingType || filters.listing_type || filters.type || 'all';
   const baseQueries = queriesFor(series, listingType);
   const targetQueries = getTargetCardQueries(filters, listingType);
+  const sourceQueries = targetQueries.length > 0 ? targetQueries : baseQueries;
   const queries = profile === 'wizards-fr'
-    ? [...targetQueries, ...baseQueries]
-    : [...targetQueries, ...baseQueries].map(query => `${profile} ${query}`);
+    ? sourceQueries
+    : sourceQueries.map(query => `${profile} ${query}`);
 
   const unique = [...new Set(queries.map(query => query.trim()).filter(Boolean))];
   return Number.isFinite(Number(maxQueries)) && Number(maxQueries) > 0

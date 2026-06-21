@@ -467,13 +467,35 @@ function queriesFor(series, listingType) {
   return playbook.all || [...(playbook.cards || []), ...(playbook.lot || [])];
 }
 
+function normalizeTargetQuery(query, listingType) {
+  const trimmed = String(query || '').trim().replace(/\s+/g, ' ');
+  if (!trimmed) return null;
+  return listingType === 'lot' ? normalizeLotSearchIntent(trimmed) : trimmed;
+}
+
+function getTargetCardQueries(filters = {}, listingType = 'all') {
+  const rawTargetQueries = [
+    ...(Array.isArray(filters.targetCardQueries) ? filters.targetCardQueries : []),
+    ...(Array.isArray(filters.target_card_queries) ? filters.target_card_queries : []),
+    ...(Array.isArray(filters.targetCards) ? filters.targetCards.flatMap(card => {
+      if (typeof card === 'string') return [card];
+      return [...(card.queryTerms || []), card.name, ...(card.aliases || [])];
+    }) : []),
+  ];
+
+  return rawTargetQueries
+    .map(query => normalizeTargetQuery(query, listingType))
+    .filter(Boolean);
+}
+
 export function buildHuntQueries({ profile = 'wizards-fr', filters = {}, maxQueries } = {}) {
   const series = filters.series || 'all';
   const listingType = filters.listingType || filters.listing_type || filters.type || 'all';
   const baseQueries = queriesFor(series, listingType);
+  const targetQueries = getTargetCardQueries(filters, listingType);
   const queries = profile === 'wizards-fr'
-    ? baseQueries
-    : baseQueries.map(query => `${profile} ${query}`);
+    ? [...targetQueries, ...baseQueries]
+    : [...targetQueries, ...baseQueries].map(query => `${profile} ${query}`);
 
   const unique = [...new Set(queries.map(query => query.trim()).filter(Boolean))];
   return Number.isFinite(Number(maxQueries)) && Number(maxQueries) > 0

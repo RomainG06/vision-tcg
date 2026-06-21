@@ -117,6 +117,37 @@ describe('Smart hunt queries', () => {
     }
   });
 
+  test('prioritizes selected card targets before the default series playbook', () => {
+    const queries = buildHuntQueries({
+      profile: 'wizards-fr',
+      filters: {
+        series: 'rocket',
+        listingType: 'cards',
+        targetCardQueries: ['dracolosse obscur', 'dark dragonite', 'raichu obscur'],
+      },
+      maxQueries: 5,
+    });
+
+    expect(queries.slice(0, 3)).toEqual(['dracolosse obscur', 'dark dragonite', 'raichu obscur']);
+    expect(queries).toContain('carte pokemon team rocket');
+    expect(new Set(queries).size).toBe(queries.length);
+  });
+
+  test('keeps selected card targets lot-oriented when lot listing type is selected', () => {
+    const queries = buildHuntQueries({
+      profile: 'wizards-fr',
+      filters: {
+        series: 'rocket',
+        listingType: 'lot',
+        targetCardQueries: ['dracolosse obscur', 'dark dragonite'],
+      },
+      maxQueries: 4,
+    });
+
+    expect(queries.slice(0, 2)).toEqual(['lot pokemon dracolosse obscur', 'lot pokemon dark dragonite']);
+    expect(queries.every(query => /\b(lot|collection|classeur|cartes|vrac|gros lot)\b/i.test(query))).toBe(true);
+  });
+
   test('deduplicates listings by source and external id while preserving query matches', () => {
     const listings = [
       { source: 'vinted', external_id: '1', title: 'Dracolosse Obscur', query: 'team rocket' },

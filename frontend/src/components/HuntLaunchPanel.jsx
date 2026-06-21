@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import theme from '../theme';
 import TcgIcon from './TcgIcon';
+import TargetCardsModal from './TargetCardsModal';
 import { fetchScrapeRuns, startScrape } from '../services/api';
 
 const SERIES_OPTIONS = [
@@ -134,6 +135,8 @@ const LISTING_TYPE_OPTIONS = {
 
 function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
   const [series, setSeries] = useState('all');
+  const [targetCards, setTargetCards] = useState([]);
+  const [targetModalOpen, setTargetModalOpen] = useState(false);
   const [listingType, setListingType] = useState('cards');
   const [budget, setBudget] = useState(1500);
   const [sensitivity, setSensitivity] = useState('balanced');
@@ -146,6 +149,9 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
 
   const copy = statusCopy[status];
   const isRunning = status === 'running';
+  const selectedSeriesLabel = SERIES_OPTIONS.find(option => option.value === series)?.label || 'Toutes Wizards FR';
+  const selectedTargetsPreview = targetCards.slice(0, 3).map(target => target.name).join(', ');
+  const targetCardQueries = targetCards.flatMap(card => card.queryTerms || [card.name]);
 
   const startHunt = async () => {
     setStatus('running');
@@ -160,7 +166,22 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
         sources: ['vinted'],
         maxResults: SENSITIVITY[sensitivity].maxResults,
         saveToDb: true,
-        filters: { series, listingType, budget: Number(budget) || 1500, sensitivity, maxQueries: SENSITIVITY[sensitivity].maxQueries, rescanSeen },
+        filters: {
+          series,
+          listingType,
+          budget: Number(budget) || 1500,
+          sensitivity,
+          maxQueries: SENSITIVITY[sensitivity].maxQueries,
+          rescanSeen,
+          targetCards: targetCards.map(card => ({
+            id: card.id,
+            name: card.name,
+            number: card.number,
+            series,
+            queryTerms: card.queryTerms || [card.name],
+          })),
+          targetCardQueries,
+        },
       };
       let data;
       try {
@@ -281,12 +302,45 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
         <div style={styles.controls}>
           <label style={styles.field}>
             <span style={styles.label}>Série ciblée</span>
-            <select value={series} onChange={(e) => setSeries(e.target.value)} style={styles.select} disabled={isRunning}>
+            <select
+              value={series}
+              onChange={(e) => {
+                setSeries(e.target.value);
+                setTargetCards([]);
+              }}
+              style={styles.select}
+              disabled={isRunning}
+            >
               {SERIES_OPTIONS.map(option => (
                 <option key={option.value} value={option.value}>{option.label}</option>
               ))}
             </select>
           </label>
+
+          <div style={styles.targetBox}>
+            <div>
+              <span style={styles.label}>Cibles de chasse</span>
+              {targetCards.length > 0 ? (
+                <div style={styles.targetSummary}>
+                  <strong>{selectedSeriesLabel} · {targetCards.length} carte{targetCards.length > 1 ? 's' : ''} ciblée{targetCards.length > 1 ? 's' : ''}</strong>
+                  <span>{selectedTargetsPreview}{targetCards.length > 3 ? ` +${targetCards.length - 3} autres` : ''}</span>
+                </div>
+              ) : (
+                <div style={styles.targetSummary}>
+                  <strong>Aucune carte ciblée</strong>
+                  <span>Optionnel : cible des Pokémon précis pour générer des requêtes plus pertinentes.</span>
+                </div>
+              )}
+            </div>
+            <div style={styles.targetActions}>
+              <button type="button" style={styles.targetButton} onClick={() => setTargetModalOpen(true)} disabled={isRunning}>
+                {targetCards.length > 0 ? 'Modifier' : 'Choisir des cartes'}
+              </button>
+              {targetCards.length > 0 && (
+                <button type="button" style={styles.targetClearButton} onClick={() => setTargetCards([])} disabled={isRunning}>Effacer</button>
+              )}
+            </div>
+          </div>
 
           <div style={styles.field}>
             <span style={styles.label}>Type d’annonce</span>
@@ -514,6 +568,18 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
           </div>
         </div>
       </div>
+
+      <TargetCardsModal
+        isOpen={targetModalOpen}
+        selectedSeries={series}
+        selectedTargets={targetCards}
+        onClose={() => setTargetModalOpen(false)}
+        onApply={({ series: nextSeries, targets }) => {
+          setSeries(nextSeries);
+          setTargetCards(targets);
+          setTargetModalOpen(false);
+        }}
+      />
     </section>
   );
 }
@@ -676,6 +742,48 @@ const styles = {
     background: `${theme.accents.hunterGold}14`,
   },
   hint: { color: theme.colors.text.muted, fontSize: theme.typography.sizes.bodySm },
+  targetBox: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+    border: `1px solid ${theme.accents.manaCyan}35`,
+    borderRadius: theme.borders.radiusMd,
+    background: `${theme.accents.manaCyan}0D`,
+    flexWrap: 'wrap',
+  },
+  targetSummary: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing.xs,
+    marginTop: theme.spacing.sm,
+    color: theme.colors.text.secondary,
+    fontSize: theme.typography.sizes.bodySm,
+    lineHeight: 1.4,
+  },
+  targetActions: {
+    display: 'flex',
+    gap: theme.spacing.sm,
+    flexWrap: 'wrap',
+  },
+  targetButton: {
+    border: `1px solid ${theme.accents.hunterGold}66`,
+    borderRadius: theme.borders.radiusMd,
+    background: `${theme.accents.hunterGold}18`,
+    color: theme.accents.hunterGold,
+    padding: `${theme.spacing.sm} ${theme.spacing.md}`,
+    cursor: 'pointer',
+    fontWeight: theme.typography.weights.semibold,
+  },
+  targetClearButton: {
+    border: `1px solid ${theme.colors.primary.slate}`,
+    borderRadius: theme.borders.radiusMd,
+    background: 'transparent',
+    color: theme.colors.text.tertiary,
+    padding: `${theme.spacing.sm} ${theme.spacing.md}`,
+    cursor: 'pointer',
+  },
   checkboxRow: {
     display: 'flex',
     alignItems: 'flex-start',

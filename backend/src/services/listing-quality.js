@@ -1,5 +1,6 @@
+import { detectLanguageSignals } from './language-detection.js';
+
 const WIZARDS_PATTERN = /\b(wizards|wotc|base set|set de base|jungle|fossile|fossil|team rocket|gym|neo genesis|neo|wizard)\b/i;
-const FRENCH_PATTERN = /\b(fr|vf|français|francais|française|francaise|édition française|edition francaise|langue\s*:?\s*fran[cç]ais(?:e)?)\b/i;
 const LOT_PATTERN = /\b(lot|collection|vrac|classeur|set complet|complete set)\b/i;
 const SINGLE_CARD_PATTERN = /\b(carte seule|carte unique|à l'unité|a l'unite|unitaire|single card|dracaufeu|tortank|florizarre|mewtwo|pikachu)\b/i;
 const POKEMON_CARD_PATTERN = /\b(pokemon|pokémon|carte|cartes|holo|rare|jungle|fossile|fossil|rocket|dracaufeu|tortank|florizarre|mewtwo|pikachu)\b/i;
@@ -14,7 +15,7 @@ const TARGET_SERIES_PATTERNS = {
 const NOISE_PATTERNS = [
   { code: 'modern_detected', pattern: /\b(écarlate|ecarlate|violet|epee|épée|bouclier|sword|shield|scarlet|sun|moon|soleil|lune|moderne|display moderne|booster moderne|diamant\s*&?\s*perle|diamant\s+et\s+perle|dp\s*0?\d|dp01|dp02|trésors?\s+mystérieux|tresors?\s+mysterieux|pokemon\s+go|pokémon\s+go)\b|\/(?:78|123|130|236)\b/i },
   { code: 'accessory_detected', pattern: /\b(sleeves?|protections?|toploader|top loader|classeur vide|binder empty|accessoires?|rangement|boite vide|box vide)\b/i },
-  { code: 'foreign_language_detected', pattern: /\b(japonais|japonaise|japanese|anglais|english|allemand|german|italien|italienne|italian|italiano|italiana|italiane|ita|espagnol|spanish)\b/i },
+  { code: 'foreign_language_detected', predicate: text => detectLanguageSignals(text).foreign },
   { code: 'fake_detected', pattern: /\b(fake|proxy|reproduction|repro|custom|fan made|non officiel)\b/i },
   { code: 'energy_bulk_detected', pattern: /\b(énergies?|energies?|cartes énergie|cartes energie)\b/i },
   { code: 'toy_detected', pattern: /\b(figurine|peluche|jouet|mug|poster|sticker|autocollant)\b/i },
@@ -185,12 +186,13 @@ export function evaluateListingQuality(listing, options = {}) {
   const score = Number(listing.score || 0);
 
   if (WIZARDS_PATTERN.test(text)) signals.push('wizards_detected');
-  if (FRENCH_PATTERN.test(text)) signals.push('french_edition');
+  if (detectLanguageSignals(text).french) signals.push('french_edition');
   if (isLotListingText(text)) signals.push('lot_detected');
   if (/\b(holo|holographique|brillante|rare|dracaufeu|tortank|florizarre|mewtwo|ronflex)\b/i.test(text)) signals.push('premium_card_detected');
 
   for (const rule of NOISE_PATTERNS) {
-    if (rule.pattern.test(text) && !shouldIgnoreNoise(rule.code, text, signals)) {
+    const matches = rule.pattern ? rule.pattern.test(text) : rule.predicate?.(text);
+    if (matches && !shouldIgnoreNoise(rule.code, text, signals)) {
       noise.push(rule.code);
     }
   }

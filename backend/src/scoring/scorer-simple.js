@@ -1,3 +1,4 @@
+import { detectLanguageSignals } from '../services/language-detection.js';
 import { config } from '../utils/config.js';
 
 function textOf(listing) {
@@ -19,11 +20,6 @@ function detectSeries(text) {
   return unique(series);
 }
 
-function detectLanguage(text) {
-  const french = /\b(fr|vf|français|francais|française|francaise|édition française|edition francaise|langue\s*:?\s*fran[cç]ais(?:e)?)\b/i.test(text);
-  const foreign = /\b(english|anglais|japanese|japonais|japonaise|allemand|german|italien|italienne|italian|italiano|italiana|italiane|ita|espagnol|spanish)\b/i.test(text);
-  return { french, foreign };
-}
 
 function detectLot(text) {
   const explicitCount = text.match(/\b([2-9]|[1-9]\d+)\s*(cartes?|cards?)\b/i);
@@ -46,7 +42,7 @@ function detectRisks(text) {
 export function explainListingScore(listing) {
   const text = textOf(listing);
   const series = detectSeries(text);
-  const language = detectLanguage(text);
+  const language = detectLanguageSignals(text);
   const lot = detectLot(text);
   const risks = detectRisks(text);
   const price = Number(listing.price || 0);

@@ -139,6 +139,36 @@ describe('Fetchers', () => {
       ]);
     });
 
+    it('rejects obvious foreign-language Vinted grid items before opening details', () => {
+      const items = [
+        {
+          url: 'https://www.vinted.fr/items/106-dark-dragonite-team-rocket-english',
+          text: 'Dark Dragonite Team Rocket 22/82 English card',
+        },
+        {
+          url: 'https://www.vinted.fr/items/107-dracolosse-obscur-team-rocket-japonais',
+          text: 'Dracolosse Obscur Team Rocket japonais holo',
+        },
+        {
+          url: 'https://www.vinted.fr/items/108-dracolosse-obscur-team-rocket-francais',
+          text: 'Dracolosse Obscur Team Rocket Français 22/82',
+        },
+      ];
+
+      const selected = selectUnseenVintedItems(items, {
+        targetSeries: 'rocket',
+        maxResults: 10,
+      });
+      const summary = summarizeVintedPrefilter(items, {
+        targetSeries: 'rocket',
+      });
+
+      expect(selected.map(item => item.url)).toEqual([
+        'https://www.vinted.fr/items/108-dracolosse-obscur-team-rocket-francais',
+      ]);
+      expect(summary.foreign_language).toBe(2);
+    });
+
     it('relaxes grid prefilter for Jungle because Vinted often hides series names before detail pages', () => {
       const items = [
         {

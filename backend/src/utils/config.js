@@ -10,13 +10,17 @@ export const config = {
   port: process.env.PORT || 3000,
   nodeEnv: process.env.NODE_ENV || 'development',
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
-  
-  // Rate limiting
+
+  // Security
+  jwtSecret: process.env.JWT_SECRET || 'dev-secret-change-in-production',
+  skipAuth: process.env.SKIP_AUTH === 'true', // Only for development
+
+  // Rate limiting (global)
   rateLimit: {
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100 // limit each IP to 100 requests per windowMs
+    windowMs: 60 * 1000, // 1 minute
+    max: 30 // limit each IP to 30 requests per minute
   },
-  
+
   // Scoring weights
   scoring: {
     wizardsWeight: 40,
@@ -25,7 +29,7 @@ export const config = {
     priceWeight: 10,
     distanceWeight: 10
   },
-  
+
   // Geographic constraints
   geo: {
     centerLat: 43.7102,  // Nice
@@ -33,11 +37,15 @@ export const config = {
     maxDistanceKm: 50,
     maxBudget: 1500
   },
-  
+
   // Scraping config
   scraping: {
     headless: false,  // MVP uses headful mode (required for CAPTCHA handling)
     timeout: 30000,
-    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+    delayMin: parseInt(process.env.SCRAPE_DELAY_MIN_MS || '2000'),
+    delayMax: parseInt(process.env.SCRAPE_DELAY_MAX_MS || '4000'),
+    retryMax: parseInt(process.env.SCRAPE_RETRY_MAX || '3'),
+    retryBackoffMs: parseInt(process.env.SCRAPE_RETRY_BACKOFF_MS || '2000')
   }
 };

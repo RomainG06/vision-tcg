@@ -108,3 +108,17 @@ CREATE INDEX IF NOT EXISTS idx_listing_history_price_drop ON listing_history(cur
 CREATE INDEX IF NOT EXISTS idx_listing_price_events_listing ON listing_price_events(listing_id, detected_at DESC);
 CREATE INDEX IF NOT EXISTS idx_listing_alerts_created ON listing_alerts(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_listing_alerts_type ON listing_alerts(type);
+
+-- Keywords for scoring
+CREATE TABLE IF NOT EXISTS keywords (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  keyword TEXT NOT NULL UNIQUE,
+  category TEXT NOT NULL,
+  weight REAL NOT NULL,
+  active INTEGER NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_keywords_active ON keywords(active);
+CREATE INDEX IF NOT EXISTS idx_keywords_category ON keywords(category);

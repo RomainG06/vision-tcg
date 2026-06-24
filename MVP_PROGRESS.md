@@ -102,15 +102,47 @@
 
 ---
 
-## 🎨 Phase 3: Design "Hunting" (À VENIR)
+## 🎨 Phase 3: Design "Hunting" (EN COURS - Guidance Ready)
 
-- [ ] Demander assets design à l'agent design
-- [ ] Créer `/design/` directory avec tokens, SVGs
-- [ ] Intégrer design hunting dans frontend:
-  - [ ] Tokens de couleurs
-  - [ ] Typographie
-  - [ ] Cartes décisionnelles
-  - [ ] Preview HTML
+### Design System Assets ✅
+- [x] Design tokens disponibles (`design/tokens/hunting-tokens.json`)
+- [x] Documentation complète (`design/README-hunting-design.md`)
+- [x] Mockups référence (`design/mockups/hunting-dashboard.svg`)
+- [x] Preview interactif (`design/preview-hunting.html`)
+
+### Implementation Guides ✅
+- [x] **PHASE3_IMPLEMENTATION_GUIDE.md** - Guide détaillé complet
+- [x] **PHASE3_QUICK_DECISIONS.md** - Résumé des décisions rapides
+- [x] **PHASE3_CODE_EXAMPLES.md** - Exemples de code transformation
+
+### Décisions Architecture ✅
+- [x] **Approche**: Remplacement progressif (pas de UI parallèle)
+- [x] **Pattern**: Inline styles (garder existant, pas de CSS-in-JS library)
+- [x] **Scope Phase 3**: Cards feed + badges (radar widget → Phase 4)
+- [x] **Responsive**: Mobile-first, breakpoints 375px/768px/1440px
+- [x] **Accessibilité**: WCAG AA, keyboard nav, ARIA labels
+
+### Implémentation Frontend
+- [ ] **Semaine 1**: Theme swap (hunting-tokens.json → theme.js)
+  - [ ] Remplacer couleurs Fantasy → Hunting
+  - [ ] Mettre à jour typographie (Outfit + Inter + JetBrains Mono)
+  - [ ] Header: "Vision Hunting" + hunt status bar
+  - [ ] Tester: tout fonctionne encore
+  
+- [ ] **Semaine 2**: Component enhancement
+  - [ ] Créer `utils/rarity.js` (score tier logic)
+  - [ ] Créer `components/Badge.jsx`
+  - [ ] LotList.jsx: rarity styling basé sur score
+  - [ ] Afficher badges depuis `opportunity_signals`
+  - [ ] Afficher value_estimate et risk_signals
+  
+- [ ] **Semaine 3**: Polish & responsive
+  - [ ] Grid responsive (CSS classes + media queries)
+  - [ ] Keyboard navigation (tabIndex, onKeyPress)
+  - [ ] ARIA labels pour accessibilité
+  - [ ] Animations (huntPulse, scoreGlow)
+  - [ ] Tests multi-devices
+  
 - [ ] Valider avec Romain
 
 ---

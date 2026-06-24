@@ -1,10 +1,45 @@
 import { all, get, run } from '../db/database.js';
+import { ListingHistoryRepository } from './listing-history-repository.js';
+import { AlertRepository } from './alert-repository.js';
 
 /**
  * Repository for listings table
  * Centralizes all database operations for listings
  */
 export class ListingRepository {
+  buildFilterClause(filters = {}) {
+    let clause = 'WHERE 1=1';
+    const params = [];
+
+    if (filters.source) {
+      clause += ' AND source = ?';
+      params.push(filters.source);
+    }
+
+    // Handle 'all' status as no filter
+    if (filters.status && filters.status !== 'all') {
+      clause += ' AND status = ?';
+      params.push(filters.status);
+    }
+
+    if (filters.minScore !== undefined) {
+      clause += ' AND score >= ?';
+      params.push(filters.minScore);
+    }
+
+    if (filters.maxPrice !== undefined) {
+      clause += ' AND price <= ?';
+      params.push(filters.maxPrice);
+    }
+
+    if (filters.maxDistance !== undefined) {
+      clause += ' AND distance_km <= ?';
+      params.push(filters.maxDistance);
+    }
+
+    return { clause, params };
+  }
+
   /**
    * Find all listings with optional filters
    * @param {Object} filters - Filter options
@@ -18,37 +53,11 @@ export class ListingRepository {
    * @returns {Array} Array of listings
    */
   findAll(filters = {}) {
-    let query = 'SELECT * FROM listings WHERE 1=1';
-    const params = [];
-    
-    if (filters.source) {
-      query += ' AND source = ?';
-      params.push(filters.source);
-    }
-    
-    // Handle 'all' status as no filter
-    if (filters.status && filters.status !== 'all') {
-      query += ' AND status = ?';
-      params.push(filters.status);
-    }
-    
-    if (filters.minScore !== undefined) {
-      query += ' AND score >= ?';
-      params.push(filters.minScore);
-    }
-    
-    if (filters.maxPrice !== undefined) {
-      query += ' AND price <= ?';
-      params.push(filters.maxPrice);
-    }
-    
-    if (filters.maxDistance !== undefined) {
-      query += ' AND distance_km <= ?';
-      params.push(filters.maxDistance);
-    }
-    
-    // Order by score DESC by default
-    query += ' ORDER BY score DESC';
+    const { clause, params } = this.buildFilterClause(filters);
+    let query = `SELECT * FROM listings ${clause}`;
+
+    // Newest scan first so the dashboard shows fresh opportunities before old backlog.
+    query += ' ORDER BY scrape_run_id DESC, datetime(COALESCE(scraped_at, posted_at)) DESC, score DESC';
     
     // Pagination
     const limit = filters.limit || 50;
@@ -80,6 +89,12 @@ export class ListingRepository {
       [source, externalId]
     );
   }
+
+  findExternalIdsBySource(source) {
+    return all('SELECT external_id FROM listings WHERE source = ?', [source])
+      .map(row => String(row.external_id))
+      .filter(Boolean);
+  }
   
   /**
    * Create or update a listing (UPSERT)
@@ -87,6 +102,7 @@ export class ListingRepository {
    * @returns {number} Inserted/updated row ID
    */
   upsert(listing) {
+    const previousListing = this.findBySourceAndExternalId(listing.source, listing.external_id);
     const {
       scrape_run_id,
       source,
@@ -109,7 +125,7 @@ export class ListingRepository {
       notes
     } = listing;
     
-    const result = run(`
+    run(`
       INSERT INTO listings (
         scrape_run_id, source, external_id, url, title, description,
         price, location, lat, lon, distance_km, images,
@@ -131,11 +147,17 @@ export class ListingRepository {
         score_breakdown = excluded.score_breakdown
     `, [
       scrape_run_id, source, external_id, url, title, description,
-      price, location, lat, lon, distance_km, images,
-      posted_at, scraped_at, raw_html, status || 'new', score, score_breakdown, notes
+      price, location ?? null, lat ?? null, lon ?? null, distance_km ?? null, images ?? null,
+      posted_at ?? null, scraped_at, raw_html ?? null, status || 'new', score ?? 0, score_breakdown ?? null, notes ?? null
     ]);
-    
-    return result.lastInsertRowid;
+
+    const savedListing = this.findBySourceAndExternalId(source, external_id);
+    const historyRepo = new ListingHistoryRepository();
+    const alertRepo = new AlertRepository();
+    const history = historyRepo.recordDetection(savedListing, previousListing);
+    alertRepo.evaluateListing({ listing: savedListing, previousListing, history });
+
+    return savedListing?.id || null;
   }
   
   /**
@@ -192,8 +214,9 @@ export class ListingRepository {
    * Count total listings
    * @returns {number} Total count
    */
-  count() {
-    const result = get('SELECT COUNT(*) as count FROM listings');
+  count(filters = {}) {
+    const { clause, params } = this.buildFilterClause(filters);
+    const result = get(`SELECT COUNT(*) as count FROM listings ${clause}`, params);
     return result?.count || 0;
   }
   

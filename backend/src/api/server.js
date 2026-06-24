@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import { fileURLToPath } from 'url';
 import { config } from '../utils/config.js';
 import { logger } from '../utils/logger.js';
 import router from './routes.js';
@@ -9,6 +10,14 @@ import profileRoutes from './routes-profiles.js';
 import { initDatabase } from '../db/database.js';
 
 export const app = express();
+
+process.on('unhandledRejection', (reason) => {
+  logger.error('Unhandled promise rejection:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+  logger.error('Uncaught exception:', error);
+});
 
 // Security middleware
 app.use(helmet());
@@ -84,7 +93,8 @@ export async function start() {
   }
 }
 
-// Start if running directly
-// Note: Always start the server when this file is imported as the main module
-// The original condition doesn't work reliably on Windows
-start();
+const isCli = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+
+if (isCli) {
+  start();
+}

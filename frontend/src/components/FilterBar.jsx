@@ -1,8 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import theme from '../theme';
 
 function FilterBar({ filters, onChange }) {
   const [localFilters, setLocalFilters] = useState(filters);
+
+  useEffect(() => {
+    setLocalFilters(filters);
+  }, [filters]);
 
   const handleChange = (key, value) => {
     const updated = { ...localFilters, [key]: value };
@@ -21,9 +25,23 @@ function FilterBar({ filters, onChange }) {
         >
           <option value="all">Tous</option>
           <option value="new">Nouveau</option>
-          <option value="interested">Intéressant</option>
-          <option value="passed">Passé</option>
+          <option value="interested">Watchlist</option>
+          <option value="reviewed">Vu</option>
+          <option value="ignored">Ignoré</option>
           <option value="contacted">Contacté</option>
+        </select>
+      </div>
+
+      <div style={styles.filterGroup}>
+        <label style={styles.label}>Trier par</label>
+        <select
+          style={styles.select}
+          value={localFilters.sortBy}
+          onChange={(e) => handleChange('sortBy', e.target.value)}
+        >
+          <option value="date">Plus récent</option>
+          <option value="score">Meilleur score</option>
+          <option value="price">Prix croissant</option>
         </select>
       </div>
 
@@ -79,6 +97,7 @@ function FilterBar({ filters, onChange }) {
           onClick={() => {
             const defaults = {
               status: 'all',
+              sortBy: 'date',
               minScore: 0,
               maxPrice: 1500,
               maxDistance: 50,
@@ -96,8 +115,8 @@ function FilterBar({ filters, onChange }) {
 
 const styles = {
   container: {
-    background: theme.colors.neutral.bgCard,
-    border: `${theme.borders.widthMedium} solid ${theme.colors.primary.arcanePurpleLight}`,
+    background: theme.colors.primary.deepDark,
+    border: `${theme.borders.widthMedium} solid ${theme.colors.primary.slate}`,
     borderRadius: theme.borders.radiusLg,
     padding: theme.spacing.xl,
     marginBottom: theme.spacing.xxxl,
@@ -115,15 +134,15 @@ const styles = {
   label: {
     fontSize: theme.typography.sizes.bodySm,
     fontWeight: theme.typography.weights.semibold,
-    color: theme.colors.accent.enchantGold,
+    color: theme.accents.hunterGold,
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
   },
   select: {
     padding: theme.spacing.md,
-    background: theme.colors.neutral.bgHover,
-    color: theme.colors.neutral.textPrimary,
-    border: `${theme.borders.widthThin} solid ${theme.colors.neutral.border}`,
+    background: theme.colors.primary.midnight,
+    color: theme.colors.text.primary,
+    border: `${theme.borders.widthThin} solid ${theme.colors.primary.slate}`,
     borderRadius: theme.borders.radiusMd,
     fontSize: theme.typography.sizes.bodyMd,
     fontFamily: theme.typography.fonts.primary,
@@ -132,9 +151,9 @@ const styles = {
   },
   input: {
     padding: theme.spacing.md,
-    background: theme.colors.neutral.bgHover,
-    color: theme.colors.neutral.textPrimary,
-    border: `${theme.borders.widthThin} solid ${theme.colors.neutral.border}`,
+    background: theme.colors.primary.midnight,
+    color: theme.colors.text.primary,
+    border: `${theme.borders.widthThin} solid ${theme.colors.primary.slate}`,
     borderRadius: theme.borders.radiusMd,
     fontSize: theme.typography.sizes.bodyMd,
     fontFamily: theme.typography.fonts.primary,
@@ -143,8 +162,8 @@ const styles = {
   range: {
     width: '100%',
     height: '8px',
-    background: theme.colors.neutral.bgHover,
-    border: `${theme.borders.widthThin} solid ${theme.colors.neutral.border}`,
+    background: theme.colors.primary.midnight,
+    border: `${theme.borders.widthThin} solid ${theme.colors.primary.slate}`,
     borderRadius: theme.borders.radiusSm,
     outline: 'none',
     WebkitAppearance: 'none',
@@ -154,7 +173,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     fontSize: theme.typography.sizes.tiny,
-    color: theme.colors.neutral.textSecondary,
+    color: theme.colors.text.secondary,
     marginTop: `-${theme.spacing.xs}`,
   },
   actions: {
@@ -163,9 +182,9 @@ const styles = {
   },
   resetButton: {
     padding: `${theme.spacing.md} ${theme.spacing.lg}`,
-    background: theme.colors.neutral.bgHover,
-    color: theme.colors.neutral.textSecondary,
-    border: `${theme.borders.widthThin} solid ${theme.colors.neutral.border}`,
+    background: theme.colors.primary.midnight,
+    color: theme.colors.text.secondary,
+    border: `${theme.borders.widthThin} solid ${theme.colors.primary.slate}`,
     borderRadius: theme.borders.radiusMd,
     fontSize: theme.typography.sizes.bodySm,
     fontWeight: theme.typography.weights.semibold,
@@ -181,19 +200,19 @@ const styleSheet = document.createElement('style');
 styleSheet.textContent = `
   select:focus, input:focus {
     outline: none;
-    border-color: ${theme.colors.accent.manaBlue} !important;
-    box-shadow: ${theme.shadows.glowMana};
+    border-color: ${theme.accents.manaCyan} !important;
+    box-shadow: 0 0 12px ${theme.accents.manaCyan}40;
   }
   
   select:hover, input:hover {
-    border-color: ${theme.colors.primary.arcanePurpleLight};
+    border-color: ${theme.accents.hunterGold};
   }
   
   button:hover {
-    background: ${theme.colors.primary.arcanePurpleLight} !important;
-    color: ${theme.colors.neutral.textPrimary} !important;
-    border-color: ${theme.colors.primary.arcanePurpleLight} !important;
-    box-shadow: ${theme.shadows.glowMagic};
+    background: ${theme.accents.hunterGold} !important;
+    color: ${theme.colors.primary.obsidian} !important;
+    border-color: ${theme.accents.hunterGold} !important;
+    box-shadow: 0 0 16px ${theme.accents.hunterGold}60;
   }
   
   /* Range slider thumb */
@@ -202,20 +221,20 @@ styleSheet.textContent = `
     appearance: none;
     width: 20px;
     height: 20px;
-    background: linear-gradient(135deg, ${theme.colors.accent.manaBlue}, ${theme.colors.primary.arcanePurpleLight});
+    background: linear-gradient(135deg, ${theme.accents.hunterGold}, ${theme.accents.manaCyan});
     border-radius: 50%;
     cursor: pointer;
-    box-shadow: ${theme.shadows.glowMana};
+    box-shadow: 0 0 12px ${theme.accents.hunterGold}80;
   }
   
   input[type="range"]::-moz-range-thumb {
     width: 20px;
     height: 20px;
-    background: linear-gradient(135deg, ${theme.colors.accent.manaBlue}, ${theme.colors.primary.arcanePurpleLight});
+    background: linear-gradient(135deg, ${theme.accents.hunterGold}, ${theme.accents.manaCyan});
     border-radius: 50%;
     cursor: pointer;
     border: none;
-    box-shadow: ${theme.shadows.glowMana};
+    box-shadow: 0 0 12px ${theme.accents.hunterGold}80;
   }
 `;
 document.head.appendChild(styleSheet);

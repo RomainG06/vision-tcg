@@ -1,0 +1,2818 @@
+[
+  {
+    "id": "base-1",
+    "tcgApiId": "base1-1",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Alakazam",
+    "englishName": "Alakazam",
+    "number": "1/102",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Alakazam",
+      "Alakazam set de base",
+      "Alakazam base set",
+      "Alakazam 1/102"
+    ],
+    "aliases": [
+      "Alakazam",
+      "Alakazam set de base",
+      "Alakazam base set",
+      "Alakazam 1/102"
+    ]
+  },
+  {
+    "id": "base-2",
+    "tcgApiId": "base1-2",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Tortank",
+    "englishName": "Blastoise",
+    "number": "2/102",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Tortank",
+      "Blastoise",
+      "Tortank set de base",
+      "Blastoise base set",
+      "Tortank 2/102",
+      "Blastoise 2/102"
+    ],
+    "aliases": [
+      "Tortank",
+      "Blastoise",
+      "Tortank set de base",
+      "Blastoise base set",
+      "Tortank 2/102",
+      "Blastoise 2/102"
+    ]
+  },
+  {
+    "id": "base-3",
+    "tcgApiId": "base1-3",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Leveinard",
+    "englishName": "Chansey",
+    "number": "3/102",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Leveinard",
+      "Chansey",
+      "Leveinard set de base",
+      "Chansey base set",
+      "Leveinard 3/102",
+      "Chansey 3/102"
+    ],
+    "aliases": [
+      "Leveinard",
+      "Chansey",
+      "Leveinard set de base",
+      "Chansey base set",
+      "Leveinard 3/102",
+      "Chansey 3/102"
+    ]
+  },
+  {
+    "id": "base-4",
+    "tcgApiId": "base1-4",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Dracaufeu",
+    "englishName": "Charizard",
+    "number": "4/102",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Dracaufeu",
+      "Charizard",
+      "Dracaufeu set de base",
+      "Charizard base set",
+      "Dracaufeu 4/102",
+      "Charizard 4/102"
+    ],
+    "aliases": [
+      "Dracaufeu",
+      "Charizard",
+      "Dracaufeu set de base",
+      "Charizard base set",
+      "Dracaufeu 4/102",
+      "Charizard 4/102"
+    ]
+  },
+  {
+    "id": "base-5",
+    "tcgApiId": "base1-5",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Mélofée",
+    "englishName": "Clefairy",
+    "number": "5/102",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Mélofée",
+      "Clefairy",
+      "Mélofée set de base",
+      "Clefairy base set",
+      "Mélofée 5/102",
+      "Clefairy 5/102"
+    ],
+    "aliases": [
+      "Mélofée",
+      "Clefairy",
+      "Mélofée set de base",
+      "Clefairy base set",
+      "Mélofée 5/102",
+      "Clefairy 5/102"
+    ]
+  },
+  {
+    "id": "base-6",
+    "tcgApiId": "base1-6",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Léviator",
+    "englishName": "Gyarados",
+    "number": "6/102",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Léviator",
+      "Gyarados",
+      "Léviator set de base",
+      "Gyarados base set",
+      "Léviator 6/102",
+      "Gyarados 6/102"
+    ],
+    "aliases": [
+      "Léviator",
+      "Gyarados",
+      "Léviator set de base",
+      "Gyarados base set",
+      "Léviator 6/102",
+      "Gyarados 6/102"
+    ]
+  },
+  {
+    "id": "base-7",
+    "tcgApiId": "base1-7",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Tygnon",
+    "englishName": "Hitmonchan",
+    "number": "7/102",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Tygnon",
+      "Hitmonchan",
+      "Tygnon set de base",
+      "Hitmonchan base set",
+      "Tygnon 7/102",
+      "Hitmonchan 7/102"
+    ],
+    "aliases": [
+      "Tygnon",
+      "Hitmonchan",
+      "Tygnon set de base",
+      "Hitmonchan base set",
+      "Tygnon 7/102",
+      "Hitmonchan 7/102"
+    ]
+  },
+  {
+    "id": "base-8",
+    "tcgApiId": "base1-8",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Mackogneur",
+    "englishName": "Machamp",
+    "number": "8/102",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Mackogneur",
+      "Machamp",
+      "Mackogneur set de base",
+      "Machamp base set",
+      "Mackogneur 8/102",
+      "Machamp 8/102"
+    ],
+    "aliases": [
+      "Mackogneur",
+      "Machamp",
+      "Mackogneur set de base",
+      "Machamp base set",
+      "Mackogneur 8/102",
+      "Machamp 8/102"
+    ]
+  },
+  {
+    "id": "base-9",
+    "tcgApiId": "base1-9",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Magnéton",
+    "englishName": "Magneton",
+    "number": "9/102",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Magnéton",
+      "Magneton",
+      "Magnéton set de base",
+      "Magneton base set",
+      "Magnéton 9/102",
+      "Magneton 9/102"
+    ],
+    "aliases": [
+      "Magnéton",
+      "Magneton",
+      "Magnéton set de base",
+      "Magneton base set",
+      "Magnéton 9/102",
+      "Magneton 9/102"
+    ]
+  },
+  {
+    "id": "base-10",
+    "tcgApiId": "base1-10",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Mewtwo",
+    "englishName": "Mewtwo",
+    "number": "10/102",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Mewtwo",
+      "Mewtwo set de base",
+      "Mewtwo base set",
+      "Mewtwo 10/102"
+    ],
+    "aliases": [
+      "Mewtwo",
+      "Mewtwo set de base",
+      "Mewtwo base set",
+      "Mewtwo 10/102"
+    ]
+  },
+  {
+    "id": "base-11",
+    "tcgApiId": "base1-11",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Nidoking",
+    "englishName": "Nidoking",
+    "number": "11/102",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Nidoking",
+      "Nidoking set de base",
+      "Nidoking base set",
+      "Nidoking 11/102"
+    ],
+    "aliases": [
+      "Nidoking",
+      "Nidoking set de base",
+      "Nidoking base set",
+      "Nidoking 11/102"
+    ]
+  },
+  {
+    "id": "base-12",
+    "tcgApiId": "base1-12",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Ninetales",
+    "englishName": "Ninetales",
+    "number": "12/102",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Ninetales",
+      "Ninetales set de base",
+      "Ninetales base set",
+      "Ninetales 12/102"
+    ],
+    "aliases": [
+      "Ninetales",
+      "Ninetales set de base",
+      "Ninetales base set",
+      "Ninetales 12/102"
+    ]
+  },
+  {
+    "id": "base-13",
+    "tcgApiId": "base1-13",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Tartard",
+    "englishName": "Poliwrath",
+    "number": "13/102",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Tartard",
+      "Poliwrath",
+      "Tartard set de base",
+      "Poliwrath base set",
+      "Tartard 13/102",
+      "Poliwrath 13/102"
+    ],
+    "aliases": [
+      "Tartard",
+      "Poliwrath",
+      "Tartard set de base",
+      "Poliwrath base set",
+      "Tartard 13/102",
+      "Poliwrath 13/102"
+    ]
+  },
+  {
+    "id": "base-14",
+    "tcgApiId": "base1-14",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Raichu",
+    "englishName": "Raichu",
+    "number": "14/102",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Raichu",
+      "Raichu set de base",
+      "Raichu base set",
+      "Raichu 14/102"
+    ],
+    "aliases": [
+      "Raichu",
+      "Raichu set de base",
+      "Raichu base set",
+      "Raichu 14/102"
+    ]
+  },
+  {
+    "id": "base-15",
+    "tcgApiId": "base1-15",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Florizarre",
+    "englishName": "Venusaur",
+    "number": "15/102",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Florizarre",
+      "Venusaur",
+      "Florizarre set de base",
+      "Venusaur base set",
+      "Florizarre 15/102",
+      "Venusaur 15/102"
+    ],
+    "aliases": [
+      "Florizarre",
+      "Venusaur",
+      "Florizarre set de base",
+      "Venusaur base set",
+      "Florizarre 15/102",
+      "Venusaur 15/102"
+    ]
+  },
+  {
+    "id": "base-16",
+    "tcgApiId": "base1-16",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Électhor",
+    "englishName": "Zapdos",
+    "number": "16/102",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Électhor",
+      "Zapdos",
+      "Électhor set de base",
+      "Zapdos base set",
+      "Électhor 16/102",
+      "Zapdos 16/102"
+    ],
+    "aliases": [
+      "Électhor",
+      "Zapdos",
+      "Électhor set de base",
+      "Zapdos base set",
+      "Électhor 16/102",
+      "Zapdos 16/102"
+    ]
+  },
+  {
+    "id": "base-17",
+    "tcgApiId": "base1-17",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Dardargnan",
+    "englishName": "Beedrill",
+    "number": "17/102",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Dardargnan",
+      "Beedrill",
+      "Dardargnan set de base",
+      "Beedrill base set",
+      "Dardargnan 17/102",
+      "Beedrill 17/102"
+    ],
+    "aliases": [
+      "Dardargnan",
+      "Beedrill",
+      "Dardargnan set de base",
+      "Beedrill base set",
+      "Dardargnan 17/102",
+      "Beedrill 17/102"
+    ]
+  },
+  {
+    "id": "base-18",
+    "tcgApiId": "base1-18",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Draco",
+    "englishName": "Dragonair",
+    "number": "18/102",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Draco",
+      "Dragonair",
+      "Draco set de base",
+      "Dragonair base set",
+      "Draco 18/102",
+      "Dragonair 18/102"
+    ],
+    "aliases": [
+      "Draco",
+      "Dragonair",
+      "Draco set de base",
+      "Dragonair base set",
+      "Draco 18/102",
+      "Dragonair 18/102"
+    ]
+  },
+  {
+    "id": "base-19",
+    "tcgApiId": "base1-19",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Triopikeur",
+    "englishName": "Dugtrio",
+    "number": "19/102",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Triopikeur",
+      "Dugtrio",
+      "Triopikeur set de base",
+      "Dugtrio base set",
+      "Triopikeur 19/102",
+      "Dugtrio 19/102"
+    ],
+    "aliases": [
+      "Triopikeur",
+      "Dugtrio",
+      "Triopikeur set de base",
+      "Dugtrio base set",
+      "Triopikeur 19/102",
+      "Dugtrio 19/102"
+    ]
+  },
+  {
+    "id": "base-20",
+    "tcgApiId": "base1-20",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Élektek",
+    "englishName": "Electabuzz",
+    "number": "20/102",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Élektek",
+      "Electabuzz",
+      "Élektek set de base",
+      "Electabuzz base set",
+      "Élektek 20/102",
+      "Electabuzz 20/102"
+    ],
+    "aliases": [
+      "Élektek",
+      "Electabuzz",
+      "Élektek set de base",
+      "Electabuzz base set",
+      "Élektek 20/102",
+      "Electabuzz 20/102"
+    ]
+  },
+  {
+    "id": "base-21",
+    "tcgApiId": "base1-21",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Électrode",
+    "englishName": "Electrode",
+    "number": "21/102",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Électrode",
+      "Electrode",
+      "Électrode set de base",
+      "Electrode base set",
+      "Électrode 21/102",
+      "Electrode 21/102"
+    ],
+    "aliases": [
+      "Électrode",
+      "Electrode",
+      "Électrode set de base",
+      "Electrode base set",
+      "Électrode 21/102",
+      "Electrode 21/102"
+    ]
+  },
+  {
+    "id": "base-22",
+    "tcgApiId": "base1-22",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Roucoups",
+    "englishName": "Pidgeotto",
+    "number": "22/102",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Roucoups",
+      "Pidgeotto",
+      "Roucoups set de base",
+      "Pidgeotto base set",
+      "Roucoups 22/102",
+      "Pidgeotto 22/102"
+    ],
+    "aliases": [
+      "Roucoups",
+      "Pidgeotto",
+      "Roucoups set de base",
+      "Pidgeotto base set",
+      "Roucoups 22/102",
+      "Pidgeotto 22/102"
+    ]
+  },
+  {
+    "id": "base-23",
+    "tcgApiId": "base1-23",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Arcanin",
+    "englishName": "Arcanine",
+    "number": "23/102",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Arcanin",
+      "Arcanine",
+      "Arcanin set de base",
+      "Arcanine base set",
+      "Arcanin 23/102",
+      "Arcanine 23/102"
+    ],
+    "aliases": [
+      "Arcanin",
+      "Arcanine",
+      "Arcanin set de base",
+      "Arcanine base set",
+      "Arcanin 23/102",
+      "Arcanine 23/102"
+    ]
+  },
+  {
+    "id": "base-24",
+    "tcgApiId": "base1-24",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Reptincel",
+    "englishName": "Charmeleon",
+    "number": "24/102",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Reptincel",
+      "Charmeleon",
+      "Reptincel set de base",
+      "Charmeleon base set",
+      "Reptincel 24/102",
+      "Charmeleon 24/102"
+    ],
+    "aliases": [
+      "Reptincel",
+      "Charmeleon",
+      "Reptincel set de base",
+      "Charmeleon base set",
+      "Reptincel 24/102",
+      "Charmeleon 24/102"
+    ]
+  },
+  {
+    "id": "base-25",
+    "tcgApiId": "base1-25",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Lamantine",
+    "englishName": "Dewgong",
+    "number": "25/102",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Lamantine",
+      "Dewgong",
+      "Lamantine set de base",
+      "Dewgong base set",
+      "Lamantine 25/102",
+      "Dewgong 25/102"
+    ],
+    "aliases": [
+      "Lamantine",
+      "Dewgong",
+      "Lamantine set de base",
+      "Dewgong base set",
+      "Lamantine 25/102",
+      "Dewgong 25/102"
+    ]
+  },
+  {
+    "id": "base-26",
+    "tcgApiId": "base1-26",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Minidraco",
+    "englishName": "Dratini",
+    "number": "26/102",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Minidraco",
+      "Dratini",
+      "Minidraco set de base",
+      "Dratini base set",
+      "Minidraco 26/102",
+      "Dratini 26/102"
+    ],
+    "aliases": [
+      "Minidraco",
+      "Dratini",
+      "Minidraco set de base",
+      "Dratini base set",
+      "Minidraco 26/102",
+      "Dratini 26/102"
+    ]
+  },
+  {
+    "id": "base-27",
+    "tcgApiId": "base1-27",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Canarticho",
+    "englishName": "Farfetch'd",
+    "number": "27/102",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Canarticho",
+      "Farfetch'd",
+      "Canarticho set de base",
+      "Farfetch'd base set",
+      "Canarticho 27/102",
+      "Farfetch'd 27/102"
+    ],
+    "aliases": [
+      "Canarticho",
+      "Farfetch'd",
+      "Canarticho set de base",
+      "Farfetch'd base set",
+      "Canarticho 27/102",
+      "Farfetch'd 27/102"
+    ]
+  },
+  {
+    "id": "base-28",
+    "tcgApiId": "base1-28",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Caninos",
+    "englishName": "Growlithe",
+    "number": "28/102",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Caninos",
+      "Growlithe",
+      "Caninos set de base",
+      "Growlithe base set",
+      "Caninos 28/102",
+      "Growlithe 28/102"
+    ],
+    "aliases": [
+      "Caninos",
+      "Growlithe",
+      "Caninos set de base",
+      "Growlithe base set",
+      "Caninos 28/102",
+      "Growlithe 28/102"
+    ]
+  },
+  {
+    "id": "base-29",
+    "tcgApiId": "base1-29",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Spectrum",
+    "englishName": "Haunter",
+    "number": "29/102",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Spectrum",
+      "Haunter",
+      "Spectrum set de base",
+      "Haunter base set",
+      "Spectrum 29/102",
+      "Haunter 29/102"
+    ],
+    "aliases": [
+      "Spectrum",
+      "Haunter",
+      "Spectrum set de base",
+      "Haunter base set",
+      "Spectrum 29/102",
+      "Haunter 29/102"
+    ]
+  },
+  {
+    "id": "base-30",
+    "tcgApiId": "base1-30",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Herbizarre",
+    "englishName": "Ivysaur",
+    "number": "30/102",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Herbizarre",
+      "Ivysaur",
+      "Herbizarre set de base",
+      "Ivysaur base set",
+      "Herbizarre 30/102",
+      "Ivysaur 30/102"
+    ],
+    "aliases": [
+      "Herbizarre",
+      "Ivysaur",
+      "Herbizarre set de base",
+      "Ivysaur base set",
+      "Herbizarre 30/102",
+      "Ivysaur 30/102"
+    ]
+  },
+  {
+    "id": "base-31",
+    "tcgApiId": "base1-31",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Lippoutou",
+    "englishName": "Jynx",
+    "number": "31/102",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Lippoutou",
+      "Jynx",
+      "Lippoutou set de base",
+      "Jynx base set",
+      "Lippoutou 31/102",
+      "Jynx 31/102"
+    ],
+    "aliases": [
+      "Lippoutou",
+      "Jynx",
+      "Lippoutou set de base",
+      "Jynx base set",
+      "Lippoutou 31/102",
+      "Jynx 31/102"
+    ]
+  },
+  {
+    "id": "base-32",
+    "tcgApiId": "base1-32",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Kadabra",
+    "englishName": "Kadabra",
+    "number": "32/102",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Kadabra",
+      "Kadabra set de base",
+      "Kadabra base set",
+      "Kadabra 32/102"
+    ],
+    "aliases": [
+      "Kadabra",
+      "Kadabra set de base",
+      "Kadabra base set",
+      "Kadabra 32/102"
+    ]
+  },
+  {
+    "id": "base-33",
+    "tcgApiId": "base1-33",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Coconfort",
+    "englishName": "Kakuna",
+    "number": "33/102",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Coconfort",
+      "Kakuna",
+      "Coconfort set de base",
+      "Kakuna base set",
+      "Coconfort 33/102",
+      "Kakuna 33/102"
+    ],
+    "aliases": [
+      "Coconfort",
+      "Kakuna",
+      "Coconfort set de base",
+      "Kakuna base set",
+      "Coconfort 33/102",
+      "Kakuna 33/102"
+    ]
+  },
+  {
+    "id": "base-34",
+    "tcgApiId": "base1-34",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Machopeur",
+    "englishName": "Machoke",
+    "number": "34/102",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Machopeur",
+      "Machoke",
+      "Machopeur set de base",
+      "Machoke base set",
+      "Machopeur 34/102",
+      "Machoke 34/102"
+    ],
+    "aliases": [
+      "Machopeur",
+      "Machoke",
+      "Machopeur set de base",
+      "Machoke base set",
+      "Machopeur 34/102",
+      "Machoke 34/102"
+    ]
+  },
+  {
+    "id": "base-35",
+    "tcgApiId": "base1-35",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Magicarpe",
+    "englishName": "Magikarp",
+    "number": "35/102",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Magicarpe",
+      "Magikarp",
+      "Magicarpe set de base",
+      "Magikarp base set",
+      "Magicarpe 35/102",
+      "Magikarp 35/102"
+    ],
+    "aliases": [
+      "Magicarpe",
+      "Magikarp",
+      "Magicarpe set de base",
+      "Magikarp base set",
+      "Magicarpe 35/102",
+      "Magikarp 35/102"
+    ]
+  },
+  {
+    "id": "base-36",
+    "tcgApiId": "base1-36",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Magmar",
+    "englishName": "Magmar",
+    "number": "36/102",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Magmar",
+      "Magmar set de base",
+      "Magmar base set",
+      "Magmar 36/102"
+    ],
+    "aliases": [
+      "Magmar",
+      "Magmar set de base",
+      "Magmar base set",
+      "Magmar 36/102"
+    ]
+  },
+  {
+    "id": "base-37",
+    "tcgApiId": "base1-37",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Nidorino",
+    "englishName": "Nidorino",
+    "number": "37/102",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Nidorino",
+      "Nidorino set de base",
+      "Nidorino base set",
+      "Nidorino 37/102"
+    ],
+    "aliases": [
+      "Nidorino",
+      "Nidorino set de base",
+      "Nidorino base set",
+      "Nidorino 37/102"
+    ]
+  },
+  {
+    "id": "base-38",
+    "tcgApiId": "base1-38",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Têtarte",
+    "englishName": "Poliwhirl",
+    "number": "38/102",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Têtarte",
+      "Poliwhirl",
+      "Têtarte set de base",
+      "Poliwhirl base set",
+      "Têtarte 38/102",
+      "Poliwhirl 38/102"
+    ],
+    "aliases": [
+      "Têtarte",
+      "Poliwhirl",
+      "Têtarte set de base",
+      "Poliwhirl base set",
+      "Têtarte 38/102",
+      "Poliwhirl 38/102"
+    ]
+  },
+  {
+    "id": "base-39",
+    "tcgApiId": "base1-39",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Porygon",
+    "englishName": "Porygon",
+    "number": "39/102",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Porygon",
+      "Porygon set de base",
+      "Porygon base set",
+      "Porygon 39/102"
+    ],
+    "aliases": [
+      "Porygon",
+      "Porygon set de base",
+      "Porygon base set",
+      "Porygon 39/102"
+    ]
+  },
+  {
+    "id": "base-40",
+    "tcgApiId": "base1-40",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Rattatac",
+    "englishName": "Raticate",
+    "number": "40/102",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Rattatac",
+      "Raticate",
+      "Rattatac set de base",
+      "Raticate base set",
+      "Rattatac 40/102",
+      "Raticate 40/102"
+    ],
+    "aliases": [
+      "Rattatac",
+      "Raticate",
+      "Rattatac set de base",
+      "Raticate base set",
+      "Rattatac 40/102",
+      "Raticate 40/102"
+    ]
+  },
+  {
+    "id": "base-41",
+    "tcgApiId": "base1-41",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Otaria",
+    "englishName": "Seel",
+    "number": "41/102",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Otaria",
+      "Seel",
+      "Otaria set de base",
+      "Seel base set",
+      "Otaria 41/102",
+      "Seel 41/102"
+    ],
+    "aliases": [
+      "Otaria",
+      "Seel",
+      "Otaria set de base",
+      "Seel base set",
+      "Otaria 41/102",
+      "Seel 41/102"
+    ]
+  },
+  {
+    "id": "base-42",
+    "tcgApiId": "base1-42",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Carabaffe",
+    "englishName": "Wartortle",
+    "number": "42/102",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Carabaffe",
+      "Wartortle",
+      "Carabaffe set de base",
+      "Wartortle base set",
+      "Carabaffe 42/102",
+      "Wartortle 42/102"
+    ],
+    "aliases": [
+      "Carabaffe",
+      "Wartortle",
+      "Carabaffe set de base",
+      "Wartortle base set",
+      "Carabaffe 42/102",
+      "Wartortle 42/102"
+    ]
+  },
+  {
+    "id": "base-43",
+    "tcgApiId": "base1-43",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Abra",
+    "englishName": "Abra",
+    "number": "43/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Abra",
+      "Abra set de base",
+      "Abra base set",
+      "Abra 43/102"
+    ],
+    "aliases": [
+      "Abra",
+      "Abra set de base",
+      "Abra base set",
+      "Abra 43/102"
+    ]
+  },
+  {
+    "id": "base-44",
+    "tcgApiId": "base1-44",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Bulbizarre",
+    "englishName": "Bulbasaur",
+    "number": "44/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Bulbizarre",
+      "Bulbasaur",
+      "Bulbizarre set de base",
+      "Bulbasaur base set",
+      "Bulbizarre 44/102",
+      "Bulbasaur 44/102"
+    ],
+    "aliases": [
+      "Bulbizarre",
+      "Bulbasaur",
+      "Bulbizarre set de base",
+      "Bulbasaur base set",
+      "Bulbizarre 44/102",
+      "Bulbasaur 44/102"
+    ]
+  },
+  {
+    "id": "base-45",
+    "tcgApiId": "base1-45",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Chenipan",
+    "englishName": "Caterpie",
+    "number": "45/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Chenipan",
+      "Caterpie",
+      "Chenipan set de base",
+      "Caterpie base set",
+      "Chenipan 45/102",
+      "Caterpie 45/102"
+    ],
+    "aliases": [
+      "Chenipan",
+      "Caterpie",
+      "Chenipan set de base",
+      "Caterpie base set",
+      "Chenipan 45/102",
+      "Caterpie 45/102"
+    ]
+  },
+  {
+    "id": "base-46",
+    "tcgApiId": "base1-46",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Salamèche",
+    "englishName": "Charmander",
+    "number": "46/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Salamèche",
+      "Charmander",
+      "Salamèche set de base",
+      "Charmander base set",
+      "Salamèche 46/102",
+      "Charmander 46/102"
+    ],
+    "aliases": [
+      "Salamèche",
+      "Charmander",
+      "Salamèche set de base",
+      "Charmander base set",
+      "Salamèche 46/102",
+      "Charmander 46/102"
+    ]
+  },
+  {
+    "id": "base-47",
+    "tcgApiId": "base1-47",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Taupiqueur",
+    "englishName": "Diglett",
+    "number": "47/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Taupiqueur",
+      "Diglett",
+      "Taupiqueur set de base",
+      "Diglett base set",
+      "Taupiqueur 47/102",
+      "Diglett 47/102"
+    ],
+    "aliases": [
+      "Taupiqueur",
+      "Diglett",
+      "Taupiqueur set de base",
+      "Diglett base set",
+      "Taupiqueur 47/102",
+      "Diglett 47/102"
+    ]
+  },
+  {
+    "id": "base-48",
+    "tcgApiId": "base1-48",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Doduo",
+    "englishName": "Doduo",
+    "number": "48/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Doduo",
+      "Doduo set de base",
+      "Doduo base set",
+      "Doduo 48/102"
+    ],
+    "aliases": [
+      "Doduo",
+      "Doduo set de base",
+      "Doduo base set",
+      "Doduo 48/102"
+    ]
+  },
+  {
+    "id": "base-49",
+    "tcgApiId": "base1-49",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Soporifik",
+    "englishName": "Drowzee",
+    "number": "49/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Soporifik",
+      "Drowzee",
+      "Soporifik set de base",
+      "Drowzee base set",
+      "Soporifik 49/102",
+      "Drowzee 49/102"
+    ],
+    "aliases": [
+      "Soporifik",
+      "Drowzee",
+      "Soporifik set de base",
+      "Drowzee base set",
+      "Soporifik 49/102",
+      "Drowzee 49/102"
+    ]
+  },
+  {
+    "id": "base-50",
+    "tcgApiId": "base1-50",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Fantominus",
+    "englishName": "Gastly",
+    "number": "50/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Fantominus",
+      "Gastly",
+      "Fantominus set de base",
+      "Gastly base set",
+      "Fantominus 50/102",
+      "Gastly 50/102"
+    ],
+    "aliases": [
+      "Fantominus",
+      "Gastly",
+      "Fantominus set de base",
+      "Gastly base set",
+      "Fantominus 50/102",
+      "Gastly 50/102"
+    ]
+  },
+  {
+    "id": "base-51",
+    "tcgApiId": "base1-51",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Smogo",
+    "englishName": "Koffing",
+    "number": "51/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Smogo",
+      "Koffing",
+      "Smogo set de base",
+      "Koffing base set",
+      "Smogo 51/102",
+      "Koffing 51/102"
+    ],
+    "aliases": [
+      "Smogo",
+      "Koffing",
+      "Smogo set de base",
+      "Koffing base set",
+      "Smogo 51/102",
+      "Koffing 51/102"
+    ]
+  },
+  {
+    "id": "base-52",
+    "tcgApiId": "base1-52",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Machoc",
+    "englishName": "Machop",
+    "number": "52/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Machoc",
+      "Machop",
+      "Machoc set de base",
+      "Machop base set",
+      "Machoc 52/102",
+      "Machop 52/102"
+    ],
+    "aliases": [
+      "Machoc",
+      "Machop",
+      "Machoc set de base",
+      "Machop base set",
+      "Machoc 52/102",
+      "Machop 52/102"
+    ]
+  },
+  {
+    "id": "base-53",
+    "tcgApiId": "base1-53",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Magnéti",
+    "englishName": "Magnemite",
+    "number": "53/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Magnéti",
+      "Magnemite",
+      "Magnéti set de base",
+      "Magnemite base set",
+      "Magnéti 53/102",
+      "Magnemite 53/102"
+    ],
+    "aliases": [
+      "Magnéti",
+      "Magnemite",
+      "Magnéti set de base",
+      "Magnemite base set",
+      "Magnéti 53/102",
+      "Magnemite 53/102"
+    ]
+  },
+  {
+    "id": "base-54",
+    "tcgApiId": "base1-54",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Chrysacier",
+    "englishName": "Metapod",
+    "number": "54/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Chrysacier",
+      "Metapod",
+      "Chrysacier set de base",
+      "Metapod base set",
+      "Chrysacier 54/102",
+      "Metapod 54/102"
+    ],
+    "aliases": [
+      "Chrysacier",
+      "Metapod",
+      "Chrysacier set de base",
+      "Metapod base set",
+      "Chrysacier 54/102",
+      "Metapod 54/102"
+    ]
+  },
+  {
+    "id": "base-55",
+    "tcgApiId": "base1-55",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Nidoran♂",
+    "englishName": "Nidoran ♂",
+    "number": "55/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Nidoran♂",
+      "Nidoran ♂",
+      "Nidoran♂ set de base",
+      "Nidoran ♂ base set",
+      "Nidoran♂ 55/102",
+      "Nidoran ♂ 55/102"
+    ],
+    "aliases": [
+      "Nidoran♂",
+      "Nidoran ♂",
+      "Nidoran♂ set de base",
+      "Nidoran ♂ base set",
+      "Nidoran♂ 55/102",
+      "Nidoran ♂ 55/102"
+    ]
+  },
+  {
+    "id": "base-56",
+    "tcgApiId": "base1-56",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Onix",
+    "englishName": "Onix",
+    "number": "56/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Onix",
+      "Onix set de base",
+      "Onix base set",
+      "Onix 56/102"
+    ],
+    "aliases": [
+      "Onix",
+      "Onix set de base",
+      "Onix base set",
+      "Onix 56/102"
+    ]
+  },
+  {
+    "id": "base-57",
+    "tcgApiId": "base1-57",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Roucool",
+    "englishName": "Pidgey",
+    "number": "57/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Roucool",
+      "Pidgey",
+      "Roucool set de base",
+      "Pidgey base set",
+      "Roucool 57/102",
+      "Pidgey 57/102"
+    ],
+    "aliases": [
+      "Roucool",
+      "Pidgey",
+      "Roucool set de base",
+      "Pidgey base set",
+      "Roucool 57/102",
+      "Pidgey 57/102"
+    ]
+  },
+  {
+    "id": "base-58",
+    "tcgApiId": "base1-58",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Pikachu",
+    "englishName": "Pikachu",
+    "number": "58/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Pikachu",
+      "Pikachu set de base",
+      "Pikachu base set",
+      "Pikachu 58/102"
+    ],
+    "aliases": [
+      "Pikachu",
+      "Pikachu set de base",
+      "Pikachu base set",
+      "Pikachu 58/102"
+    ]
+  },
+  {
+    "id": "base-59",
+    "tcgApiId": "base1-59",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Ptitard",
+    "englishName": "Poliwag",
+    "number": "59/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Ptitard",
+      "Poliwag",
+      "Ptitard set de base",
+      "Poliwag base set",
+      "Ptitard 59/102",
+      "Poliwag 59/102"
+    ],
+    "aliases": [
+      "Ptitard",
+      "Poliwag",
+      "Ptitard set de base",
+      "Poliwag base set",
+      "Ptitard 59/102",
+      "Poliwag 59/102"
+    ]
+  },
+  {
+    "id": "base-60",
+    "tcgApiId": "base1-60",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Ponyta",
+    "englishName": "Ponyta",
+    "number": "60/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Ponyta",
+      "Ponyta set de base",
+      "Ponyta base set",
+      "Ponyta 60/102"
+    ],
+    "aliases": [
+      "Ponyta",
+      "Ponyta set de base",
+      "Ponyta base set",
+      "Ponyta 60/102"
+    ]
+  },
+  {
+    "id": "base-61",
+    "tcgApiId": "base1-61",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Rattata",
+    "englishName": "Rattata",
+    "number": "61/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Rattata",
+      "Rattata set de base",
+      "Rattata base set",
+      "Rattata 61/102"
+    ],
+    "aliases": [
+      "Rattata",
+      "Rattata set de base",
+      "Rattata base set",
+      "Rattata 61/102"
+    ]
+  },
+  {
+    "id": "base-62",
+    "tcgApiId": "base1-62",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Sabelette",
+    "englishName": "Sandshrew",
+    "number": "62/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Sabelette",
+      "Sandshrew",
+      "Sabelette set de base",
+      "Sandshrew base set",
+      "Sabelette 62/102",
+      "Sandshrew 62/102"
+    ],
+    "aliases": [
+      "Sabelette",
+      "Sandshrew",
+      "Sabelette set de base",
+      "Sandshrew base set",
+      "Sabelette 62/102",
+      "Sandshrew 62/102"
+    ]
+  },
+  {
+    "id": "base-63",
+    "tcgApiId": "base1-63",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Carapuce",
+    "englishName": "Squirtle",
+    "number": "63/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Carapuce",
+      "Squirtle",
+      "Carapuce set de base",
+      "Squirtle base set",
+      "Carapuce 63/102",
+      "Squirtle 63/102"
+    ],
+    "aliases": [
+      "Carapuce",
+      "Squirtle",
+      "Carapuce set de base",
+      "Squirtle base set",
+      "Carapuce 63/102",
+      "Squirtle 63/102"
+    ]
+  },
+  {
+    "id": "base-64",
+    "tcgApiId": "base1-64",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Staross",
+    "englishName": "Starmie",
+    "number": "64/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Staross",
+      "Starmie",
+      "Staross set de base",
+      "Starmie base set",
+      "Staross 64/102",
+      "Starmie 64/102"
+    ],
+    "aliases": [
+      "Staross",
+      "Starmie",
+      "Staross set de base",
+      "Starmie base set",
+      "Staross 64/102",
+      "Starmie 64/102"
+    ]
+  },
+  {
+    "id": "base-65",
+    "tcgApiId": "base1-65",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Stari",
+    "englishName": "Staryu",
+    "number": "65/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Stari",
+      "Staryu",
+      "Stari set de base",
+      "Staryu base set",
+      "Stari 65/102",
+      "Staryu 65/102"
+    ],
+    "aliases": [
+      "Stari",
+      "Staryu",
+      "Stari set de base",
+      "Staryu base set",
+      "Stari 65/102",
+      "Staryu 65/102"
+    ]
+  },
+  {
+    "id": "base-66",
+    "tcgApiId": "base1-66",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Saquedeneu",
+    "englishName": "Tangela",
+    "number": "66/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Saquedeneu",
+      "Tangela",
+      "Saquedeneu set de base",
+      "Tangela base set",
+      "Saquedeneu 66/102",
+      "Tangela 66/102"
+    ],
+    "aliases": [
+      "Saquedeneu",
+      "Tangela",
+      "Saquedeneu set de base",
+      "Tangela base set",
+      "Saquedeneu 66/102",
+      "Tangela 66/102"
+    ]
+  },
+  {
+    "id": "base-67",
+    "tcgApiId": "base1-67",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Voltorbe",
+    "englishName": "Voltorb",
+    "number": "67/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Voltorbe",
+      "Voltorb",
+      "Voltorbe set de base",
+      "Voltorb base set",
+      "Voltorbe 67/102",
+      "Voltorb 67/102"
+    ],
+    "aliases": [
+      "Voltorbe",
+      "Voltorb",
+      "Voltorbe set de base",
+      "Voltorb base set",
+      "Voltorbe 67/102",
+      "Voltorb 67/102"
+    ]
+  },
+  {
+    "id": "base-68",
+    "tcgApiId": "base1-68",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Goupix",
+    "englishName": "Vulpix",
+    "number": "68/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Goupix",
+      "Vulpix",
+      "Goupix set de base",
+      "Vulpix base set",
+      "Goupix 68/102",
+      "Vulpix 68/102"
+    ],
+    "aliases": [
+      "Goupix",
+      "Vulpix",
+      "Goupix set de base",
+      "Vulpix base set",
+      "Goupix 68/102",
+      "Vulpix 68/102"
+    ]
+  },
+  {
+    "id": "base-69",
+    "tcgApiId": "base1-69",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Aspicot",
+    "englishName": "Weedle",
+    "number": "69/102",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Aspicot",
+      "Weedle",
+      "Aspicot set de base",
+      "Weedle base set",
+      "Aspicot 69/102",
+      "Weedle 69/102"
+    ],
+    "aliases": [
+      "Aspicot",
+      "Weedle",
+      "Aspicot set de base",
+      "Weedle base set",
+      "Aspicot 69/102",
+      "Weedle 69/102"
+    ]
+  },
+  {
+    "id": "base-70",
+    "tcgApiId": "base1-70",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Clefairy Doll",
+    "englishName": "Clefairy Doll",
+    "number": "70/102",
+    "rarity": "Rare",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Clefairy Doll",
+      "Clefairy Doll set de base",
+      "Clefairy Doll base set",
+      "Clefairy Doll 70/102"
+    ],
+    "aliases": [
+      "Clefairy Doll",
+      "Clefairy Doll set de base",
+      "Clefairy Doll base set",
+      "Clefairy Doll 70/102"
+    ]
+  },
+  {
+    "id": "base-71",
+    "tcgApiId": "base1-71",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Computer Search",
+    "englishName": "Computer Search",
+    "number": "71/102",
+    "rarity": "Rare",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Computer Search",
+      "Computer Search set de base",
+      "Computer Search base set",
+      "Computer Search 71/102"
+    ],
+    "aliases": [
+      "Computer Search",
+      "Computer Search set de base",
+      "Computer Search base set",
+      "Computer Search 71/102"
+    ]
+  },
+  {
+    "id": "base-72",
+    "tcgApiId": "base1-72",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Devolution Spray",
+    "englishName": "Devolution Spray",
+    "number": "72/102",
+    "rarity": "Rare",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Devolution Spray",
+      "Devolution Spray set de base",
+      "Devolution Spray base set",
+      "Devolution Spray 72/102"
+    ],
+    "aliases": [
+      "Devolution Spray",
+      "Devolution Spray set de base",
+      "Devolution Spray base set",
+      "Devolution Spray 72/102"
+    ]
+  },
+  {
+    "id": "base-73",
+    "tcgApiId": "base1-73",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Impostor Professor Oak",
+    "englishName": "Impostor Professor Oak",
+    "number": "73/102",
+    "rarity": "Rare",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Impostor Professor Oak",
+      "Impostor Professor Oak set de base",
+      "Impostor Professor Oak base set",
+      "Impostor Professor Oak 73/102"
+    ],
+    "aliases": [
+      "Impostor Professor Oak",
+      "Impostor Professor Oak set de base",
+      "Impostor Professor Oak base set",
+      "Impostor Professor Oak 73/102"
+    ]
+  },
+  {
+    "id": "base-74",
+    "tcgApiId": "base1-74",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Item Finder",
+    "englishName": "Item Finder",
+    "number": "74/102",
+    "rarity": "Rare",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Item Finder",
+      "Item Finder set de base",
+      "Item Finder base set",
+      "Item Finder 74/102"
+    ],
+    "aliases": [
+      "Item Finder",
+      "Item Finder set de base",
+      "Item Finder base set",
+      "Item Finder 74/102"
+    ]
+  },
+  {
+    "id": "base-75",
+    "tcgApiId": "base1-75",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Lass",
+    "englishName": "Lass",
+    "number": "75/102",
+    "rarity": "Rare",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Lass",
+      "Lass set de base",
+      "Lass base set",
+      "Lass 75/102"
+    ],
+    "aliases": [
+      "Lass",
+      "Lass set de base",
+      "Lass base set",
+      "Lass 75/102"
+    ]
+  },
+  {
+    "id": "base-76",
+    "tcgApiId": "base1-76",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Pokémon Breeder",
+    "englishName": "Pokémon Breeder",
+    "number": "76/102",
+    "rarity": "Rare",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Pokémon Breeder",
+      "Pokémon Breeder set de base",
+      "Pokémon Breeder base set",
+      "Pokémon Breeder 76/102"
+    ],
+    "aliases": [
+      "Pokémon Breeder",
+      "Pokémon Breeder set de base",
+      "Pokémon Breeder base set",
+      "Pokémon Breeder 76/102"
+    ]
+  },
+  {
+    "id": "base-77",
+    "tcgApiId": "base1-77",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Pokémon Trader",
+    "englishName": "Pokémon Trader",
+    "number": "77/102",
+    "rarity": "Rare",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Pokémon Trader",
+      "Pokémon Trader set de base",
+      "Pokémon Trader base set",
+      "Pokémon Trader 77/102"
+    ],
+    "aliases": [
+      "Pokémon Trader",
+      "Pokémon Trader set de base",
+      "Pokémon Trader base set",
+      "Pokémon Trader 77/102"
+    ]
+  },
+  {
+    "id": "base-78",
+    "tcgApiId": "base1-78",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Scoop Up",
+    "englishName": "Scoop Up",
+    "number": "78/102",
+    "rarity": "Rare",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Scoop Up",
+      "Scoop Up set de base",
+      "Scoop Up base set",
+      "Scoop Up 78/102"
+    ],
+    "aliases": [
+      "Scoop Up",
+      "Scoop Up set de base",
+      "Scoop Up base set",
+      "Scoop Up 78/102"
+    ]
+  },
+  {
+    "id": "base-79",
+    "tcgApiId": "base1-79",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Super Energy Removal",
+    "englishName": "Super Energy Removal",
+    "number": "79/102",
+    "rarity": "Rare",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Super Energy Removal",
+      "Super Energy Removal set de base",
+      "Super Energy Removal base set",
+      "Super Energy Removal 79/102"
+    ],
+    "aliases": [
+      "Super Energy Removal",
+      "Super Energy Removal set de base",
+      "Super Energy Removal base set",
+      "Super Energy Removal 79/102"
+    ]
+  },
+  {
+    "id": "base-80",
+    "tcgApiId": "base1-80",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Defender",
+    "englishName": "Defender",
+    "number": "80/102",
+    "rarity": "Uncommon",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Defender",
+      "Defender set de base",
+      "Defender base set",
+      "Defender 80/102"
+    ],
+    "aliases": [
+      "Defender",
+      "Defender set de base",
+      "Defender base set",
+      "Defender 80/102"
+    ]
+  },
+  {
+    "id": "base-81",
+    "tcgApiId": "base1-81",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Energy Retrieval",
+    "englishName": "Energy Retrieval",
+    "number": "81/102",
+    "rarity": "Uncommon",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Energy Retrieval",
+      "Energy Retrieval set de base",
+      "Energy Retrieval base set",
+      "Energy Retrieval 81/102"
+    ],
+    "aliases": [
+      "Energy Retrieval",
+      "Energy Retrieval set de base",
+      "Energy Retrieval base set",
+      "Energy Retrieval 81/102"
+    ]
+  },
+  {
+    "id": "base-82",
+    "tcgApiId": "base1-82",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Full Heal",
+    "englishName": "Full Heal",
+    "number": "82/102",
+    "rarity": "Uncommon",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Full Heal",
+      "Full Heal set de base",
+      "Full Heal base set",
+      "Full Heal 82/102"
+    ],
+    "aliases": [
+      "Full Heal",
+      "Full Heal set de base",
+      "Full Heal base set",
+      "Full Heal 82/102"
+    ]
+  },
+  {
+    "id": "base-83",
+    "tcgApiId": "base1-83",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Maintenance",
+    "englishName": "Maintenance",
+    "number": "83/102",
+    "rarity": "Uncommon",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Maintenance",
+      "Maintenance set de base",
+      "Maintenance base set",
+      "Maintenance 83/102"
+    ],
+    "aliases": [
+      "Maintenance",
+      "Maintenance set de base",
+      "Maintenance base set",
+      "Maintenance 83/102"
+    ]
+  },
+  {
+    "id": "base-84",
+    "tcgApiId": "base1-84",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "PlusPower",
+    "englishName": "PlusPower",
+    "number": "84/102",
+    "rarity": "Uncommon",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "PlusPower",
+      "PlusPower set de base",
+      "PlusPower base set",
+      "PlusPower 84/102"
+    ],
+    "aliases": [
+      "PlusPower",
+      "PlusPower set de base",
+      "PlusPower base set",
+      "PlusPower 84/102"
+    ]
+  },
+  {
+    "id": "base-85",
+    "tcgApiId": "base1-85",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Pokémon Center",
+    "englishName": "Pokémon Center",
+    "number": "85/102",
+    "rarity": "Uncommon",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Pokémon Center",
+      "Pokémon Center set de base",
+      "Pokémon Center base set",
+      "Pokémon Center 85/102"
+    ],
+    "aliases": [
+      "Pokémon Center",
+      "Pokémon Center set de base",
+      "Pokémon Center base set",
+      "Pokémon Center 85/102"
+    ]
+  },
+  {
+    "id": "base-86",
+    "tcgApiId": "base1-86",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Pokémon Flute",
+    "englishName": "Pokémon Flute",
+    "number": "86/102",
+    "rarity": "Uncommon",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Pokémon Flute",
+      "Pokémon Flute set de base",
+      "Pokémon Flute base set",
+      "Pokémon Flute 86/102"
+    ],
+    "aliases": [
+      "Pokémon Flute",
+      "Pokémon Flute set de base",
+      "Pokémon Flute base set",
+      "Pokémon Flute 86/102"
+    ]
+  },
+  {
+    "id": "base-87",
+    "tcgApiId": "base1-87",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Pokédex",
+    "englishName": "Pokédex",
+    "number": "87/102",
+    "rarity": "Uncommon",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Pokédex",
+      "Pokédex set de base",
+      "Pokédex base set",
+      "Pokédex 87/102"
+    ],
+    "aliases": [
+      "Pokédex",
+      "Pokédex set de base",
+      "Pokédex base set",
+      "Pokédex 87/102"
+    ]
+  },
+  {
+    "id": "base-88",
+    "tcgApiId": "base1-88",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Professor Oak",
+    "englishName": "Professor Oak",
+    "number": "88/102",
+    "rarity": "Uncommon",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Professor Oak",
+      "Professor Oak set de base",
+      "Professor Oak base set",
+      "Professor Oak 88/102"
+    ],
+    "aliases": [
+      "Professor Oak",
+      "Professor Oak set de base",
+      "Professor Oak base set",
+      "Professor Oak 88/102"
+    ]
+  },
+  {
+    "id": "base-89",
+    "tcgApiId": "base1-89",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Revive",
+    "englishName": "Revive",
+    "number": "89/102",
+    "rarity": "Uncommon",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Revive",
+      "Revive set de base",
+      "Revive base set",
+      "Revive 89/102"
+    ],
+    "aliases": [
+      "Revive",
+      "Revive set de base",
+      "Revive base set",
+      "Revive 89/102"
+    ]
+  },
+  {
+    "id": "base-90",
+    "tcgApiId": "base1-90",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Super Potion",
+    "englishName": "Super Potion",
+    "number": "90/102",
+    "rarity": "Uncommon",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Super Potion",
+      "Super Potion set de base",
+      "Super Potion base set",
+      "Super Potion 90/102"
+    ],
+    "aliases": [
+      "Super Potion",
+      "Super Potion set de base",
+      "Super Potion base set",
+      "Super Potion 90/102"
+    ]
+  },
+  {
+    "id": "base-91",
+    "tcgApiId": "base1-91",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Bill",
+    "englishName": "Bill",
+    "number": "91/102",
+    "rarity": "Common",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Bill",
+      "Bill set de base",
+      "Bill base set",
+      "Bill 91/102"
+    ],
+    "aliases": [
+      "Bill",
+      "Bill set de base",
+      "Bill base set",
+      "Bill 91/102"
+    ]
+  },
+  {
+    "id": "base-92",
+    "tcgApiId": "base1-92",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Energy Removal",
+    "englishName": "Energy Removal",
+    "number": "92/102",
+    "rarity": "Common",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Energy Removal",
+      "Energy Removal set de base",
+      "Energy Removal base set",
+      "Energy Removal 92/102"
+    ],
+    "aliases": [
+      "Energy Removal",
+      "Energy Removal set de base",
+      "Energy Removal base set",
+      "Energy Removal 92/102"
+    ]
+  },
+  {
+    "id": "base-93",
+    "tcgApiId": "base1-93",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Gust of Wind",
+    "englishName": "Gust of Wind",
+    "number": "93/102",
+    "rarity": "Common",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Gust of Wind",
+      "Gust of Wind set de base",
+      "Gust of Wind base set",
+      "Gust of Wind 93/102"
+    ],
+    "aliases": [
+      "Gust of Wind",
+      "Gust of Wind set de base",
+      "Gust of Wind base set",
+      "Gust of Wind 93/102"
+    ]
+  },
+  {
+    "id": "base-94",
+    "tcgApiId": "base1-94",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Potion",
+    "englishName": "Potion",
+    "number": "94/102",
+    "rarity": "Common",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Potion",
+      "Potion set de base",
+      "Potion base set",
+      "Potion 94/102"
+    ],
+    "aliases": [
+      "Potion",
+      "Potion set de base",
+      "Potion base set",
+      "Potion 94/102"
+    ]
+  },
+  {
+    "id": "base-95",
+    "tcgApiId": "base1-95",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Switch",
+    "englishName": "Switch",
+    "number": "95/102",
+    "rarity": "Common",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Switch",
+      "Switch set de base",
+      "Switch base set",
+      "Switch 95/102"
+    ],
+    "aliases": [
+      "Switch",
+      "Switch set de base",
+      "Switch base set",
+      "Switch 95/102"
+    ]
+  },
+  {
+    "id": "base-96",
+    "tcgApiId": "base1-96",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Double Colorless Energy",
+    "englishName": "Double Colorless Energy",
+    "number": "96/102",
+    "rarity": "Uncommon",
+    "supertype": "Energy",
+    "subtypes": [
+      "Special"
+    ],
+    "queryTerms": [
+      "Double Colorless Energy",
+      "Double Colorless Energy set de base",
+      "Double Colorless Energy base set",
+      "Double Colorless Energy 96/102"
+    ],
+    "aliases": [
+      "Double Colorless Energy",
+      "Double Colorless Energy set de base",
+      "Double Colorless Energy base set",
+      "Double Colorless Energy 96/102"
+    ]
+  },
+  {
+    "id": "base-97",
+    "tcgApiId": "base1-97",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Fighting Energy",
+    "englishName": "Fighting Energy",
+    "number": "97/102",
+    "rarity": "Unknown",
+    "supertype": "Energy",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Fighting Energy",
+      "Fighting Energy set de base",
+      "Fighting Energy base set",
+      "Fighting Energy 97/102"
+    ],
+    "aliases": [
+      "Fighting Energy",
+      "Fighting Energy set de base",
+      "Fighting Energy base set",
+      "Fighting Energy 97/102"
+    ]
+  },
+  {
+    "id": "base-98",
+    "tcgApiId": "base1-98",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Fire Energy",
+    "englishName": "Fire Energy",
+    "number": "98/102",
+    "rarity": "Unknown",
+    "supertype": "Energy",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Fire Energy",
+      "Fire Energy set de base",
+      "Fire Energy base set",
+      "Fire Energy 98/102"
+    ],
+    "aliases": [
+      "Fire Energy",
+      "Fire Energy set de base",
+      "Fire Energy base set",
+      "Fire Energy 98/102"
+    ]
+  },
+  {
+    "id": "base-99",
+    "tcgApiId": "base1-99",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Grass Energy",
+    "englishName": "Grass Energy",
+    "number": "99/102",
+    "rarity": "Unknown",
+    "supertype": "Energy",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Grass Energy",
+      "Grass Energy set de base",
+      "Grass Energy base set",
+      "Grass Energy 99/102"
+    ],
+    "aliases": [
+      "Grass Energy",
+      "Grass Energy set de base",
+      "Grass Energy base set",
+      "Grass Energy 99/102"
+    ]
+  },
+  {
+    "id": "base-100",
+    "tcgApiId": "base1-100",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Lightning Energy",
+    "englishName": "Lightning Energy",
+    "number": "100/102",
+    "rarity": "Unknown",
+    "supertype": "Energy",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Lightning Energy",
+      "Lightning Energy set de base",
+      "Lightning Energy base set",
+      "Lightning Energy 100/102"
+    ],
+    "aliases": [
+      "Lightning Energy",
+      "Lightning Energy set de base",
+      "Lightning Energy base set",
+      "Lightning Energy 100/102"
+    ]
+  },
+  {
+    "id": "base-101",
+    "tcgApiId": "base1-101",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Psychic Energy",
+    "englishName": "Psychic Energy",
+    "number": "101/102",
+    "rarity": "Unknown",
+    "supertype": "Energy",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Psychic Energy",
+      "Psychic Energy set de base",
+      "Psychic Energy base set",
+      "Psychic Energy 101/102"
+    ],
+    "aliases": [
+      "Psychic Energy",
+      "Psychic Energy set de base",
+      "Psychic Energy base set",
+      "Psychic Energy 101/102"
+    ]
+  },
+  {
+    "id": "base-102",
+    "tcgApiId": "base1-102",
+    "setId": "base",
+    "setLabel": "Set de Base",
+    "name": "Water Energy",
+    "englishName": "Water Energy",
+    "number": "102/102",
+    "rarity": "Unknown",
+    "supertype": "Energy",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Water Energy",
+      "Water Energy set de base",
+      "Water Energy base set",
+      "Water Energy 102/102"
+    ],
+    "aliases": [
+      "Water Energy",
+      "Water Energy set de base",
+      "Water Energy base set",
+      "Water Energy 102/102"
+    ]
+  }
+]

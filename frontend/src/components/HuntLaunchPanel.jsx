@@ -159,7 +159,7 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
   const copy = statusCopy[status];
   const isRunning = status === 'running';
   const selectedSeriesLabel = SERIES_OPTIONS.find(option => option.value === series)?.label || 'Toutes Wizards FR';
-  const canSelectTargetCards = canSelectCardsForSeries(series);
+  const canSelectTargetCards = canSelectCardsForSeries(series) && listingType === 'cards';
   const selectedTargetsPreview = targetCards.slice(0, 3).map(target => target.name).join(', ');
   const targetCardQueries = targetCards.flatMap(card => card.queryTerms || [card.name]);
   const priceMinValue = Math.max(0, Number(priceMin) || 0);

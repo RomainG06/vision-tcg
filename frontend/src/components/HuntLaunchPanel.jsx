@@ -148,13 +148,13 @@ function LbcCaptchaAssistModal({ isRunning, onClose }) {
           <span style={styles.lbcModalIcon}>LBC</span>
           <div>
             <strong>Fenêtre Leboncoin ouverte</strong>
-            <p>Le scan LBC utilise Chrome visible pour te laisser résoudre DataDome/CAPTCHA si nécessaire.</p>
+            <p>Une fenêtre Chrome normale doit s’ouvrir. Tu as jusqu’à 5 minutes pour résoudre DataDome/CAPTCHA si LBC le demande.</p>
           </div>
         </div>
         <ol style={styles.lbcSteps}>
-          <li>Regarde la petite fenêtre Chrome ouverte par le backend.</li>
-          <li>Si DataDome/CAPTCHA apparaît, complète-le directement dans cette fenêtre.</li>
-          <li>Ne ferme pas Chrome : le scan reprend automatiquement après validation.</li>
+          <li>Regarde la fenêtre Chrome Leboncoin ouverte par le backend.</li>
+          <li>Si DataDome/CAPTCHA apparaît, prends le temps de le compléter directement dans cette fenêtre.</li>
+          <li>Ne ferme pas Chrome : le scan reprend automatiquement après validation ou à la fin du délai.</li>
         </ol>
         <div style={styles.lbcModalNote}>
           Impossible d’embarquer Chrome directement dans le dashboard web sans composant desktop/noVNC. Cette modal sert donc de copilote pendant que la vraie fenêtre Chrome reste interactive.
@@ -231,7 +231,7 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
         profile: 'wizards-fr',
         sources: selectedSources,
         maxResults: SENSITIVITY[sensitivity].maxResults,
-        waitForCaptcha: includesLeboncoin ? 180 : 60,
+        waitForCaptcha: includesLeboncoin ? 300 : 60,
         saveToDb: true,
         filters: {
           series,

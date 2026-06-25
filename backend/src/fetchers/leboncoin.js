@@ -33,10 +33,10 @@ export class LeboncoinFetcher extends BaseFetcher {
   async fetch(query, options = {}) {
     const {
       maxResults = 50,
-      waitForCaptcha = 120,
+      waitForCaptcha = 300,
       excludeExternalIds = [],
       scanDepth = Math.max(maxResults * 3, 30),
-    } = options; // 120s par défaut pour résoudre CAPTCHA LBC dans la fenêtre visible
+    } = options; // 5 minutes par défaut pour résoudre CAPTCHA LBC dans la fenêtre visible
 
     try {
       await this.init();
@@ -56,9 +56,9 @@ export class LeboncoinFetcher extends BaseFetcher {
       // Check for CAPTCHA
       if (await this.detectCaptcha()) {
         const debugInfo = await this.saveDebugInfo('captcha');
-        logger.warn(`⏳ CAPTCHA détecté ! Tu as ${waitForCaptcha} secondes pour le résoudre manuellement...`);
+        logger.warn(`⏳ CAPTCHA/DataDome Leboncoin détecté ! Tu as ${waitForCaptcha} secondes pour le résoudre manuellement dans la fenêtre Chrome visible...`);
         logger.warn(`   Screenshots sauvegardés : ${debugInfo?.screenshotPath}`);
-        logger.warn(`   Le script attend... résous le CAPTCHA dans le navigateur ouvert.`);
+        logger.warn(`   Ne ferme pas Chrome. Résous le challenge puis attends : le scan reprend automatiquement.`);
 
         // Wait for user to solve CAPTCHA
         await new Promise(resolve => setTimeout(resolve, waitForCaptcha * 1000));

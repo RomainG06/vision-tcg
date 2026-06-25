@@ -19,6 +19,16 @@ describe('Fetchers', () => {
       await expect(fetcher.fetch('test')).rejects.toThrow('fetch() must be implemented');
     });
 
+    it('detects DataDome/IP poll anti-bot text even without a captcha iframe', async () => {
+      const fetcher = new BaseFetcher('leboncoin');
+      fetcher.page = {
+        $: async () => null,
+        evaluate: async () => 'Aïe aïe aïe Code d’erreur: IPPOLL_REASONCODE',
+      };
+
+      await expect(fetcher.detectCaptcha()).resolves.toBe(true);
+    });
+
     it('keeps Vinted headless and Leboncoin headful by default', () => {
       expect(browserPool.getLaunchOptions('vinted').headless).toBe(true);
       expect(browserPool.getLaunchOptions('leboncoin').headless).toBe(false);

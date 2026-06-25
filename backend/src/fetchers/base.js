@@ -97,8 +97,13 @@ export class BaseFetcher {
     const captchaSelectors = [
       'iframe[src*="recaptcha"]',
       'iframe[src*="captcha"]',
+      'iframe[src*="datadome"]',
+      'iframe[src*="challenges.cloudflare"]',
       '[class*="captcha"]',
       '[id*="captcha"]',
+      '[class*="datadome"]',
+      '[id*="datadome"]',
+      '[data-testid*="captcha"]',
       'div[class*="challenge"]'
     ];
 
@@ -108,6 +113,12 @@ export class BaseFetcher {
         logger.warn(`CAPTCHA detected on ${this.source}`);
         return true;
       }
+    }
+
+    const pageText = await this.page.evaluate(() => document.body?.innerText || '').catch(() => '');
+    if (/datadome|captcha|vérifions que vous n'êtes pas un robot|verifions que vous n'etes pas un robot|ippoll_reasoncode/i.test(pageText)) {
+      logger.warn(`CAPTCHA/anti-bot text detected on ${this.source}`);
+      return true;
     }
 
     return false;

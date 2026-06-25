@@ -29,7 +29,7 @@ export class BaseFetcher {
     logger.info(`Initializing ${this.source} fetcher...`);
 
     // Acquire browser from pool instead of launching new one
-    this.browser = await browserPool.acquire();
+    this.browser = await browserPool.acquire({ source: this.source });
     logger.debug(`Acquired browser from pool for ${this.source}`);
 
     this.page = await this.browser.newPage();

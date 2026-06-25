@@ -33,8 +33,8 @@ export function verifyToken(token) {
  * Checks for Bearer token in Authorization header
  */
 export function authenticate(req, res, next) {
-    // Skip auth in development if no token provided and auth is disabled
-    if (config.nodeEnv === 'development' && config.skipAuth) {
+    // Skip auth only outside production when explicitly enabled.
+    if (config.nodeEnv !== 'production' && config.skipAuth) {
         logger.debug('Skipping auth (development mode with skipAuth enabled)');
         return next();
     }

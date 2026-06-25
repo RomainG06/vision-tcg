@@ -6,6 +6,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
+function parseBoolean(value, defaultValue = false) {
+  if (value === undefined || value === null || value === '') return defaultValue;
+  return ['1', 'true', 'yes', 'on'].includes(String(value).trim().toLowerCase());
+}
+
 export const config = {
   port: process.env.PORT || 3000,
   nodeEnv: process.env.NODE_ENV || 'development',
@@ -40,7 +45,13 @@ export const config = {
 
   // Scraping config
   scraping: {
-    headless: false,  // MVP uses headful mode (required for CAPTCHA handling)
+    // Default: invisible browser for comfort. Per-source defaults keep LBC visible for CAPTCHA.
+    headless: parseBoolean(process.env.CHROMIUM_HEADLESS, true),
+    headlessBySource: {
+      vinted: parseBoolean(process.env.VINTED_HEADLESS, true),
+      leboncoin: parseBoolean(process.env.LEBONCOIN_HEADLESS, false),
+      facebook: parseBoolean(process.env.FACEBOOK_HEADLESS, false)
+    },
     timeout: 30000,
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
     delayMin: parseInt(process.env.SCRAPE_DELAY_MIN_MS || '2000'),

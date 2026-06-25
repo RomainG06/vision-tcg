@@ -8,8 +8,8 @@
     "start": "node src/api/server.js",
     "db:seed": "node src/db/seed.js",
     "db:seed-keywords": "node seed-keywords.js",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
-    "test:coverage": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "test": "cross-env SKIP_AUTH=true NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:coverage": "cross-env SKIP_AUTH=true NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "db:migrate": "node src/db/migrations.js"
   },
   "dependencies": {

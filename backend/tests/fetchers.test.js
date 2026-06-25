@@ -1,4 +1,5 @@
 import { BaseFetcher } from '../src/fetchers/base.js';
+import { browserPool } from '../src/fetchers/browser-pool.js';
 import { VintedFetcher, extractVintedExternalId, selectUnseenVintedItems, selectUnseenVintedUrls, summarizeVintedPrefilter } from '../src/fetchers/vinted.js';
 
 describe('Fetchers', () => {
@@ -15,6 +16,13 @@ describe('Fetchers', () => {
 
     it('should throw error if fetch not implemented', async () => {
       await expect(fetcher.fetch('test')).rejects.toThrow('fetch() must be implemented');
+    });
+
+    it('keeps Vinted headless and Leboncoin headful by default', () => {
+      expect(browserPool.getLaunchOptions('vinted').headless).toBe(true);
+      expect(browserPool.getLaunchOptions('leboncoin').headless).toBe(false);
+      expect(browserPool.getPoolKey('vinted')).toBe('vinted:headless');
+      expect(browserPool.getPoolKey('leboncoin')).toBe('leboncoin:headful');
     });
   });
 

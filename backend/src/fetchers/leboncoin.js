@@ -1,7 +1,14 @@
 import { BaseFetcher } from './base.js';
 import { parseLeboncoinListing } from '../parsers/parser-lbc.js';
 import { logger } from '../utils/logger.js';
-import { sanitizeSearchQuery } from '../utils/url-validator.js';
+import {
+  attachLeboncoinMetadata,
+  buildLeboncoinSearchUrl,
+  extractLeboncoinExternalId,
+  selectLeboncoinUrls,
+} from './leboncoin-utils.js';
+
+export { extractLeboncoinExternalId, selectLeboncoinUrls } from './leboncoin-utils.js';
 
 /**
  * Leboncoin fetcher
@@ -17,26 +24,19 @@ export class LeboncoinFetcher extends BaseFetcher {
    * Build search URL
    */
   buildSearchUrl(query, options = {}) {
-    const { location = 'nice', radius = 50 } = options;
-
-    // Sanitize query to prevent injection
-    const safeQuery = sanitizeSearchQuery(query);
-
-    // Leboncoin search URL structure
-    const params = new URLSearchParams({
-      text: safeQuery,
-      category: '40', // Jeux & Jouets
-      locations: `Nice_06000__43.70313_7.26608_${radius * 1000}` // radius in meters
-    });
-
-    return `${this.baseUrl}/recherche?${params.toString()}`;
+    return buildLeboncoinSearchUrl(query, options);
   }
 
   /**
    * Fetch listings from Leboncoin
    */
   async fetch(query, options = {}) {
-    const { maxResults = 50, waitForCaptcha = 60 } = options; // 60s par défaut pour résoudre CAPTCHA
+    const {
+      maxResults = 50,
+      waitForCaptcha = 120,
+      excludeExternalIds = [],
+      scanDepth = Math.max(maxResults * 3, 30),
+    } = options; // 120s par défaut pour résoudre CAPTCHA LBC dans la fenêtre visible
 
     try {
       await this.init();
@@ -79,7 +79,12 @@ export class LeboncoinFetcher extends BaseFetcher {
       } catch (error) {
         logger.warn('No listings found or page structure changed');
         await this.saveDebugInfo('no_results');
-        return [];
+        return attachLeboncoinMetadata([], {
+          grid_raw_found: 0,
+          selected_for_details: 0,
+          selected_external_ids: [],
+          prefilter_summary: { total: 0, selected: 0, already_seen: 0, duplicate: 0, invalid_url: 0 },
+        });
       }
 
       // Extract listing URLs
@@ -92,14 +97,31 @@ export class LeboncoinFetcher extends BaseFetcher {
             href.includes('/ad/') &&
             href.startsWith('https://www.leboncoin.fr/')
           )
-          .slice(0, 50);
+          .slice(0, 200);
       });
 
       logger.info(`Found ${listingUrls.length} listings on Leboncoin`);
 
+      const selectedUrls = selectLeboncoinUrls(listingUrls.slice(0, scanDepth), {
+        excludeExternalIds,
+        maxResults,
+      });
+      const selectedExternalIds = selectedUrls
+        .map(extractLeboncoinExternalId)
+        .filter(Boolean);
+      const prefilterSummary = {
+        total: listingUrls.length,
+        selected: selectedUrls.length,
+        already_seen: Math.max(0, listingUrls.length - selectedUrls.length),
+        duplicate: 0,
+        invalid_url: listingUrls.filter(url => !extractLeboncoinExternalId(url)).length,
+      };
+
+      logger.info(`Selected ${selectedUrls.length}/${listingUrls.length} Leboncoin URLs after already-seen dedupe`);
+
       // Fetch details for each listing
       const listings = [];
-      for (const url of listingUrls.slice(0, maxResults)) {
+      for (const url of selectedUrls) {
         try {
           logger.debug(`Fetching listing: ${url}`);
 
@@ -128,7 +150,11 @@ export class LeboncoinFetcher extends BaseFetcher {
           const listing = await parseLeboncoinListing(html, url);
 
           if (listing) {
-            listings.push(listing);
+            listings.push({
+              ...listing,
+              external_id: listing.external_id || extractLeboncoinExternalId(url),
+              source: 'leboncoin',
+            });
           }
         } catch (error) {
           logger.error(`Failed to fetch listing ${url}:`, error.message);
@@ -136,7 +162,12 @@ export class LeboncoinFetcher extends BaseFetcher {
         }
       }
 
-      return listings;
+      return attachLeboncoinMetadata(listings, {
+        grid_raw_found: listingUrls.length,
+        selected_for_details: selectedUrls.length,
+        selected_external_ids: selectedExternalIds,
+        prefilter_summary: prefilterSummary,
+      });
     } catch (error) {
       logger.error('Leboncoin fetch error:', error);
       throw error;

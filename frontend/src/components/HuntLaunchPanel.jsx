@@ -24,6 +24,17 @@ const SCAN_MODES = {
   deep: { label: 'Approfondi', hint: 'Reparcourt plus largement les annonces pour détecter les opportunités manquées. Plus lent.' },
 };
 
+const PLATFORM_OPTIONS = {
+  vinted: {
+    label: 'Vinted',
+    hint: 'Rapide, invisible en headless. Idéal pour les scans quotidiens.',
+  },
+  leboncoin: {
+    label: 'Leboncoin',
+    hint: 'Ouvre une fenêtre Chrome pour gérer DataDome/CAPTCHA si besoin.',
+  },
+};
+
 const statusCopy = {
   idle: {
     badge: 'Radar prêt',
@@ -129,6 +140,33 @@ function FunnelMetric({ label, value, highlight = false }) {
   );
 }
 
+function LbcCaptchaAssistModal({ isRunning, onClose }) {
+  return (
+    <div style={styles.modalBackdrop} role="dialog" aria-modal="true" aria-label="Assistance CAPTCHA Leboncoin">
+      <div style={styles.lbcModal}>
+        <div style={styles.lbcModalHeader}>
+          <span style={styles.lbcModalIcon}>LBC</span>
+          <div>
+            <strong>Fenêtre Leboncoin ouverte</strong>
+            <p>Le scan LBC utilise Chrome visible pour te laisser résoudre DataDome/CAPTCHA si nécessaire.</p>
+          </div>
+        </div>
+        <ol style={styles.lbcSteps}>
+          <li>Regarde la petite fenêtre Chrome ouverte par le backend.</li>
+          <li>Si DataDome/CAPTCHA apparaît, complète-le directement dans cette fenêtre.</li>
+          <li>Ne ferme pas Chrome : le scan reprend automatiquement après validation.</li>
+        </ol>
+        <div style={styles.lbcModalNote}>
+          Impossible d’embarquer Chrome directement dans le dashboard web sans composant desktop/noVNC. Cette modal sert donc de copilote pendant que la vraie fenêtre Chrome reste interactive.
+        </div>
+        <button type="button" style={styles.secondaryButton} onClick={onClose}>
+          {isRunning ? 'J’ai compris, laisser le scan continuer' : 'Fermer'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 const LISTING_TYPE_OPTIONS = {
   cards: {
     label: 'Cartes',
@@ -142,6 +180,8 @@ const LISTING_TYPE_OPTIONS = {
 
 function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
   const [series, setSeries] = useState('all');
+  const [selectedSources, setSelectedSources] = useState(['vinted']);
+  const [lbcAssistOpen, setLbcAssistOpen] = useState(false);
   const [targetCards, setTargetCards] = useState([]);
   const [targetModalOpen, setTargetModalOpen] = useState(false);
   const [listingType, setListingType] = useState('cards');
@@ -161,24 +201,37 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
   const selectedSeriesLabel = SERIES_OPTIONS.find(option => option.value === series)?.label || 'Toutes Wizards FR';
   const canSelectTargetCards = canSelectCardsForSeries(series) && listingType === 'cards';
   const selectedTargetsPreview = targetCards.slice(0, 3).map(target => target.name).join(', ');
+  const selectedSourceLabels = selectedSources.map(source => PLATFORM_OPTIONS[source]?.label || source).join(' + ');
+  const includesLeboncoin = selectedSources.includes('leboncoin');
   const targetCardQueries = targetCards.flatMap(card => card.queryTerms || [card.name]);
   const priceMinValue = Math.max(0, Number(priceMin) || 0);
   const priceMaxValue = Math.max(1, Number(priceMax) || 1500);
   const normalizedPriceMin = Math.min(priceMinValue, priceMaxValue);
   const normalizedPriceMax = Math.max(priceMinValue, priceMaxValue);
 
+  const toggleSource = (source) => {
+    setSelectedSources(current => {
+      if (current.includes(source)) {
+        return current.length === 1 ? current : current.filter(item => item !== source);
+      }
+      return [...current, source];
+    });
+  };
+
   const startHunt = async () => {
     setStatus('running');
     setError(null);
     setSummary(null);
-    setStep('Lecture du dernier scan disponible');
+    setStep(includesLeboncoin ? 'Préparation de la fenêtre Leboncoin' : 'Lecture du dernier scan disponible');
+    if (includesLeboncoin) setLbcAssistOpen(true);
 
     try {
       const startedAt = Date.now();
       const scrapeOptions = {
         profile: 'wizards-fr',
-        sources: ['vinted'],
+        sources: selectedSources,
         maxResults: SENSITIVITY[sensitivity].maxResults,
+        waitForCaptcha: includesLeboncoin ? 180 : 60,
         saveToDb: true,
         filters: {
           series,
@@ -338,6 +391,36 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
               ))}
             </select>
           </label>
+
+          <div style={styles.field}>
+            <span style={styles.label}>Plateformes</span>
+            <div style={styles.platformGrid}>
+              {Object.entries(PLATFORM_OPTIONS).map(([source, option]) => {
+                const selected = selectedSources.includes(source);
+                return (
+                  <button
+                    key={source}
+                    type="button"
+                    onClick={() => toggleSource(source)}
+                    disabled={isRunning}
+                    style={{
+                      ...styles.platformButton,
+                      ...(selected ? styles.platformButtonActive : {}),
+                    }}
+                  >
+                    <span style={styles.platformButtonTitle}>
+                      <TcgIcon name={source === 'leboncoin' ? 'radar' : 'spark'} size={15} />
+                      {option.label}
+                    </span>
+                    <small>{option.hint}</small>
+                  </button>
+                );
+              })}
+            </div>
+            <span style={styles.hint}>
+              Sélection actuelle : {selectedSourceLabels}. {includesLeboncoin ? 'Leboncoin ouvrira une fenêtre Chrome visible pour le CAPTCHA.' : 'Vinted tourne sans fenêtre visible.'}
+            </span>
+          </div>
 
           <div style={styles.field}>
             <span style={styles.label}>Mode de scan</span>
@@ -632,6 +715,13 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
         </div>
       </div>
 
+      {lbcAssistOpen && (
+        <LbcCaptchaAssistModal
+          isRunning={isRunning}
+          onClose={() => setLbcAssistOpen(false)}
+        />
+      )}
+
       {canSelectTargetCards && (
         <TargetCardsModal
           isOpen={targetModalOpen}
@@ -809,6 +899,35 @@ const styles = {
     display: 'grid',
     gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
     gap: theme.spacing.sm,
+  },
+  platformGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+    gap: theme.spacing.sm,
+  },
+  platformButton: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing.xs,
+    padding: theme.spacing.md,
+    border: `1px solid ${theme.colors.primary.slate}`,
+    borderRadius: theme.borders.radiusMd,
+    background: 'rgba(10,14,39,.35)',
+    color: theme.colors.text.secondary,
+    cursor: 'pointer',
+    textAlign: 'left',
+    lineHeight: 1.35,
+  },
+  platformButtonActive: {
+    color: theme.accents.hunterGold,
+    borderColor: `${theme.accents.hunterGold}99`,
+    background: `${theme.accents.hunterGold}14`,
+  },
+  platformButtonTitle: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: theme.spacing.xs,
+    fontWeight: theme.typography.weights.bold,
   },
   segmentButton: {
     padding: `${theme.spacing.sm} ${theme.spacing.md}`,
@@ -1088,6 +1207,57 @@ const styles = {
     fontStyle: 'normal',
     color: theme.accents.successGreen,
     fontSize: theme.typography.sizes.tiny,
+  },
+  modalBackdrop: {
+    position: 'fixed',
+    inset: 0,
+    zIndex: 50,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: theme.spacing.lg,
+    background: 'rgba(3,6,18,.72)',
+    backdropFilter: 'blur(8px)',
+  },
+  lbcModal: {
+    width: 'min(520px, 100%)',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing.md,
+    padding: theme.spacing.xl,
+    border: `1px solid ${theme.accents.hunterGold}55`,
+    borderRadius: theme.borders.radiusLg,
+    background: `linear-gradient(135deg, ${theme.colors.primary.deepDark}, ${theme.colors.primary.midnight})`,
+    boxShadow: theme.shadows.lg,
+    color: theme.colors.text.secondary,
+  },
+  lbcModalHeader: {
+    display: 'flex',
+    gap: theme.spacing.md,
+    alignItems: 'flex-start',
+  },
+  lbcModalIcon: {
+    flex: '0 0 auto',
+    padding: `${theme.spacing.sm} ${theme.spacing.md}`,
+    borderRadius: theme.borders.radiusMd,
+    border: `1px solid ${theme.accents.hunterGold}66`,
+    color: theme.accents.hunterGold,
+    background: `${theme.accents.hunterGold}14`,
+    fontWeight: theme.typography.weights.bold,
+  },
+  lbcSteps: {
+    margin: 0,
+    paddingLeft: theme.spacing.xl,
+    lineHeight: 1.6,
+  },
+  lbcModalNote: {
+    padding: theme.spacing.md,
+    border: `1px solid ${theme.accents.manaCyan}35`,
+    borderRadius: theme.borders.radiusMd,
+    background: `${theme.accents.manaCyan}0D`,
+    color: theme.colors.text.muted,
+    fontSize: theme.typography.sizes.bodySm,
+    lineHeight: 1.45,
   },
   actions: {
     display: 'flex',

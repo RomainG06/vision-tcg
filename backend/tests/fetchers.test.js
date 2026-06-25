@@ -1,5 +1,6 @@
 import { BaseFetcher } from '../src/fetchers/base.js';
 import { browserPool } from '../src/fetchers/browser-pool.js';
+import { buildLeboncoinSearchUrl, extractLeboncoinExternalId, selectLeboncoinUrls } from '../src/fetchers/leboncoin-utils.js';
 import { VintedFetcher, extractVintedExternalId, selectUnseenVintedItems, selectUnseenVintedUrls, summarizeVintedPrefilter } from '../src/fetchers/vinted.js';
 
 describe('Fetchers', () => {
@@ -23,6 +24,44 @@ describe('Fetchers', () => {
       expect(browserPool.getLaunchOptions('leboncoin').headless).toBe(false);
       expect(browserPool.getPoolKey('vinted')).toBe('vinted:headless');
       expect(browserPool.getPoolKey('leboncoin')).toBe('leboncoin:headful');
+    });
+  });
+
+  describe('Leboncoin smart selection', () => {
+    it('builds a Nice radius search URL with sanitized query', () => {
+      const url = new URL(buildLeboncoinSearchUrl('lot pokemon <script> jungle', { radius: 50 }));
+
+      expect(url.origin).toBe('https://www.leboncoin.fr');
+      expect(url.pathname).toBe('/recherche');
+      expect(url.searchParams.get('text')).toBe('lot pokemon script jungle');
+      expect(url.searchParams.get('category')).toBe('40');
+      expect(url.searchParams.get('locations')).toContain('Nice_06000');
+    });
+
+    it('extracts Leboncoin external ids from ad URLs', () => {
+      expect(extractLeboncoinExternalId('https://www.leboncoin.fr/ad/collection/3215332013')).toBe('3215332013');
+      expect(extractLeboncoinExternalId('https://www.leboncoin.fr/collection/1234567890.htm')).toBe('1234567890');
+      expect(extractLeboncoinExternalId('https://www.leboncoin.fr/recherche?text=pokemon')).toBeNull();
+    });
+
+    it('selects unique unseen Leboncoin URLs before detail scraping', () => {
+      const urls = [
+        'https://www.leboncoin.fr/ad/collection/111',
+        'https://www.leboncoin.fr/ad/collection/222',
+        'https://www.leboncoin.fr/ad/collection/222',
+        'https://example.com/ad/collection/333',
+        'https://www.leboncoin.fr/ad/collection/333',
+      ];
+
+      const selected = selectLeboncoinUrls(urls, {
+        excludeExternalIds: new Set(['111']),
+        maxResults: 2,
+      });
+
+      expect(selected).toEqual([
+        'https://www.leboncoin.fr/ad/collection/222',
+        'https://www.leboncoin.fr/ad/collection/333',
+      ]);
     });
   });
 

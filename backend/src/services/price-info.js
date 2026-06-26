@@ -19,10 +19,59 @@ function percentile(sortedValues, ratio) {
   return sortedValues[index];
 }
 
+export function normalizeCardCondition(value) {
+  if (!value) return null;
+  const text = String(value)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+
+  const matchers = [
+    { key: 'damaged', label: 'Damaged', rank: 10, pattern: /\b(damaged|abimee?|abime|tres\s+abimee?|pli(?:e|ee|ure)|dechiree?|poor|hp|heavy\s+played)\b/ },
+    { key: 'played', label: 'Played', rank: 30, pattern: /\b(played|pl|jouee?|moyen(?:ne)?|etat\s+moyen|moderately\s+played|mp)\b/ },
+    { key: 'light_played', label: 'LP', rank: 45, pattern: /\b(light\s+played|lp|legerement\s+jouee?|bon\s+etat|good)\b/ },
+    { key: 'excellent', label: 'Excellent', rank: 60, pattern: /\b(excellent|ex\+?|very\s+good|tres\s+bon\s+etat)\b/ },
+    { key: 'near_mint', label: 'NM', rank: 80, pattern: /\b(near\s+mint|near-mint|nm|mint-|mint\s-)\b|\betat\s+neuf\b|\bcomme\s+neuve?\b/ },
+    { key: 'mint', label: 'Mint', rank: 90, pattern: /\b(mint|neuve?|neuf)\b/ },
+  ];
+
+  for (const matcher of matchers) {
+    if (matcher.pattern.test(text)) {
+      return { key: matcher.key, label: matcher.label, rank: matcher.rank };
+    }
+  }
+
+  return null;
+}
+
+export function detectListingCondition(listing = {}) {
+  return normalizeCardCondition([
+    listing.condition,
+    listing.title,
+    listing.description,
+  ].filter(Boolean).join(' '));
+}
+
+function comparableCondition(comparable = {}) {
+  return comparable.condition_normalized || normalizeCardCondition([
+    comparable.condition,
+    comparable.title,
+  ].filter(Boolean).join(' '));
+}
+
+function conditionMatches(comparable, targetCondition) {
+  if (!targetCondition?.key) return true;
+  const condition = comparableCondition(comparable);
+  return condition?.key === targetCondition.key;
+}
+
 function normalizeComparable(item) {
   const priceValue = parseNumber(item?.price?.value || item?.lastSoldPrice?.value || item?.itemSalePrice?.value);
   const shippingValue = parseNumber(item?.shippingOptions?.[0]?.shippingCost?.value || item?.shippingCost?.value);
   if (priceValue === null || priceValue <= 0) return null;
+
+  const condition = item?.condition || null;
+  const normalizedCondition = normalizeCardCondition([condition, item?.title].filter(Boolean).join(' '));
 
   return {
     title: item?.title || '',
@@ -32,7 +81,8 @@ function normalizeComparable(item) {
     currency: item?.price?.currency || item?.lastSoldPrice?.currency || item?.itemSalePrice?.currency || 'EUR',
     sold_at: item?.itemSoldDate || item?.lastSoldDate || item?.itemEndDate || null,
     url: item?.itemWebUrl || item?.itemAffiliateWebUrl || null,
-    condition: item?.condition || null,
+    condition,
+    condition_normalized: normalizedCondition,
   };
 }
 
@@ -50,7 +100,9 @@ export function buildEbaySoldSearchUrl(query, options = {}) {
 
 export function summarizeSoldComparables(comparables = [], options = {}) {
   const minComparables = Number(options.minComparables || config.priceInfo.minComparables || 3);
-  const prices = comparables
+  const targetCondition = options.targetCondition || options.condition || null;
+  const conditionFilteredComparables = comparables.filter(item => conditionMatches(item, targetCondition));
+  const prices = conditionFilteredComparables
     .map(item => parseNumber(item.price))
     .filter(price => Number.isFinite(price) && price > 0)
     .sort((a, b) => a - b);
@@ -59,7 +111,12 @@ export function summarizeSoldComparables(comparables = [], options = {}) {
     return {
       calibrated: false,
       sample_count: prices.length,
-      reason: `not_enough_comparables_${prices.length}_of_${minComparables}`,
+      total_sample_count: comparables.length,
+      condition_key: targetCondition?.key || null,
+      condition_label: targetCondition?.label || null,
+      reason: targetCondition?.key
+        ? `not_enough_${targetCondition.key}_comparables_${prices.length}_of_${minComparables}`
+        : `not_enough_comparables_${prices.length}_of_${minComparables}`,
     };
   }
 
@@ -73,6 +130,9 @@ export function summarizeSoldComparables(comparables = [], options = {}) {
   return {
     calibrated: true,
     sample_count: prices.length,
+    total_sample_count: comparables.length,
+    condition_key: targetCondition?.key || null,
+    condition_label: targetCondition?.label || null,
     average_price: Math.round(average * 100) / 100,
     median_price: Math.round(median * 100) / 100,
     value_min: roundEuro(p25),
@@ -90,6 +150,10 @@ export function applySoldEstimateToListing(listing, summary, comparables = []) {
   const estimatedMax = Math.max(estimatedMin || 0, summary.value_max ?? roundEuro(summary.average_price));
   const gainMin = price > 0 && estimatedMin !== null ? Math.round(estimatedMin - price) : null;
   const gainMax = price > 0 && estimatedMax !== null ? Math.round(estimatedMax - price) : null;
+  const listingCondition = summary.condition_key
+    ? { key: summary.condition_key, label: summary.condition_label }
+    : detectListingCondition(listing);
+  const matchingComparables = comparables.filter(item => conditionMatches(item, listingCondition));
 
   return {
     ...listing,
@@ -103,14 +167,20 @@ export function applySoldEstimateToListing(listing, summary, comparables = []) {
       estimate_reference_marketplace: 'ebay_sold',
       estimate_average_price: summary.average_price,
       estimate_median_price: summary.median_price,
+      estimate_condition_key: listingCondition?.key || null,
+      estimate_condition_label: listingCondition?.label || null,
+      estimate_total_sample_count: summary.total_sample_count || comparables.length,
+      card_condition_key: listingCondition?.key || null,
+      card_condition_label: listingCondition?.label || null,
       estimated_gain_min: gainMin,
       estimated_gain_max: gainMax,
-      ebay_sold_comparables: comparables.slice(0, 5).map(item => ({
+      ebay_sold_comparables: matchingComparables.slice(0, 5).map(item => ({
         title: item.title,
         price: item.price,
         sold_at: item.sold_at,
         url: item.url,
         condition: item.condition,
+        condition_normalized: item.condition_normalized || comparableCondition(item),
       })),
     },
   };
@@ -181,7 +251,11 @@ export async function enrichListingsWithEbaySoldPrices(listings = [], options = 
         ...options,
         limit: options.maxComparables || config.priceInfo.maxComparables,
       });
-      const summary = summarizeSoldComparables(comparables, options);
+      const targetCondition = detectListingCondition(listing);
+      const summary = summarizeSoldComparables(comparables, {
+        ...options,
+        targetCondition,
+      });
       enriched.push(applySoldEstimateToListing(listing, summary, comparables));
     } catch (error) {
       if (error instanceof EbayConfigError || error.code === 'ebay_config_missing') {

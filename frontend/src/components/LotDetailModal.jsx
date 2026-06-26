@@ -289,7 +289,7 @@ function LotDetailModal({ isOpen, onClose, listing, onUpdate, onDelete }) {
                   </div>
                   {!isUncalibratedEstimate && listing.estimate_method === 'ebay_sold_average' && (
                     <div style={estimateSourceStyle}>
-                      eBay ventes réussies · {listing.estimate_sample_count || '?'} comparables
+                      eBay ventes réussies{listing.estimate_condition_label ? ` ${listing.estimate_condition_label}` : ''} · {listing.estimate_sample_count || '?'} comparables
                     </div>
                   )}
                 </div>

@@ -189,15 +189,18 @@ function LotList({ listings, onUpdate, onDelete, highlightedIds = [] }) {
                       </div>
                       {listing.estimate_method === 'ebay_sold_average' && (
                         <div style={styles.estimateSource}>
-                          eBay ventes réussies · {listing.estimate_sample_count || '?'} comparables
+                          eBay ventes réussies{listing.estimate_condition_label ? ` ${listing.estimate_condition_label}` : ''} · {listing.estimate_sample_count || '?'} comparables
                         </div>
                       )}
                     </>
                   )}
-                  {!isUncalibratedEstimate && gainMax !== null && gainMax > 0 && (
+                  {!isUncalibratedEstimate && gainMax !== null && (
                     <div style={styles.gainRow}>
                       <span style={styles.gainLabel}>Gain potentiel:</span>
-                      <span style={styles.gainValue}>
+                      <span style={{
+                        ...styles.gainValue,
+                        color: gainMax > 0 ? theme.accents.successGreen : theme.accents.preyRed,
+                      }}>
                         {gainMin !== null && gainMin !== gainMax ? `${gainMin > 0 ? '+' : ''}${gainMin} à ${gainMax > 0 ? '+' : ''}${gainMax}€` : `${gainMax > 0 ? '+' : ''}${gainMax}€`}
                       </span>
                     </div>

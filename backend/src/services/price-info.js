@@ -3,6 +3,16 @@ import { logger } from '../utils/logger.js';
 import { sanitizeSearchQuery } from '../utils/url-validator.js';
 import { getEbayAccessToken, getEbayApiBaseUrl, EbayConfigError } from '../fetchers/ebay-auth.js';
 
+export class EbaySoldAccessDeniedError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'EbaySoldAccessDeniedError';
+    this.code = 'ebay_sold_access_denied';
+  }
+}
+
+let soldAccessDeniedWarned = false;
+
 function parseNumber(value) {
   const number = Number(value);
   return Number.isFinite(number) ? number : null;
@@ -219,6 +229,11 @@ export async function fetchEbaySoldComparables(query, options = {}) {
 
   if (!response.ok) {
     const apiMessage = json?.errors?.[0]?.message || json?.message || text.slice(0, 200) || `HTTP ${response.status}`;
+    if (response.status === 403 && /access\s+denied|forbidden|not\s+authorized|unauthori[sz]ed/i.test(apiMessage)) {
+      throw new EbaySoldAccessDeniedError(
+        'eBay Marketplace Insights access denied. Browse API credentials are valid, but this app is not authorized for sold/completed sales data.'
+      );
+    }
     throw new Error(`eBay sold price API failed (${response.status}): ${apiMessage}`);
   }
 
@@ -260,6 +275,11 @@ export async function enrichListingsWithEbaySoldPrices(listings = [], options = 
     } catch (error) {
       if (error instanceof EbayConfigError || error.code === 'ebay_config_missing') {
         logger.warn('[price-info] eBay credentials missing; keeping fallback estimates.');
+      } else if (error instanceof EbaySoldAccessDeniedError || error.code === 'ebay_sold_access_denied') {
+        if (!soldAccessDeniedWarned) {
+          logger.warn('[price-info] eBay Marketplace Insights access denied; sold-price calibration disabled for this run. Ask eBay for Marketplace Insights/item_sales access or set PRICE_INFO_ENABLED=false to silence this fallback.');
+          soldAccessDeniedWarned = true;
+        }
       } else {
         logger.warn(`[price-info] eBay sold estimate unavailable: ${error.message}`);
       }

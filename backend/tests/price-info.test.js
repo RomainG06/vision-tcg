@@ -4,6 +4,7 @@ import {
   buildEbaySoldSearchUrl,
   buildPriceInfoQuery,
   detectListingCondition,
+  EbaySoldAccessDeniedError,
   fetchEbaySoldComparables,
   normalizeCardCondition,
   summarizeSoldComparables,
@@ -192,5 +193,30 @@ describe('price-info eBay sold estimates', () => {
       shipping_price: 5,
       currency: 'EUR',
     });
+  });
+
+  test('throws a typed error when Marketplace Insights sold sales access is denied', async () => {
+    const fetchImpl = async (url) => {
+      if (String(url).includes('/identity/v1/oauth2/token')) {
+        return {
+          ok: true,
+          status: 200,
+          text: async () => JSON.stringify({ access_token: 'mock-token', expires_in: 7200 }),
+        };
+      }
+
+      return {
+        ok: false,
+        status: 403,
+        text: async () => JSON.stringify({ errors: [{ message: 'Access denied' }] }),
+      };
+    };
+
+    await expect(fetchEbaySoldComparables('dracolosse obscur', {
+      fetchImpl,
+      clientId: 'client-id',
+      clientSecret: 'client-secret',
+      marketplaceId: 'EBAY_FR',
+    })).rejects.toBeInstanceOf(EbaySoldAccessDeniedError);
   });
 });

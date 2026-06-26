@@ -70,6 +70,10 @@ function LotList({ listings, onUpdate, onDelete, highlightedIds = [] }) {
           const rarityStyle = getRarityStyle(rarity);
           const isHighlighted = highlightedIds.includes(listing.id);
           const isUncalibratedEstimate = listing.estimate_method === 'price_multiplier_fallback' || listing.estimate_confidence === 'low';
+          const estimatedLow = listing.estimated_value_min ?? listing.value_estimate_low ?? null;
+          const estimatedHigh = listing.estimated_value_max ?? listing.value_estimate_high ?? null;
+          const gainMin = listing.estimated_gain_min ?? (estimatedLow !== null ? Math.round(Number(estimatedLow) - Number(listing.price || 0)) : null);
+          const gainMax = listing.estimated_gain_max ?? (estimatedHigh !== null ? Math.round(Number(estimatedHigh) - Number(listing.price || 0)) : null);
           const opportunitySignals = (listing.opportunity_signals || [])
             .filter((signal) => shouldDisplayOpportunitySignal(listing, signal));
 
@@ -175,19 +179,26 @@ function LotList({ listings, onUpdate, onDelete, highlightedIds = [] }) {
                         <span style={styles.gainMuted}>À vérifier</span>
                       </div>
                     </>
-                  ) : listing.value_estimate_low && listing.value_estimate_high && (
-                    <div style={styles.estimateRow}>
-                      <span style={styles.estimateLabel}>Valeur estimée:</span>
-                      <span style={styles.estimate}>
-                        {listing.value_estimate_low}€ - {listing.value_estimate_high}€
-                      </span>
-                    </div>
+                  ) : estimatedLow && estimatedHigh && (
+                    <>
+                      <div style={styles.estimateRow}>
+                        <span style={styles.estimateLabel}>Valeur estimée:</span>
+                        <span style={styles.estimate}>
+                          {estimatedLow}€ - {estimatedHigh}€
+                        </span>
+                      </div>
+                      {listing.estimate_method === 'ebay_sold_average' && (
+                        <div style={styles.estimateSource}>
+                          eBay ventes réussies · {listing.estimate_sample_count || '?'} comparables
+                        </div>
+                      )}
+                    </>
                   )}
-                  {!isUncalibratedEstimate && listing.gain_potential && listing.gain_potential > 0 && (
+                  {!isUncalibratedEstimate && gainMax !== null && gainMax > 0 && (
                     <div style={styles.gainRow}>
                       <span style={styles.gainLabel}>Gain potentiel:</span>
                       <span style={styles.gainValue}>
-                        +{listing.gain_potential}€ ({listing.gain_percentage > 0 ? '+' : ''}{listing.gain_percentage}%)
+                        {gainMin !== null && gainMin !== gainMax ? `${gainMin > 0 ? '+' : ''}${gainMin} à ${gainMax > 0 ? '+' : ''}${gainMax}€` : `${gainMax > 0 ? '+' : ''}${gainMax}€`}
                       </span>
                     </div>
                   )}
@@ -571,6 +582,13 @@ const styles = {
     fontSize: theme.typography.sizes.bodySm,
     fontWeight: theme.typography.weights.semibold,
     color: theme.colors.text.tertiary,
+  },
+  estimateSource: {
+    fontSize: theme.typography.sizes.tiny,
+    color: theme.colors.text.tertiary,
+    marginTop: `-${theme.spacing.xs}`,
+    marginBottom: theme.spacing.xs,
+    textAlign: 'right',
   },
   gainRow: {
     display: 'flex',

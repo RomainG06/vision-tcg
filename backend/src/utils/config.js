@@ -73,5 +73,12 @@ export const config = {
     scope: optionalString(process.env.EBAY_SCOPE) || 'https://api.ebay.com/oauth/api_scope',
     categoryIds: optionalString(process.env.EBAY_CATEGORY_IDS),
     maxResults: parseInt(process.env.EBAY_MAX_RESULTS || '50'),
+  },
+
+  priceInfo: {
+    enabled: parseBoolean(process.env.PRICE_INFO_ENABLED, true),
+    provider: optionalString(process.env.PRICE_INFO_PROVIDER) || 'ebay_sold',
+    maxComparables: parseInt(process.env.PRICE_INFO_MAX_COMPARABLES || '20'),
+    minComparables: parseInt(process.env.PRICE_INFO_MIN_COMPARABLES || '3'),
   }
 };

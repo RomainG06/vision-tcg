@@ -11,6 +11,7 @@ import { selectExplorationCandidates, splitQualityListings } from './listing-qua
 import { filterByBudget } from './hunt-filters.js';
 import { buildHuntQueries, buildPrimaryHuntQuery, dedupeListingsBySourceExternalId } from './hunt-queries.js';
 import { buildActionableScanSummary } from './scan-summary.js';
+import { enrichListingsWithEbaySoldPrices } from './price-info.js';
 
 const listingRepo = new ListingRepository();
 const scrapeRunRepo = new ScrapeRunRepository();
@@ -330,7 +331,12 @@ export async function startScrape(options = {}) {
           errors.push({ source, type: 'quality_filtered', count: rejectedCount });
         }
 
-        const { normalized, invalid } = normalizeListings(qualityListings, source, runId);
+        const enrichedQualityListings = await enrichListingsWithEbaySoldPrices(qualityListings, {
+          enabled: filters.priceInfo !== false && filters.price_info !== false,
+          maxComparables: filters.priceInfoMaxComparables || filters.price_info_max_comparables,
+          minComparables: filters.priceInfoMinComparables || filters.price_info_min_comparables,
+        });
+        const { normalized, invalid } = normalizeListings(enrichedQualityListings, source, runId);
 
         if (invalid.length > 0) {
           for (const item of invalid) {

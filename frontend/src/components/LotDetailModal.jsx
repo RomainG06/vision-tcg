@@ -287,6 +287,11 @@ function LotDetailModal({ isOpen, onClose, listing, onUpdate, onDelete }) {
                   <div style={estimationValueStyle}>
                     {isUncalibratedEstimate ? 'Non calibrée' : `${estimatedLow ?? '?'}–${estimatedHigh ?? '?'} €`}
                   </div>
+                  {!isUncalibratedEstimate && listing.estimate_method === 'ebay_sold_average' && (
+                    <div style={estimateSourceStyle}>
+                      eBay ventes réussies · {listing.estimate_sample_count || '?'} comparables
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -747,6 +752,12 @@ const estimationValueStyle = {
   fontWeight: theme.typography.weights.bold,
   color: theme.accents.manaCyan,
   textShadow: `0 0 12px ${theme.accents.manaCyan}60`,
+};
+
+const estimateSourceStyle = {
+  marginTop: theme.spacing.xs,
+  fontSize: theme.typography.sizes.bodySm,
+  color: theme.colors.text.tertiary,
 };
 
 const potentialBlockStyle = {

@@ -109,6 +109,9 @@ function getFriendlyScrapeError(message = '') {
   if (/Missing X server|\$DISPLAY|Failed to launch the browser process/i.test(text)) {
     return 'Chromium n’a pas pu démarrer. Ferme les anciens Chrome/Puppeteer puis relance le backend.';
   }
+  if (/lbc_api_blocked|captcha-delivery|interstitial/i.test(text)) {
+    return 'L’API Leboncoin est bloquée par DataDome. Le scan bascule en mode navigateur si le mode LBC est réglé sur auto ; sinon passe LEBONCOIN_FETCH_MODE=auto ou browser.';
+  }
   if (/accès temporairement restreint|acces temporairement restreint|temporarily restricted|IPPOLL_REASONCODE/i.test(text)) {
     return 'Leboncoin a temporairement restreint l’accès après le challenge. Stoppe LBC pour maintenant, attends un moment, puis relance en mode LBC seul très prudent.';
   }
@@ -251,7 +254,7 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
           maxQueries: SENSITIVITY[sensitivity].maxQueries,
           lbcMaxQueries: includesLeboncoin ? 1 : undefined,
           lbcMaxResults: includesLeboncoin ? 2 : undefined,
-          lbcFetchMode: includesLeboncoin ? 'api' : undefined,
+          lbcFetchMode: includesLeboncoin ? 'auto' : undefined,
           rescanSeen,
           targetCards: targetCards.map(card => ({
             id: card.id,

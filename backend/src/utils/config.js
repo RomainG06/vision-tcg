@@ -63,7 +63,7 @@ export const config = {
     userDataDirBySource: {
       leboncoin: optionalString(process.env.LEBONCOIN_USER_DATA_DIR)
     },
-    leboncoinFetchMode: optionalString(process.env.LEBONCOIN_FETCH_MODE) || 'api', // api | browser | auto
+    leboncoinFetchMode: optionalString(process.env.LEBONCOIN_FETCH_MODE) || 'auto', // api | browser | auto
     leboncoinApiKey: optionalString(process.env.LEBONCOIN_API_KEY),
     timeout: 30000,
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',

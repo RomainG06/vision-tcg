@@ -172,13 +172,23 @@ export async function startScrape(options = {}) {
   let seenExcluded = 0;
   let seenRecorded = 0;
   let explorationFallback = 0;
+  let totalQueryAttempts = 0;
   const rejectedSamples = [];
   const queryStats = [];
 
   try {
     for (const source of enabledSources) {
       try {
-        logger.info(`Starting smart scrape: ${source} queries=${executionQueries.length} maxResults=${maxResults}`);
+        const sourceQueryLimit = source === 'leboncoin'
+          ? Math.max(1, Number(filters.lbcMaxQueries ?? filters.lbc_max_queries ?? 1) || 1)
+          : executionQueries.length;
+        const sourceQueries = executionQueries.slice(0, sourceQueryLimit);
+        const sourceMaxResults = source === 'leboncoin'
+          ? Math.max(1, Math.min(maxResults, Number(filters.lbcMaxResults ?? filters.lbc_max_results ?? 3) || 3))
+          : maxResults;
+
+        logger.info(`Starting smart scrape: ${source} queries=${sourceQueries.length}/${executionQueries.length} maxResults=${sourceMaxResults}`);
+        totalQueryAttempts += sourceQueries.length;
         const savedExternalIds = saveToDb ? listingRepo.findExternalIdsBySource(source) : [];
         const seenExternalIds = saveToDb && !rescanSeen
           ? seenListingRepo.findExcludedExternalIdsBySource(source, { targetSeries: filters.series || 'all' })
@@ -191,15 +201,15 @@ export async function startScrape(options = {}) {
         const configuredScrollPasses = Number(filters.maxScrollPasses ?? filters.max_scroll_passes);
         const scanDepth = Number.isFinite(configuredScanDepth) && configuredScanDepth > 0
           ? configuredScanDepth
-          : Math.max(maxResults * scanModePreset.scanDepthMultiplier, scanModePreset.minScanDepth);
+          : Math.max(sourceMaxResults * scanModePreset.scanDepthMultiplier, source === 'leboncoin' ? 12 : scanModePreset.minScanDepth);
         const maxScrollPasses = Number.isFinite(configuredScrollPasses) && configuredScrollPasses > 0
           ? configuredScrollPasses
-          : scanModePreset.maxScrollPasses;
-        const perQueryLimit = Math.max(maxResults, Math.ceil(maxResults * 1.5));
+          : (source === 'leboncoin' ? Math.min(scanModePreset.maxScrollPasses, 4) : scanModePreset.maxScrollPasses);
+        const perQueryLimit = Math.max(sourceMaxResults, Math.ceil(sourceMaxResults * 1.5));
         const dynamicExcludeIds = new Set(excludeExternalIds.map(String));
         const budgetRange = getBudgetRange(filters);
 
-        for (const currentQuery of executionQueries) {
+        for (const currentQuery of sourceQueries) {
           const beforeCount = queryRawListings.length;
           try {
             const fetchedListings = await FETCHERS[source](currentQuery, {
@@ -369,7 +379,6 @@ export async function startScrape(options = {}) {
     }
 
     const queryErrorCount = errors.filter(error => error.type === 'query_error').length;
-    const totalQueryAttempts = enabledSources.length * executionQueries.length;
     const allQueriesFailed = totalQueryAttempts > 0 && queryErrorCount >= totalQueryAttempts;
     const status = allQueriesFailed ? 'failed' : 'completed';
     const actionableSummary = buildActionableScanSummary({

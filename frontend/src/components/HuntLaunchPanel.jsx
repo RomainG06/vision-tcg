@@ -109,6 +109,9 @@ function getFriendlyScrapeError(message = '') {
   if (/Missing X server|\$DISPLAY|Failed to launch the browser process/i.test(text)) {
     return 'Chromium n’a pas pu démarrer. Ferme les anciens Chrome/Puppeteer puis relance le backend.';
   }
+  if (/accès temporairement restreint|acces temporairement restreint|temporarily restricted|IPPOLL_REASONCODE/i.test(text)) {
+    return 'Leboncoin a temporairement restreint l’accès après le challenge. Stoppe LBC pour maintenant, attends un moment, puis relance en mode LBC seul très prudent.';
+  }
   if (/captcha|datadome|blocked|forbidden|403/i.test(text)) {
     return 'Vinted semble bloquer le scan. Réessaie plus tard, réduis la sensibilité ou résous le challenge si une fenêtre s’ouvre.';
   }
@@ -246,6 +249,8 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
           order: 'newest_first',
           sensitivity,
           maxQueries: SENSITIVITY[sensitivity].maxQueries,
+          lbcMaxQueries: includesLeboncoin ? 1 : undefined,
+          lbcMaxResults: includesLeboncoin ? 3 : undefined,
           rescanSeen,
           targetCards: targetCards.map(card => ({
             id: card.id,

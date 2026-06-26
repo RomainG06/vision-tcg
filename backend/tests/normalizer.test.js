@@ -111,6 +111,31 @@ describe('Normalizer', () => {
       expect(normalized.scrape_run_id).toBe(2);
     });
   });
+
+  describe('normalizeListing - eBay', () => {
+    test('should normalize eBay Browse API listing', () => {
+      const raw = {
+        external_id: 'v1|123|0',
+        url: 'https://www.ebay.fr/itm/123',
+        title: ' Lot Pokémon Wizards FR ',
+        description: 'Cartes anciennes',
+        price: 105.5,
+        location: 'Nice, FR',
+        images: ['https://img.example/item.jpg'],
+        posted_at: '2026-06-26T08:00:00Z',
+      };
+
+      const normalized = normalizeListing(raw, 'ebay', 7);
+
+      expect(normalized.scrape_run_id).toBe(7);
+      expect(normalized.source).toBe('ebay');
+      expect(normalized.external_id).toBe('v1|123|0');
+      expect(normalized.title).toBe('Lot Pokémon Wizards FR');
+      expect(normalized.price).toBe(105.5);
+      expect(normalized.images).toBe('https://img.example/item.jpg');
+      expect(normalized.status).toBe('new');
+    });
+  });
   
   describe('validateListing', () => {
     test('should validate correct listing', () => {

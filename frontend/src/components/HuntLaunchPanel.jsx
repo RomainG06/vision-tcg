@@ -24,6 +24,17 @@ const SCAN_MODES = {
   deep: { label: 'Approfondi', hint: 'Reparcourt plus largement les annonces pour détecter les opportunités manquées. Plus lent.' },
 };
 
+const PLATFORM_OPTIONS = {
+  vinted: {
+    label: 'Vinted',
+    hint: 'Scan marketplace actuel, rapide mais non officiel.',
+  },
+  ebay: {
+    label: 'eBay',
+    hint: 'API officielle Browse, sans navigateur ni CAPTCHA.',
+  },
+};
+
 const statusCopy = {
   idle: {
     badge: 'Radar prêt',
@@ -142,6 +153,7 @@ const LISTING_TYPE_OPTIONS = {
 
 function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
   const [series, setSeries] = useState('all');
+  const [selectedSources, setSelectedSources] = useState(['vinted']);
   const [targetCards, setTargetCards] = useState([]);
   const [targetModalOpen, setTargetModalOpen] = useState(false);
   const [listingType, setListingType] = useState('cards');
@@ -159,13 +171,23 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
   const copy = statusCopy[status];
   const isRunning = status === 'running';
   const selectedSeriesLabel = SERIES_OPTIONS.find(option => option.value === series)?.label || 'Toutes Wizards FR';
-  const canSelectTargetCards = canSelectCardsForSeries(series);
+  const canSelectTargetCards = canSelectCardsForSeries(series) && listingType === 'cards';
   const selectedTargetsPreview = targetCards.slice(0, 3).map(target => target.name).join(', ');
+  const selectedSourceLabels = selectedSources.map(source => PLATFORM_OPTIONS[source]?.label || source).join(' + ');
   const targetCardQueries = targetCards.flatMap(card => card.queryTerms || [card.name]);
   const priceMinValue = Math.max(0, Number(priceMin) || 0);
   const priceMaxValue = Math.max(1, Number(priceMax) || 1500);
   const normalizedPriceMin = Math.min(priceMinValue, priceMaxValue);
   const normalizedPriceMax = Math.max(priceMinValue, priceMaxValue);
+
+  const toggleSource = (source) => {
+    setSelectedSources(current => {
+      if (current.includes(source)) {
+        return current.length === 1 ? current : current.filter(item => item !== source);
+      }
+      return [...current, source];
+    });
+  };
 
   const startHunt = async () => {
     setStatus('running');
@@ -177,7 +199,7 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
       const startedAt = Date.now();
       const scrapeOptions = {
         profile: 'wizards-fr',
-        sources: ['vinted'],
+        sources: selectedSources,
         maxResults: SENSITIVITY[sensitivity].maxResults,
         saveToDb: true,
         filters: {
@@ -338,6 +360,31 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
               ))}
             </select>
           </label>
+
+          <div style={styles.field}>
+            <span style={styles.label}>Plateformes</span>
+            <div style={styles.platformGrid}>
+              {Object.entries(PLATFORM_OPTIONS).map(([source, option]) => {
+                const selected = selectedSources.includes(source);
+                return (
+                  <button
+                    key={source}
+                    type="button"
+                    onClick={() => toggleSource(source)}
+                    disabled={isRunning}
+                    style={{
+                      ...styles.platformButton,
+                      ...(selected ? styles.platformButtonActive : {}),
+                    }}
+                  >
+                    <span style={styles.platformButtonTitle}>{option.label}</span>
+                    <small>{option.hint}</small>
+                  </button>
+                );
+              })}
+            </div>
+            <span style={styles.hint}>Sélection actuelle : {selectedSourceLabels}</span>
+          </div>
 
           <div style={styles.field}>
             <span style={styles.label}>Mode de scan</span>
@@ -809,6 +856,32 @@ const styles = {
     display: 'grid',
     gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
     gap: theme.spacing.sm,
+  },
+  platformGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+    gap: theme.spacing.sm,
+  },
+  platformButton: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing.xs,
+    padding: theme.spacing.md,
+    border: `1px solid ${theme.colors.primary.slate}`,
+    borderRadius: theme.borders.radiusMd,
+    background: 'rgba(10,14,39,.35)',
+    color: theme.colors.text.secondary,
+    cursor: 'pointer',
+    textAlign: 'left',
+    lineHeight: 1.35,
+  },
+  platformButtonActive: {
+    color: theme.accents.hunterGold,
+    borderColor: `${theme.accents.hunterGold}99`,
+    background: `${theme.accents.hunterGold}14`,
+  },
+  platformButtonTitle: {
+    fontWeight: theme.typography.weights.bold,
   },
   segmentButton: {
     padding: `${theme.spacing.sm} ${theme.spacing.md}`,

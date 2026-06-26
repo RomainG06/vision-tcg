@@ -1,5 +1,8 @@
 import express from 'express';
 import { logger } from '../utils/logger.js';
+import { authenticate } from './auth.js';
+import { validateInteger, validateFloat, validateEnum } from '../utils/url-validator.js';
+import { config } from '../utils/config.js';
 import { ListingRepository } from '../repositories/listing-repository.js';
 import { ScrapeRunRepository } from '../repositories/scrape-run-repository.js';
 import { ListingHistoryRepository } from '../repositories/listing-history-repository.js';
@@ -37,12 +40,12 @@ function parseJsonField(value, fallback) {
 
 function mapListing(listing) {
   if (!listing) return null;
-  
+
   // Parse JSON fields. Scraped data can store images as a JSON array or a single URL string.
   const parsedImages = parseJsonField(listing.images, null);
   const images = Array.isArray(parsedImages) ? parsedImages : (listing.images ? [listing.images] : []);
   const scoreBreakdown = parseJsonField(listing.score_breakdown, {});
-  
+
   return {
     id: listing.id,
     scrape_run_id: listing.scrape_run_id,
@@ -58,11 +61,11 @@ function mapListing(listing) {
     published_at: listing.posted_at,
     score: listing.score,
     status: listing.status,
-    
+
     // Images
     image_url: images[0] || null,
     images: images,
-    
+
     // Scoring details (from score_breakdown JSON)
     confidence: scoreBreakdown.confidence || null,
     estimated_value_min: scoreBreakdown.estimated_value_min || null,
@@ -81,7 +84,7 @@ function mapListing(listing) {
     positive_reasons: scoreBreakdown.quality?.positive_reasons || [],
     risk_reasons: scoreBreakdown.quality?.risk_reasons || [],
     explanation: listing.notes || null, // Map 'notes' to 'explanation'
-    
+
     // History / alerts MVP
     history: listing.history || null,
     has_price_drop: Boolean(listing.history?.price_drop_amount > 0),
@@ -130,29 +133,16 @@ router.get('/docs', (req, res) => {
   });
 });
 
-router.get('/debug/db', (req, res) => {
-  try {
-    res.json({
-      ...getDatabaseInfo(),
-      listing_count: listingRepo.count(),
-      sample: listingRepo.findAll({ limit: 3, offset: 0, status: 'all' }).map((listing) => ({
-        id: listing.id,
-        title: listing.title,
-        status: listing.status,
-        source: listing.source,
-      })),
-    });
-  } catch (error) {
-    logger.error('Error fetching DB debug info:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+// Debug endpoint removed for security - use logging or proper monitoring tools
+// If needed in development, protect with authentication:
+// router.get('/debug/db', authenticate, (req, res) => { ... });
 
 /**
  * POST /api/scrape/start
  * Start a marketplace scrape. MVP is synchronous so the UI can show immediate results.
+ * Protected: requires authentication
  */
-router.post('/scrape/start', async (req, res) => {
+router.post('/scrape/start', authenticate, async (req, res) => {
   try {
     const result = await scrapeJobManager.start(req.body || {});
     res.json(result);
@@ -184,19 +174,21 @@ router.get('/jobs/status', (req, res) => {
 router.get('/listings', (req, res) => {
   try {
     const requestedStatus = req.query.status || 'all';
+
+    // Validate all inputs with bounds
     const filters = {
-      source: req.query.source,
+      source: validateEnum(req.query.source, ['vinted', 'leboncoin', 'facebook'], null),
       status: requestedStatus === 'all' ? 'all' : normalizeListingStatus(requestedStatus),
-      minScore: req.query.min_score ? parseFloat(req.query.min_score) : undefined,
-      maxPrice: req.query.max_price ? parseFloat(req.query.max_price) : undefined,
-      maxDistance: req.query.max_distance ? parseFloat(req.query.max_distance) : undefined,
-      limit: req.query.limit ? parseInt(req.query.limit) : 50,
-      offset: req.query.offset ? parseInt(req.query.offset) : 0
+      minScore: req.query.min_score ? validateFloat(req.query.min_score, 0, 100, 0) : undefined,
+      maxPrice: req.query.max_price ? validateFloat(req.query.max_price, 0, 999999, 10000) : undefined,
+      maxDistance: req.query.max_distance ? validateFloat(req.query.max_distance, 0, 10000, 50) : undefined,
+      limit: validateInteger(req.query.limit, 1, 500, 50),
+      offset: validateInteger(req.query.offset, 0, 999999, 0)
     };
-    
+
     const listings = listingRepo.findAll(filters).map(withHistory);
     const total = listingRepo.count(filters);
-    
+
     res.json({
       listings: listings.map(mapListing),
       pagination: {
@@ -265,11 +257,11 @@ router.get('/listings/:id', (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const listing = listingRepo.findById(id);
-    
+
     if (!listing) {
       return res.status(404).json({ error: 'Listing not found' });
     }
-    
+
     res.json(mapListing(withHistory(listing)));
   } catch (error) {
     logger.error(`Error fetching listing ${req.params.id}:`, error);
@@ -280,31 +272,32 @@ router.get('/listings/:id', (req, res) => {
 /**
  * PATCH /api/listings/:id
  * Update a listing (status, notes)
+ * Protected: requires authentication
  */
-router.patch('/listings/:id', (req, res) => {
+router.patch('/listings/:id', authenticate, (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const updates = {};
-    
+
     if (req.body.status !== undefined) {
       updates.status = assertValidListingStatus(req.body.status);
     }
-    
+
     if (req.body.notes !== undefined) {
       updates.notes = req.body.notes;
     }
-    
+
     if (Object.keys(updates).length === 0) {
       return res.status(400).json({ error: 'No updates provided' });
     }
-    
+
     listingRepo.update(id, updates);
     const updated = listingRepo.findById(id);
-    
+
     if (!updated) {
       return res.status(404).json({ error: 'Listing not found' });
     }
-    
+
     res.json(mapListing(withHistory(updated)));
   } catch (error) {
     logger.error(`Error updating listing ${req.params.id}:`, error);
@@ -365,8 +358,9 @@ router.post('/listings/:id/watchlist', (req, res) => {
 /**
  * DELETE /api/listings
  * Clear all local dashboard listings. Scrape history/seen cache are preserved.
+ * Protected: requires authentication
  */
-router.delete('/listings', (req, res) => {
+router.delete('/listings', authenticate, (req, res) => {
   try {
     const before = listingRepo.count();
     listingRepo.deleteAll();
@@ -380,8 +374,9 @@ router.delete('/listings', (req, res) => {
 /**
  * DELETE /api/listings/:id
  * Delete a listing from the local dashboard backlog.
+ * Protected: requires authentication
  */
-router.delete('/listings/:id', (req, res) => {
+router.delete('/listings/:id', authenticate, (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const existing = listingRepo.findById(id);
@@ -409,10 +404,10 @@ router.get('/scrape-runs', (req, res) => {
       status: req.query.status,
       limit: req.query.limit ? parseInt(req.query.limit) : 50
     };
-    
+
     const runs = scrapeRunRepo.findAll(filters);
     const stats = scrapeRunRepo.getStats();
-    
+
     res.json({
       runs,
       stats
@@ -445,7 +440,7 @@ router.get('/stats', (req, res) => {
       history: listingHistoryRepo.getSummary(),
       bySource: listingRepo.countBySource()
     };
-    
+
     res.json(stats);
   } catch (error) {
     logger.error('Error fetching stats:', error);

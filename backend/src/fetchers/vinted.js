@@ -1,5 +1,7 @@
 import { BaseFetcher } from './base.js';
 import { logger } from '../utils/logger.js';
+import { config } from '../utils/config.js';
+import { sanitizeSearchQuery } from '../utils/url-validator.js';
 import { isForeignLanguageOnly } from '../services/language-detection.js';
 
 export function extractVintedExternalId(url) {
@@ -246,6 +248,79 @@ export class VintedFetcher extends BaseFetcher {
     this._fastPageConfigured = false;
   }
 
+  /**
+   * Detect if page shows rate limit message
+   */
+  async detectRateLimit() {
+    if (!this.page) return false;
+    try {
+      const rateLimitIndicators = [
+        'You are rate limited',
+        'rate limited',
+        'too many requests',
+        'trop de requêtes',
+        'ralentis',
+        'essayez plus tard',
+        'try again later',
+        'temporarily unavailable',
+      ];
+
+      const pageText = await this.page.evaluate(() => document.body.innerText.toLowerCase());
+
+      for (const indicator of rateLimitIndicators) {
+        if (pageText.includes(indicator.toLowerCase())) {
+          return true;
+        }
+      }
+      return false;
+    } catch (error) {
+      logger.debug('Error detecting rate limit:', error.message);
+      return false;
+    }
+  }
+
+  /**
+   * Retry navigation with exponential backoff
+   */
+  async safeGotoWithRetry(url, options = {}) {
+    const { retryMax = 3, retryBackoffMs = 2000 } = config.scraping;
+
+    let lastError = null;
+
+    for (let attempt = 1; attempt <= retryMax; attempt++) {
+      try {
+        logger.debug(`Navigation attempt ${attempt}/${retryMax}: ${url}`);
+
+        await this.safeGoto(url, options);
+
+        // Check if we got rate limited
+        if (await this.detectRateLimit()) {
+          if (attempt < retryMax) {
+            const waitTime = retryBackoffMs * Math.pow(2, attempt - 1); // Exponential backoff: 2s, 4s, 8s...
+            logger.warn(`⏱️ Rate limited detected! Waiting ${waitTime}ms before retry ${attempt + 1}/${retryMax}...`);
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+            continue;
+          } else {
+            throw new Error('Rate limited - max retries reached');
+          }
+        }
+
+        logger.debug(`✅ Navigation successful on attempt ${attempt}`);
+        return;
+      } catch (error) {
+        lastError = error;
+
+        if (attempt < retryMax) {
+          const waitTime = retryBackoffMs * Math.pow(2, attempt - 1);
+          logger.warn(`Navigation failed (${error.message}). Retrying in ${waitTime}ms...`);
+          await new Promise(resolve => setTimeout(resolve, waitTime));
+        }
+      }
+    }
+
+    throw lastError || new Error('Navigation failed after all retries');
+  }
+
   getPriceRangeOptions(options = {}) {
     const budget = typeof options.budget === 'object' && options.budget !== null
       ? options.budget
@@ -292,7 +367,7 @@ export class VintedFetcher extends BaseFetcher {
 
     const fixedUrl = this.withVintedPriceParams(currentUrl, options).toString();
     logger.warn(`Vinted a retiré la fourchette prix de l'URL, re-navigation rapide avec filtres: ${fixedUrl}`);
-    await this.page.goto(fixedUrl, { waitUntil: 'domcontentloaded', timeout: 12000 });
+    await this.safeGoto(fixedUrl, { waitUntil: 'domcontentloaded', timeout: 12000 });
     await this.randomDelay(400, 800);
   }
 
@@ -385,20 +460,26 @@ export class VintedFetcher extends BaseFetcher {
 
       if (visitHomepageFirst) {
         logger.info('Visiting Vinted homepage first...');
-        await this.page.goto(this.baseUrl, {
+        await this.safeGotoWithRetry(this.baseUrl, {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         });
         await this.randomDelay(400, 800);
       }
 
-      const searchUrl = this.buildSearchUrl(query, options);
+      // Sanitize query before building URL
+      const safeQuery = sanitizeSearchQuery(query);
+      const searchUrl = this.buildSearchUrl(safeQuery, options);
       logger.info(`Navigating to: ${searchUrl}`);
 
-      await this.page.goto(searchUrl, {
+      await this.safeGotoWithRetry(searchUrl, {
         waitUntil: 'domcontentloaded',
         timeout: 12000,
       });
+
+      // Add random delay after main search page load
+      await this.randomDelay(config.scraping.delayMin, config.scraping.delayMax);
+
       await this.ensurePriceFiltersInUrl(options);
 
       // CAPTCHA check juste après l'arrivée sur la page de recherche.
@@ -595,10 +676,13 @@ export class VintedFetcher extends BaseFetcher {
         try {
           logger.debug(`Fetching listing: ${url}`);
 
-          await this.page.goto(url, {
+          await this.safeGotoWithRetry(url, {
             waitUntil: 'domcontentloaded',
             timeout: 8000,
           });
+
+          // Add random delay between requests to avoid rate limiting
+          await this.randomDelay(config.scraping.delayMin, config.scraping.delayMax);
 
           // Petite attente optionnelle très courte pour laisser hydrater le DOM.
           await this.page.waitForSelector('h1, [data-testid="item-price"], [itemprop="description"], time', {
@@ -699,6 +783,9 @@ export class VintedFetcher extends BaseFetcher {
     } catch (error) {
       logger.error('Vinted fetch error:', error);
       throw error;
+    } finally {
+      // Always cleanup resources (page/browser released to pool)
+      await this.close();
     }
   }
 }

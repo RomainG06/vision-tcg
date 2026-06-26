@@ -16,6 +16,8 @@ export function normalizeListing(rawListing, source, scrapeRunId) {
       return normalizeLeboncoin(rawListing, scrapeRunId);
     case 'vinted':
       return normalizeVinted(rawListing, scrapeRunId);
+    case 'ebay':
+      return normalizeEbay(rawListing, scrapeRunId);
     default:
       throw new Error(`Unknown source: ${source}`);
   }
@@ -71,6 +73,30 @@ function normalizeVinted(raw, scrapeRunId) {
     lon: raw.lon || null,
     distance_km: raw.distance_km || null,
     images: normalizeImages(raw.images || raw.image_url || raw.photo),
+    posted_at: normalizeDate(raw.posted_at || raw.created_at),
+    scraped_at: new Date().toISOString(),
+    raw_html: raw.raw_html || null,
+    status: 'new',
+    score: raw.score || 0,
+    score_breakdown: raw.score_breakdown ? JSON.stringify(raw.score_breakdown) : null,
+    notes: null
+  };
+}
+
+function normalizeEbay(raw, scrapeRunId) {
+  return {
+    scrape_run_id: scrapeRunId,
+    source: 'ebay',
+    external_id: raw.id || raw.external_id,
+    url: raw.url,
+    title: cleanText(raw.title),
+    description: cleanText(raw.description),
+    price: parsePrice(raw.price),
+    location: raw.location,
+    lat: raw.lat || null,
+    lon: raw.lon || null,
+    distance_km: raw.distance_km || null,
+    images: normalizeImages(raw.images || raw.image_url),
     posted_at: normalizeDate(raw.posted_at || raw.created_at),
     scraped_at: new Date().toISOString(),
     raw_html: raw.raw_html || null,

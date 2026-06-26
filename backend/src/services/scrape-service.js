@@ -1,5 +1,6 @@
 import { fetchVinted } from '../fetchers/vinted.js';
 import { fetchLeboncoin } from '../fetchers/leboncoin.js';
+import { fetchEbay } from '../fetchers/ebay.js';
 import { normalizeListings } from './normalizer.js';
 import { explainListingScore } from '../scoring/scorer-simple.js';
 import { ListingRepository } from '../repositories/listing-repository.js';
@@ -18,6 +19,7 @@ const seenListingRepo = new SeenListingRepository();
 const FETCHERS = {
   vinted: fetchVinted,
   leboncoin: fetchLeboncoin,
+  ebay: fetchEbay,
 };
 
 export function buildHuntQuery(options = {}) {
@@ -136,7 +138,7 @@ export async function startScrape(options = {}) {
 
   const enabledSources = sources.filter(source => FETCHERS[source]);
   if (enabledSources.length === 0) {
-    throw new Error('No supported source selected. Use vinted or leboncoin.');
+    throw new Error('No supported source selected. Use vinted, leboncoin, or ebay.');
   }
 
   const queries = smartQueries

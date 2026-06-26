@@ -11,6 +11,11 @@ function parseBoolean(value, defaultValue = false) {
   return ['1', 'true', 'yes', 'on'].includes(String(value).trim().toLowerCase());
 }
 
+function optionalString(value) {
+  const text = String(value || '').trim();
+  return text.length > 0 ? text : undefined;
+}
+
 export const config = {
   port: process.env.PORT || 3000,
   nodeEnv: process.env.NODE_ENV || 'development',
@@ -58,5 +63,15 @@ export const config = {
     delayMax: parseInt(process.env.SCRAPE_DELAY_MAX_MS || '4000'),
     retryMax: parseInt(process.env.SCRAPE_RETRY_MAX || '3'),
     retryBackoffMs: parseInt(process.env.SCRAPE_RETRY_BACKOFF_MS || '2000')
+  },
+
+  ebay: {
+    env: optionalString(process.env.EBAY_ENV) || 'production',
+    clientId: optionalString(process.env.EBAY_CLIENT_ID),
+    clientSecret: optionalString(process.env.EBAY_CLIENT_SECRET),
+    marketplaceId: optionalString(process.env.EBAY_MARKETPLACE_ID) || 'EBAY_FR',
+    scope: optionalString(process.env.EBAY_SCOPE) || 'https://api.ebay.com/oauth/api_scope',
+    categoryIds: optionalString(process.env.EBAY_CATEGORY_IDS),
+    maxResults: parseInt(process.env.EBAY_MAX_RESULTS || '50'),
   }
 };

@@ -1,5 +1,7 @@
 import { BaseFetcher } from '../src/fetchers/base.js';
 import { browserPool } from '../src/fetchers/browser-pool.js';
+import { buildEbayTokenRequest, EbayConfigError } from '../src/fetchers/ebay-auth.js';
+import { buildEbaySearchUrl, fetchEbay, mapEbayItemSummary } from '../src/fetchers/ebay.js';
 import { VintedFetcher, extractVintedExternalId, selectUnseenVintedItems, selectUnseenVintedUrls, summarizeVintedPrefilter } from '../src/fetchers/vinted.js';
 
 describe('Fetchers', () => {
@@ -23,6 +25,105 @@ describe('Fetchers', () => {
       expect(browserPool.getLaunchOptions('leboncoin').headless).toBe(false);
       expect(browserPool.getPoolKey('vinted')).toBe('vinted:headless');
       expect(browserPool.getPoolKey('leboncoin')).toBe('leboncoin:headful');
+    });
+  });
+
+  describe('eBay Browse API', () => {
+    it('builds OAuth client credentials request without logging secrets', () => {
+      const request = buildEbayTokenRequest({
+        clientId: 'client-id',
+        clientSecret: 'client-secret',
+        scope: 'scope-a',
+        env: 'sandbox',
+      });
+
+      expect(request.url).toBe('https://api.sandbox.ebay.com/identity/v1/oauth2/token');
+      expect(request.init.method).toBe('POST');
+      expect(request.init.headers.Authorization).toMatch(/^Basic /);
+      expect(String(request.init.body)).toContain('grant_type=client_credentials');
+      expect(String(request.init.body)).toContain('scope=scope-a');
+    });
+
+    it('fails fast when eBay credentials are missing', () => {
+      expect(() => buildEbayTokenRequest({ clientId: '', clientSecret: '' })).toThrow(EbayConfigError);
+    });
+
+    it('builds Browse API search URL with budget filters', () => {
+      const url = new URL(buildEbaySearchUrl('lot pokemon jungle', {
+        accessToken: 'token',
+        maxResults: 5,
+        budget: { min: 20, max: 1500 },
+        env: 'production',
+      }));
+
+      expect(url.origin).toBe('https://api.ebay.com');
+      expect(url.pathname).toBe('/buy/browse/v1/item_summary/search');
+      expect(url.searchParams.get('q')).toBe('lot pokemon jungle');
+      expect(url.searchParams.get('limit')).toBe('5');
+      expect(url.searchParams.get('filter')).toContain('price:[20..1500]');
+      expect(url.searchParams.get('filter')).toContain('priceCurrency:EUR');
+    });
+
+    it('maps eBay item summaries to internal listing contract', () => {
+      const listing = mapEbayItemSummary({
+        itemId: 'v1|123|0',
+        title: 'Lot cartes Pokémon Wizards FR',
+        price: { value: '100.00', currency: 'EUR' },
+        shippingOptions: [{ shippingCost: { value: '5.50', currency: 'EUR' } }],
+        itemWebUrl: 'https://www.ebay.fr/itm/123',
+        image: { imageUrl: 'https://img.example/item.jpg' },
+        itemLocation: { city: 'Nice', country: 'FR' },
+        seller: { username: 'seller123' },
+      });
+
+      expect(listing).toMatchObject({
+        source: 'ebay',
+        external_id: 'v1|123|0',
+        title: 'Lot cartes Pokémon Wizards FR',
+        price: 105.5,
+        image_url: 'https://img.example/item.jpg',
+        location: 'Nice, FR',
+      });
+    });
+
+    it('fetches eBay listings with mocked OAuth and Browse API calls', async () => {
+      const fetchImpl = async (url, request) => {
+        if (String(url).includes('/identity/v1/oauth2/token')) {
+          return {
+            ok: true,
+            status: 200,
+            text: async () => JSON.stringify({ access_token: 'mock-token', expires_in: 7200 }),
+          };
+        }
+
+        expect(request.headers.Authorization).toBe('Bearer mock-token');
+        expect(request.headers['X-EBAY-C-MARKETPLACE-ID']).toBe('EBAY_FR');
+        return {
+          ok: true,
+          status: 200,
+          text: async () => JSON.stringify({
+            total: 2,
+            itemSummaries: [
+              { itemId: 'seen-1', title: 'Déjà vue', price: { value: '10', currency: 'EUR' }, itemWebUrl: 'https://www.ebay.fr/itm/seen-1' },
+              { itemId: 'new-2', title: 'Lot Pokémon Jungle', price: { value: '80', currency: 'EUR' }, itemWebUrl: 'https://www.ebay.fr/itm/new-2' },
+            ],
+          }),
+        };
+      };
+
+      const listings = await fetchEbay('pokemon jungle', {
+        fetchImpl,
+        clientId: 'client-id',
+        clientSecret: 'client-secret',
+        marketplaceId: 'EBAY_FR',
+        excludeExternalIds: ['seen-1'],
+        maxResults: 2,
+      });
+
+      expect(listings).toHaveLength(1);
+      expect(listings[0].external_id).toBe('new-2');
+      expect(listings.prefilter_summary.already_seen).toBe(1);
+      expect(listings.ebay_api.mode).toBe('browse_api');
     });
   });
 

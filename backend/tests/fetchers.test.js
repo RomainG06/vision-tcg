@@ -1,5 +1,6 @@
 import { BaseFetcher } from '../src/fetchers/base.js';
 import { browserPool } from '../src/fetchers/browser-pool.js';
+import { buildLeboncoinApiPayload, detectLeboncoinApiBlock, fetchLeboncoinApi, LeboncoinApiBlockedError, mapLeboncoinApiAd } from '../src/fetchers/leboncoin-api.js';
 import { buildLeboncoinSearchUrl, extractLeboncoinExternalId, selectLeboncoinUrls } from '../src/fetchers/leboncoin-utils.js';
 import { VintedFetcher, extractVintedExternalId, selectUnseenVintedItems, selectUnseenVintedUrls, summarizeVintedPrefilter } from '../src/fetchers/vinted.js';
 
@@ -75,6 +76,87 @@ describe('Fetchers', () => {
         'https://www.leboncoin.fr/ad/collection/222',
         'https://www.leboncoin.fr/ad/collection/333',
       ]);
+    });
+    it('maps Leboncoin API ads to the internal listing contract', () => {
+      const listing = mapLeboncoinApiAd({
+        list_id: 123456789,
+        subject: 'Lot cartes Pokémon Wizards FR',
+        body: 'Base set, Jungle et Fossile en français',
+        price: [120],
+        images: { thumb_url: 'https://img.example/thumb.jpg' },
+        location: { city: 'Nice', zipcode: '06000', lat: 43.7, lng: 7.26 },
+        first_publication_date: '2026-06-26T08:00:00Z',
+      });
+
+      expect(listing).toMatchObject({
+        source: 'leboncoin',
+        external_id: '123456789',
+        title: 'Lot cartes Pokémon Wizards FR',
+        price: 120,
+        location: 'Nice 06000',
+        image_url: 'https://img.example/thumb.jpg',
+      });
+      expect(listing.url).toContain('/ad/collection/123456789');
+    });
+
+    it('builds the Leboncoin API search payload for Nice collection searches', () => {
+      const payload = buildLeboncoinApiPayload('lot pokemon <script> jungle', {
+        maxResults: 2,
+        budget: { min: 10, max: 1500 },
+      });
+
+      expect(payload.limit).toBe(2);
+      expect(payload.filters.category.id).toBe('40');
+      expect(payload.filters.keywords.text).toBe('lot pokemon script jungle');
+      expect(payload.filters.location.locations[0].city).toBe('Nice');
+      expect(payload.filters.location.locations[0].area.default_radius).toBe(50000);
+      expect(payload.filters.ranges.price).toEqual({ min: 10, max: 1500 });
+    });
+
+    it('detects Leboncoin API DataDome blocks', () => {
+      expect(detectLeboncoinApiBlock(403, '{"url":"https://geo.captcha-delivery.com/captcha/"}')).toBe(true);
+      expect(detectLeboncoinApiBlock(200, '{"ads":[]}')).toBe(false);
+    });
+
+    it('fetches Leboncoin API listings with a mock fetch and skips already seen ids', async () => {
+      const fetchImpl = async (_url, request) => {
+        const body = JSON.parse(request.body);
+        expect(body.filters.keywords.text).toBe('pokemon jungle');
+        return {
+          ok: true,
+          status: 200,
+          headers: { get: () => 'application/json' },
+          text: async () => JSON.stringify({
+            total: 2,
+            ads: [
+              { list_id: 111, subject: 'Ancien déjà vu', price: [10], location: { city: 'Nice' } },
+              { list_id: 222, subject: 'Lot Pokémon Jungle', price: [90], location: { city: 'Nice', zipcode: '06000' } },
+            ],
+          }),
+        };
+      };
+
+      const listings = await fetchLeboncoinApi('pokemon jungle', {
+        maxResults: 2,
+        excludeExternalIds: ['111'],
+        fetchImpl,
+      });
+
+      expect(listings).toHaveLength(1);
+      expect(listings[0].external_id).toBe('222');
+      expect(listings.prefilter_summary.already_seen).toBe(1);
+      expect(listings.lbc_api.mode).toBe('api');
+    });
+
+    it('throws a typed error when Leboncoin API is blocked', async () => {
+      await expect(fetchLeboncoinApi('pokemon', {
+        fetchImpl: async () => ({
+          ok: false,
+          status: 403,
+          headers: { get: () => 'application/json' },
+          text: async () => '{"url":"https://geo.captcha-delivery.com/captcha/"}',
+        }),
+      })).rejects.toBeInstanceOf(LeboncoinApiBlockedError);
     });
   });
 

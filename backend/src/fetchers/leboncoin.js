@@ -2,6 +2,7 @@ import { BaseFetcher } from './base.js';
 import { parseLeboncoinListing } from '../parsers/parser-lbc.js';
 import { logger } from '../utils/logger.js';
 import { config } from '../utils/config.js';
+import { fetchLeboncoinApi, LeboncoinApiBlockedError } from './leboncoin-api.js';
 import {
   attachLeboncoinMetadata,
   buildLeboncoinSearchUrl,
@@ -393,6 +394,21 @@ export class LeboncoinFetcher extends BaseFetcher {
  * Convenience function
  */
 export async function fetchLeboncoin(query, options = {}) {
+  const mode = String(options.fetchMode || options.fetch_mode || config.scraping.leboncoinFetchMode || 'api').toLowerCase();
+
+  if (mode === 'api' || mode === 'auto') {
+    try {
+      return await fetchLeboncoinApi(query, options);
+    } catch (error) {
+      if (mode === 'api') {
+        throw error;
+      }
+
+      const isApiBlocked = error instanceof LeboncoinApiBlockedError || error?.code === 'lbc_api_blocked';
+      logger.warn(`[LBC] API mode failed (${error.message}). ${isApiBlocked ? 'Falling back to browser mode.' : 'Trying browser fallback.'}`);
+    }
+  }
+
   const fetcher = new LeboncoinFetcher();
   return await fetcher.fetch(query, options);
 }

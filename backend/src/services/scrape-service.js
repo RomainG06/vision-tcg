@@ -225,6 +225,7 @@ export async function startScrape(options = {}) {
               order: filters.order || filters.sort || 'newest_first',
               maxScrollPasses,
               waitForCaptcha,
+              fetchMode: filters.lbcFetchMode || filters.lbc_fetch_mode,
             });
             const prefilterSummary = fetchedListings.prefilter_summary || null;
             const gridRawFound = Number(fetchedListings.grid_raw_found ?? prefilterSummary?.total ?? fetchedListings.length);

@@ -250,7 +250,7 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
           sensitivity,
           maxQueries: SENSITIVITY[sensitivity].maxQueries,
           lbcMaxQueries: includesLeboncoin ? 1 : undefined,
-          lbcMaxResults: includesLeboncoin ? 3 : undefined,
+          lbcMaxResults: includesLeboncoin ? 2 : undefined,
           rescanSeen,
           targetCards: targetCards.map(card => ({
             id: card.id,

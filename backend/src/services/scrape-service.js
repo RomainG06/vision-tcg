@@ -184,7 +184,7 @@ export async function startScrape(options = {}) {
           : executionQueries.length;
         const sourceQueries = executionQueries.slice(0, sourceQueryLimit);
         const sourceMaxResults = source === 'leboncoin'
-          ? Math.max(1, Math.min(maxResults, Number(filters.lbcMaxResults ?? filters.lbc_max_results ?? 3) || 3))
+          ? Math.max(1, Math.min(maxResults, Number(filters.lbcMaxResults ?? filters.lbc_max_results ?? 2) || 2))
           : maxResults;
 
         logger.info(`Starting smart scrape: ${source} queries=${sourceQueries.length}/${executionQueries.length} maxResults=${sourceMaxResults}`);
@@ -201,7 +201,7 @@ export async function startScrape(options = {}) {
         const configuredScrollPasses = Number(filters.maxScrollPasses ?? filters.max_scroll_passes);
         const scanDepth = Number.isFinite(configuredScanDepth) && configuredScanDepth > 0
           ? configuredScanDepth
-          : Math.max(sourceMaxResults * scanModePreset.scanDepthMultiplier, source === 'leboncoin' ? 12 : scanModePreset.minScanDepth);
+          : Math.max(sourceMaxResults * scanModePreset.scanDepthMultiplier, source === 'leboncoin' ? 10 : scanModePreset.minScanDepth);
         const maxScrollPasses = Number.isFinite(configuredScrollPasses) && configuredScrollPasses > 0
           ? configuredScrollPasses
           : (source === 'leboncoin' ? Math.min(scanModePreset.maxScrollPasses, 4) : scanModePreset.maxScrollPasses);

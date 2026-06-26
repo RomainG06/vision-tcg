@@ -1,0 +1,32 @@
+// Instructions pour mise à jour URGENTE de HuntLaunchPanel.jsx
+// STRATÉGIE ULTRA-PRUDENTE post-CAPTCHA (suite au blocage rapide LBC)
+
+// ÉTAPE 1: Remplacer le cas "Still rate limited after" dans getFriendlyScrapeError()
+// Chercher et remplacer:
+
+  if (/Still rate limited after.*post-CAPTCHA cooldown/i.test(text)) {
+    return 'Leboncoin impose un cooldown sévère même après résolution du CAPTCHA (jusqu\'à 90 secondes). Le système a limité à 1 seule annonce pour cette session. Attends 30 minutes avant de relancer en mode LBC seul très prudent (Sensibilité: Prudent, uniquement LBC, 2 résultats max).';
+  }
+
+// ÉTAPE 2: Remplacer le cas "Rate limit persists after 90s" (nouveau cas à ajouter):
+
+  if (/Rate limit persists after 90s post-CAPTCHA cooldown/i.test(text)) {
+    return 'Le Bon Coin bloque très agressivement. Le système a attendu 90 secondes post-CAPTCHA mais LBC continue à bloquer. Attends au minimum 30-60 minutes. Évite LBC pour les prochaines sessions et utilise uniquement Vinted. Ou réessaye LBC demain.';
+  }
+
+// ÉTAPE 3: Remplacer le cas "Rate limit detected immediately after CAPTCHA":
+
+  if (/\[LBC\].*Rate limited detected immediately after CAPTCHA/i.test(text)) {
+    return 'Le Bon Coin a détecté un rate limit immédiatement après résolution du CAPTCHA. Le système a attendu 90 secondes et limité à 1 seule annonce. Réessaye dans 30-60 minutes ou utilise uniquement Vinted pour l\'instant.';
+  }
+
+// ÉTAPE 4: Mettre à jour la modal LbcCaptchaAssistModal() - étape #3:
+
+          <li>Ne ferme pas Chrome : le scan reprend automatiquement après validation avec cooldown de 90 secondes.</li>
+          <li><strong>Stratégie ultra-prudente :</strong> Après résolution du CAPTCHA, le système attend 90 secondes (cooling down), puis fetche UNIQUEMENT 1 seule annonce pour minimiser l'exposition. Cela réduit drastiquement le risque de blocage permanent. Tu peux relancer un scan normal 30+ minutes plus tard.</li>
+
+// ÉTAPE 5: Mettre à jour la note dans la modal:
+
+        <div style={styles.lbcModalNote}>
+          🛡️ <strong>Stratégie ultra-prudente post-CAPTCHA:</strong> Le Bon Coin est très agressif après validation du CAPTCHA. Le système utilise un cooldown de 90 secondes puis ne fetche qu'1 seule annonce. Si LBC bloque encore, attends 30-60 minutes avant de relancer. Pour les sessions normales sans CAPTCHA, délais standards 3-6s entre annonces. Retries avec backoff exponentiel (3s → 6s → 12s) si blocage détecté.
+        </div>

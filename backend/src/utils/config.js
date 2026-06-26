@@ -77,8 +77,21 @@ export const config = {
 
   priceInfo: {
     enabled: parseBoolean(process.env.PRICE_INFO_ENABLED, true),
-    provider: optionalString(process.env.PRICE_INFO_PROVIDER) || 'ebay_sold',
+    provider: optionalString(process.env.PRICE_INFO_PROVIDER) || 'cardmarket,ebay_sold',
     maxComparables: parseInt(process.env.PRICE_INFO_MAX_COMPARABLES || '20'),
     minComparables: parseInt(process.env.PRICE_INFO_MIN_COMPARABLES || '3'),
+    cacheTtlHours: parseInt(process.env.PRICE_INFO_CACHE_TTL_HOURS || '48'),
+  },
+
+  cardmarket: {
+    enabled: parseBoolean(process.env.CARDMARKET_ENABLED, true),
+    baseUrl: optionalString(process.env.CARDMARKET_BASE_URL) || 'https://api.cardmarket.com/ws/v2.0',
+    consumerKey: optionalString(process.env.CARDMARKET_CONSUMER_KEY),
+    consumerSecret: optionalString(process.env.CARDMARKET_CONSUMER_SECRET),
+    accessToken: optionalString(process.env.CARDMARKET_ACCESS_TOKEN),
+    accessTokenSecret: optionalString(process.env.CARDMARKET_ACCESS_TOKEN_SECRET),
+    gameId: parseInt(process.env.CARDMARKET_GAME_ID || '6'),
+    languageId: parseInt(process.env.CARDMARKET_LANGUAGE_ID || '2'),
+    maxResults: parseInt(process.env.CARDMARKET_MAX_RESULTS || '10'),
   }
 };

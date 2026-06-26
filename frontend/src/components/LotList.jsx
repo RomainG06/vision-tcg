@@ -69,7 +69,7 @@ function LotList({ listings, onUpdate, onDelete, highlightedIds = [] }) {
           const rarity = getRarityLevel(listing.score);
           const rarityStyle = getRarityStyle(rarity);
           const isHighlighted = highlightedIds.includes(listing.id);
-          const isUncalibratedEstimate = listing.estimate_method === 'price_multiplier_fallback' || listing.estimate_confidence === 'low';
+          const isUncalibratedEstimate = !listing.estimate_method || listing.estimate_method === 'price_multiplier_fallback';
           const estimatedLow = listing.estimated_value_min ?? listing.value_estimate_low ?? null;
           const estimatedHigh = listing.estimated_value_max ?? listing.value_estimate_high ?? null;
           const gainMin = listing.estimated_gain_min ?? (estimatedLow !== null ? Math.round(Number(estimatedLow) - Number(listing.price || 0)) : null);
@@ -190,6 +190,11 @@ function LotList({ listings, onUpdate, onDelete, highlightedIds = [] }) {
                       {listing.estimate_method === 'ebay_sold_average' && (
                         <div style={styles.estimateSource}>
                           eBay ventes réussies{listing.estimate_condition_label ? ` ${listing.estimate_condition_label}` : ''} · {listing.estimate_sample_count || '?'} comparables
+                        </div>
+                      )}
+                      {listing.estimate_method === 'cardmarket_priceguide' && (
+                        <div style={styles.estimateSource}>
+                          Cardmarket{listing.estimate_condition_label ? ` ${listing.estimate_condition_label}` : ''} · {listing.estimate_cardmarket_expansion || 'price guide'}
                         </div>
                       )}
                     </>

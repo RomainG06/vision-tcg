@@ -2,6 +2,10 @@ import { config } from '../utils/config.js';
 import { logger } from '../utils/logger.js';
 import { sanitizeSearchQuery } from '../utils/url-validator.js';
 import { getEbayAccessToken, getEbayApiBaseUrl, EbayConfigError } from '../fetchers/ebay-auth.js';
+import { detectListingCondition, normalizeCardCondition } from './card-condition.js';
+import { enrichListingWithCardmarketPrice } from './cardmarket-price-info.js';
+
+export { detectListingCondition, normalizeCardCondition };
 
 export class EbaySoldAccessDeniedError extends Error {
   constructor(message) {
@@ -27,39 +31,6 @@ function percentile(sortedValues, ratio) {
   if (!sortedValues.length) return null;
   const index = Math.min(sortedValues.length - 1, Math.max(0, Math.round((sortedValues.length - 1) * ratio)));
   return sortedValues[index];
-}
-
-export function normalizeCardCondition(value) {
-  if (!value) return null;
-  const text = String(value)
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase();
-
-  const matchers = [
-    { key: 'damaged', label: 'Damaged', rank: 10, pattern: /\b(damaged|abimee?|abime|tres\s+abimee?|pli(?:e|ee|ure)|dechiree?|poor|hp|heavy\s+played)\b/ },
-    { key: 'played', label: 'Played', rank: 30, pattern: /\b(played|pl|jouee?|moyen(?:ne)?|etat\s+moyen|moderately\s+played|mp)\b/ },
-    { key: 'light_played', label: 'LP', rank: 45, pattern: /\b(light\s+played|lp|legerement\s+jouee?|bon\s+etat|good)\b/ },
-    { key: 'excellent', label: 'Excellent', rank: 60, pattern: /\b(excellent|ex\+?|very\s+good|tres\s+bon\s+etat)\b/ },
-    { key: 'near_mint', label: 'NM', rank: 80, pattern: /\b(near\s+mint|near-mint|nm|mint-|mint\s-)\b|\betat\s+neuf\b|\bcomme\s+neuve?\b/ },
-    { key: 'mint', label: 'Mint', rank: 90, pattern: /\b(mint|neuve?|neuf)\b/ },
-  ];
-
-  for (const matcher of matchers) {
-    if (matcher.pattern.test(text)) {
-      return { key: matcher.key, label: matcher.label, rank: matcher.rank };
-    }
-  }
-
-  return null;
-}
-
-export function detectListingCondition(listing = {}) {
-  return normalizeCardCondition([
-    listing.condition,
-    listing.title,
-    listing.description,
-  ].filter(Boolean).join(' '));
 }
 
 function comparableCondition(comparable = {}) {
@@ -253,38 +224,65 @@ export function buildPriceInfoQuery(listing) {
     .trim() || sanitizeSearchQuery(listing?.title || 'pokemon wizards');
 }
 
+function priceProviders() {
+  return String(config.priceInfo.provider || 'cardmarket,ebay_sold')
+    .split(',')
+    .map(provider => provider.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+function hasCalibratedEstimate(listing) {
+  return listing?.score_breakdown?.estimate_method && listing.score_breakdown.estimate_method !== 'price_multiplier_fallback';
+}
+
+async function enrichListingWithEbaySoldPrice(listing, options = {}) {
+  try {
+    const query = options.queryBuilder ? options.queryBuilder(listing) : buildPriceInfoQuery(listing);
+    const comparables = await fetchEbaySoldComparables(query, {
+      ...options,
+      limit: options.maxComparables || config.priceInfo.maxComparables,
+    });
+    const targetCondition = detectListingCondition(listing);
+    const summary = summarizeSoldComparables(comparables, {
+      ...options,
+      targetCondition,
+    });
+    return applySoldEstimateToListing(listing, summary, comparables);
+  } catch (error) {
+    if (error instanceof EbayConfigError || error.code === 'ebay_config_missing') {
+      logger.warn('[price-info] eBay credentials missing; keeping fallback estimates.');
+    } else if (error instanceof EbaySoldAccessDeniedError || error.code === 'ebay_sold_access_denied') {
+      if (!soldAccessDeniedWarned) {
+        logger.warn('[price-info] eBay Marketplace Insights access denied; sold-price calibration disabled for this run. Ask eBay for Marketplace Insights/item_sales access or set PRICE_INFO_ENABLED=false to silence this fallback.');
+        soldAccessDeniedWarned = true;
+      }
+    } else {
+      logger.warn(`[price-info] eBay sold estimate unavailable: ${error.message}`);
+    }
+    return listing;
+  }
+}
+
 export async function enrichListingsWithEbaySoldPrices(listings = [], options = {}) {
-  if (!config.priceInfo.enabled || options.enabled === false || config.priceInfo.provider !== 'ebay_sold') {
+  if (!config.priceInfo.enabled || options.enabled === false) {
     return listings;
   }
 
+  const providers = priceProviders();
   const enriched = [];
+
   for (const listing of listings) {
-    try {
-      const query = options.queryBuilder ? options.queryBuilder(listing) : buildPriceInfoQuery(listing);
-      const comparables = await fetchEbaySoldComparables(query, {
-        ...options,
-        limit: options.maxComparables || config.priceInfo.maxComparables,
-      });
-      const targetCondition = detectListingCondition(listing);
-      const summary = summarizeSoldComparables(comparables, {
-        ...options,
-        targetCondition,
-      });
-      enriched.push(applySoldEstimateToListing(listing, summary, comparables));
-    } catch (error) {
-      if (error instanceof EbayConfigError || error.code === 'ebay_config_missing') {
-        logger.warn('[price-info] eBay credentials missing; keeping fallback estimates.');
-      } else if (error instanceof EbaySoldAccessDeniedError || error.code === 'ebay_sold_access_denied') {
-        if (!soldAccessDeniedWarned) {
-          logger.warn('[price-info] eBay Marketplace Insights access denied; sold-price calibration disabled for this run. Ask eBay for Marketplace Insights/item_sales access or set PRICE_INFO_ENABLED=false to silence this fallback.');
-          soldAccessDeniedWarned = true;
-        }
-      } else {
-        logger.warn(`[price-info] eBay sold estimate unavailable: ${error.message}`);
-      }
-      enriched.push(listing);
+    let current = listing;
+
+    if (providers.includes('cardmarket')) {
+      current = await enrichListingWithCardmarketPrice(current, options);
     }
+
+    if (!hasCalibratedEstimate(current) && providers.includes('ebay_sold')) {
+      current = await enrichListingWithEbaySoldPrice(current, options);
+    }
+
+    enriched.push(current);
   }
 
   return enriched;

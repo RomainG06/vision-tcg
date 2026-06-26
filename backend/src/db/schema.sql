@@ -109,6 +109,20 @@ CREATE INDEX IF NOT EXISTS idx_listing_price_events_listing ON listing_price_eve
 CREATE INDEX IF NOT EXISTS idx_listing_alerts_created ON listing_alerts(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_listing_alerts_type ON listing_alerts(type);
 
+CREATE TABLE IF NOT EXISTS price_info_cache (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  provider TEXT NOT NULL,
+  cache_key TEXT NOT NULL,
+  payload TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL,
+  UNIQUE(provider, cache_key)
+);
+
+CREATE INDEX IF NOT EXISTS idx_price_info_cache_provider_key ON price_info_cache(provider, cache_key);
+CREATE INDEX IF NOT EXISTS idx_price_info_cache_expires ON price_info_cache(expires_at);
+
 -- Keywords for scoring
 CREATE TABLE IF NOT EXISTS keywords (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

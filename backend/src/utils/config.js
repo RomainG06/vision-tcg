@@ -11,6 +11,11 @@ function parseBoolean(value, defaultValue = false) {
   return ['1', 'true', 'yes', 'on'].includes(String(value).trim().toLowerCase());
 }
 
+function optionalString(value) {
+  const text = String(value || '').trim();
+  return text.length > 0 ? text : undefined;
+}
+
 export const config = {
   port: process.env.PORT || 3000,
   nodeEnv: process.env.NODE_ENV || 'development',
@@ -51,6 +56,12 @@ export const config = {
       vinted: parseBoolean(process.env.VINTED_HEADLESS, true),
       leboncoin: parseBoolean(process.env.LEBONCOIN_HEADLESS, false),
       facebook: parseBoolean(process.env.FACEBOOK_HEADLESS, false)
+    },
+    executablePathBySource: {
+      leboncoin: optionalString(process.env.LEBONCOIN_CHROME_PATH)
+    },
+    userDataDirBySource: {
+      leboncoin: optionalString(process.env.LEBONCOIN_USER_DATA_DIR)
     },
     timeout: 30000,
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',

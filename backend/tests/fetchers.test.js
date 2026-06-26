@@ -31,9 +31,12 @@ describe('Fetchers', () => {
 
     it('keeps Vinted headless and Leboncoin headful by default', () => {
       expect(browserPool.getLaunchOptions('vinted').headless).toBe(true);
-      expect(browserPool.getLaunchOptions('leboncoin').headless).toBe(false);
-      expect(browserPool.getPoolKey('vinted')).toBe('vinted:headless');
-      expect(browserPool.getPoolKey('leboncoin')).toBe('leboncoin:headful');
+      const lbcLaunchOptions = browserPool.getLaunchOptions('leboncoin');
+      expect(lbcLaunchOptions.headless).toBe(false);
+      expect(lbcLaunchOptions.args).toContain('--disable-blink-features=AutomationControlled');
+      expect(lbcLaunchOptions.args).toContain('--lang=fr-FR,fr');
+      expect(browserPool.getPoolKey('vinted')).toContain('vinted:headless');
+      expect(browserPool.getPoolKey('leboncoin')).toContain('leboncoin:headful');
     });
   });
 

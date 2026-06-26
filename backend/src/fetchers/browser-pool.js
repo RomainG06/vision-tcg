@@ -13,17 +13,25 @@ class BrowserPool {
         this.browsers = [];
         this.inUseBrowsers = new Set();
         this.maxBrowsers = 3;
-        this.baseLaunchOptions = {
-            args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-dev-shm-usage',
-                '--disable-accelerated-2d-canvas',
-                '--no-first-run',
-                '--no-zygote',
-                '--disable-gpu'
-            ]
-        };
+        this.defaultArgs = [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--no-zygote',
+            '--disable-gpu',
+            '--disable-blink-features=AutomationControlled',
+            '--lang=fr-FR,fr',
+            '--window-size=1920,1080'
+        ];
+        this.leboncoinArgs = [
+            '--disable-blink-features=AutomationControlled',
+            '--lang=fr-FR,fr',
+            '--window-size=1920,1080',
+            '--no-first-run',
+            '--no-default-browser-check'
+        ];
     }
 
     getHeadlessForSource(source = 'default') {
@@ -32,15 +40,29 @@ class BrowserPool {
 
     getLaunchOptions(source = 'default') {
         const headless = this.getHeadlessForSource(source);
-        return {
-            ...this.baseLaunchOptions,
+        const executablePath = config.scraping.executablePathBySource?.[source];
+        const userDataDir = config.scraping.userDataDirBySource?.[source];
+        const launchOptions = {
+            args: source === 'leboncoin' ? this.leboncoinArgs : this.defaultArgs,
             headless,
         };
+
+        if (executablePath) {
+            launchOptions.executablePath = executablePath;
+        }
+
+        if (userDataDir) {
+            launchOptions.userDataDir = userDataDir;
+        }
+
+        return launchOptions;
     }
 
     getPoolKey(source = 'default') {
         const headless = this.getHeadlessForSource(source);
-        return `${source}:${headless ? 'headless' : 'headful'}`;
+        const executablePath = config.scraping.executablePathBySource?.[source] || 'bundled';
+        const userDataDir = config.scraping.userDataDirBySource?.[source] || 'temp-profile';
+        return `${source}:${headless ? 'headless' : 'headful'}:${executablePath}:${userDataDir}`;
     }
 
     /**
@@ -77,8 +99,11 @@ class BrowserPool {
 
         // Create new browser if under capacity.
         if (this.browsers.length < this.maxBrowsers) {
-            logger.info(`Launching new browser instance for ${source} (${headless ? 'headless' : 'headful'})...`);
-            const browser = await puppeteer.launch(this.getLaunchOptions(source));
+            const launchOptions = this.getLaunchOptions(source);
+            const browserLabel = launchOptions.executablePath ? 'configured Chrome' : 'bundled Chromium';
+            const profileLabel = launchOptions.userDataDir ? 'persistent profile' : 'temporary profile';
+            logger.info(`Launching new browser instance for ${source} (${headless ? 'headless' : 'headful'}, ${browserLabel}, ${profileLabel})...`);
+            const browser = await puppeteer.launch(launchOptions);
             this.browsers.push({ browser, key: poolKey, source, headless });
             this.inUseBrowsers.add(browser);
             logger.info(`Browser launched. Pool size: ${this.browsers.length}/${this.maxBrowsers}`);

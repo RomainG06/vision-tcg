@@ -87,6 +87,8 @@ describe('cardmarket price info', () => {
     expect(extractCardmarketHints(kabutoListing)).toMatchObject({
       card_name_key: 'kabuto',
       card_name_label: 'Kabuto',
+      language: 'fr',
+      language_id: 2,
       number: '50/62',
       numberPrefix: '50',
       expansion_key: 'fossil',
@@ -95,7 +97,7 @@ describe('cardmarket price info', () => {
       condition: { key: 'near_mint', label: 'NM' },
     });
     expect(buildCardmarketSearchQuery(kabutoListing)).toBe('Kabuto');
-    expect(buildCardmarketCacheKey(kabutoListing)).toBe('kabuto|50/62|fossil|1ed');
+    expect(buildCardmarketCacheKey(kabutoListing)).toBe('fr|kabuto|50/62|fossil|1ed');
   });
 
   test('canonicalizes noisy Voltali/Jolteon titles to one cache key per card variant', () => {
@@ -104,14 +106,14 @@ describe('cardmarket price info', () => {
       { title: 'Voltali 4/64 HOLO Jungle Edition 2 Exc. 🇫🇷🔥' },
       { title: 'Holo Jolteon Jungle TCG GAMEFREAK Électrique 4/64' },
     ];
-    expect(new Set(variants4.map(buildCardmarketCacheKey))).toEqual(new Set(['jolteon|4/64|jungle']));
-    expect(new Set(variants4.map(buildCardmarketSearchQuery))).toEqual(new Set(['Jolteon']));
+    expect(new Set(variants4.map(buildCardmarketCacheKey))).toEqual(new Set(['fr|jolteon|4/64|jungle']));
+    expect(new Set(variants4.map(buildCardmarketSearchQuery))).toEqual(new Set(['Voltali']));
 
     const variants20 = [
       { title: ': Voltali 20/64 Edition 2 Jungle Wizards FR' },
       { title: 'Voltali Edition 2 Jungle 20/64' },
     ];
-    expect(new Set(variants20.map(buildCardmarketCacheKey))).toEqual(new Set(['jolteon|20/64|jungle']));
+    expect(new Set(variants20.map(buildCardmarketCacheKey))).toEqual(new Set(['fr|jolteon|20/64|jungle']));
   });
 
   test('skips Cardmarket API for graded cards because priceGuide is raw-card pricing', async () => {
@@ -145,7 +147,7 @@ describe('cardmarket price info', () => {
     expect(product.priceGuide.TREND).toBe(8.8);
   });
 
-  test('selects matching Fossil product and summarizes priceGuide', () => {
+  test('selects matching Fossil product and summarizes French priceGuide', () => {
     const best = selectBestCardmarketProduct(productSearchPayload.product, kabutoListing);
     expect(best.idProduct).toBe(111);
 
@@ -154,6 +156,10 @@ describe('cardmarket price info', () => {
       calibrated: true,
       method: 'cardmarket_priceguide',
       product_id: 111,
+      product_name: 'Kabuto',
+      product_name_en: 'Kabuto',
+      product_language: 'fr',
+      product_language_id: 2,
       expansion_name: 'Fossil',
       condition_key: 'near_mint',
       condition_label: 'NM',
@@ -163,6 +169,30 @@ describe('cardmarket price info', () => {
       value_min: 6,
       value_max: 9,
     });
+  });
+
+  test('selects French localized candidate over English-only candidate', () => {
+    const products = [
+      {
+        idProduct: 333,
+        enName: 'Jolteon',
+        gameName: 'Pokemon',
+        expansionName: 'Jungle',
+        number: '4',
+        localization: [{ idLanguage: 1, languageName: 'English', productName: 'Jolteon' }],
+      },
+      {
+        idProduct: 444,
+        enName: 'Jolteon',
+        gameName: 'Pokemon',
+        expansionName: 'Jungle',
+        number: '4',
+        localization: [{ idLanguage: 2, languageName: 'French', productName: 'Voltali' }],
+      },
+    ];
+
+    const best = selectBestCardmarketProduct(products, { title: 'Voltali 4/64 Jungle FR' });
+    expect(best.idProduct).toBe(444);
   });
 
   test('applies Cardmarket estimate to score_breakdown with gain', () => {
@@ -175,6 +205,8 @@ describe('cardmarket price info', () => {
       estimated_gain_min: 1,
       estimated_gain_max: 4,
       estimate_cardmarket_product_id: 111,
+      estimate_cardmarket_product_language: 'fr',
+      estimate_cardmarket_product_language_id: 2,
       estimate_condition_label: 'NM',
     });
   });

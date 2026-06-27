@@ -39,25 +39,27 @@ function normalizeCachePart(value) {
     .replace(/\s+/g, '-');
 }
 
+const CARDMARKET_FRENCH_LANGUAGE_ID = 2;
+
 const POKEMON_ALIASES = [
-  { canonical: 'jolteon', names: ['jolteon', 'voltali'] },
-  { canonical: 'vaporeon', names: ['vaporeon', 'aquali'] },
-  { canonical: 'flareon', names: ['flareon', 'pyroli'] },
-  { canonical: 'kabuto', names: ['kabuto'] },
-  { canonical: 'gastly', names: ['gastly', 'fantominus'] },
-  { canonical: 'haunter', names: ['haunter', 'spectrum'] },
-  { canonical: 'gengar', names: ['gengar', 'ectoplasma'] },
-  { canonical: 'dragonite', names: ['dragonite', 'dracolosse'] },
-  { canonical: 'charizard', names: ['charizard', 'dracaufeu', 'dracofeu'] },
-  { canonical: 'blastoise', names: ['blastoise', 'tortank'] },
-  { canonical: 'venusaur', names: ['venusaur', 'florizarre'] },
-  { canonical: 'snorlax', names: ['snorlax', 'ronflex'] },
-  { canonical: 'raichu', names: ['raichu'] },
-  { canonical: 'alakazam', names: ['alakazam'] },
-  { canonical: 'scyther', names: ['scyther', 'insecateur', 'insécateur'] },
-  { canonical: 'pinsir', names: ['pinsir', 'scarabrute'] },
-  { canonical: 'kangaskhan', names: ['kangaskhan', 'kangourex'] },
-  { canonical: 'mr-mime', names: ['mr mime', 'm mime', 'm. mime', 'mr-mime'] },
+  { canonical: 'jolteon', fr: 'Voltali', en: 'Jolteon', names: ['jolteon', 'voltali'] },
+  { canonical: 'vaporeon', fr: 'Aquali', en: 'Vaporeon', names: ['vaporeon', 'aquali'] },
+  { canonical: 'flareon', fr: 'Pyroli', en: 'Flareon', names: ['flareon', 'pyroli'] },
+  { canonical: 'kabuto', fr: 'Kabuto', en: 'Kabuto', names: ['kabuto'] },
+  { canonical: 'gastly', fr: 'Fantominus', en: 'Gastly', names: ['gastly', 'fantominus'] },
+  { canonical: 'haunter', fr: 'Spectrum', en: 'Haunter', names: ['haunter', 'spectrum'] },
+  { canonical: 'gengar', fr: 'Ectoplasma', en: 'Gengar', names: ['gengar', 'ectoplasma'] },
+  { canonical: 'dragonite', fr: 'Dracolosse', en: 'Dragonite', names: ['dragonite', 'dracolosse'] },
+  { canonical: 'charizard', fr: 'Dracaufeu', en: 'Charizard', names: ['charizard', 'dracaufeu', 'dracofeu'] },
+  { canonical: 'blastoise', fr: 'Tortank', en: 'Blastoise', names: ['blastoise', 'tortank'] },
+  { canonical: 'venusaur', fr: 'Florizarre', en: 'Venusaur', names: ['venusaur', 'florizarre'] },
+  { canonical: 'snorlax', fr: 'Ronflex', en: 'Snorlax', names: ['snorlax', 'ronflex'] },
+  { canonical: 'raichu', fr: 'Raichu', en: 'Raichu', names: ['raichu'] },
+  { canonical: 'alakazam', fr: 'Alakazam', en: 'Alakazam', names: ['alakazam'] },
+  { canonical: 'scyther', fr: 'Insécateur', en: 'Scyther', names: ['scyther', 'insecateur', 'insécateur'] },
+  { canonical: 'pinsir', fr: 'Scarabrute', en: 'Pinsir', names: ['pinsir', 'scarabrute'] },
+  { canonical: 'kangaskhan', fr: 'Kangourex', en: 'Kangaskhan', names: ['kangaskhan', 'kangourex'] },
+  { canonical: 'mr-mime', fr: 'M. Mime', en: 'Mr. Mime', names: ['mr mime', 'm mime', 'm. mime', 'mr-mime'] },
 ];
 
 function detectCanonicalCardName(value) {
@@ -70,13 +72,35 @@ function detectCanonicalCardName(value) {
   return null;
 }
 
-function titleCaseCanonicalName(canonicalName) {
+function cardAlias(canonicalName) {
+  return POKEMON_ALIASES.find(alias => alias.canonical === canonicalName) || null;
+}
+
+function displayCardName(canonicalName, language = 'fr') {
+  const alias = cardAlias(canonicalName);
+  if (alias && language === 'fr') return alias.fr;
+  if (alias?.en) return alias.en;
   if (!canonicalName) return null;
   return canonicalName
     .split('-')
     .filter(Boolean)
     .map(part => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ');
+}
+
+function localizedProductName(product, languageId = CARDMARKET_FRENCH_LANGUAGE_ID) {
+  const localized = Array.isArray(product?.localization)
+    ? product.localization.find(item => Number(item.idLanguage) === Number(languageId))
+    : null;
+  return localized?.productName || null;
+}
+
+function productHasLanguage(product, languageId = CARDMARKET_FRENCH_LANGUAGE_ID) {
+  return Boolean(localizedProductName(product, languageId));
+}
+
+function productDisplayName(product, languageId = CARDMARKET_FRENCH_LANGUAGE_ID) {
+  return localizedProductName(product, languageId) || product?.enName || '';
 }
 
 function parseCollectorNumber(normalizedText) {
@@ -243,7 +267,9 @@ export function extractCardmarketHints(listing = {}) {
 
   return {
     card_name_key: canonicalCardName,
-    card_name_label: titleCaseCanonicalName(canonicalCardName),
+    card_name_label: displayCardName(canonicalCardName, 'fr'),
+    language: 'fr',
+    language_id: CARDMARKET_FRENCH_LANGUAGE_ID,
     number: collector.number,
     numberPrefix: collector.numberPrefix,
     expansion_key: expansion?.key || null,
@@ -274,6 +300,7 @@ export function buildCardmarketCacheKey(listing = {}) {
   const hints = extractCardmarketHints(listing);
   const query = hints.card_name_key || buildCardmarketSearchQuery(listing);
   return [
+    'fr',
     normalizeCachePart(query),
     normalizeCachePart(hints.number || ''),
     normalizeCachePart(hints.expansion_key || ''),
@@ -286,7 +313,7 @@ export async function findCardmarketProducts(query, options = {}) {
   const payload = await cardmarketGet('/products/find', {
     search: query,
     idGame: options.gameId || config.cardmarket.gameId,
-    idLanguage: options.languageId || config.cardmarket.languageId,
+    idLanguage: CARDMARKET_FRENCH_LANGUAGE_ID,
     maxResults: options.maxResults || config.cardmarket.maxResults,
   }, options);
   return extractProducts(payload);
@@ -304,6 +331,15 @@ function productName(product) {
   return `${product?.enName || ''} ${localized}`.trim();
 }
 
+function productFrenchName(product) {
+  return localizedProductName(product, CARDMARKET_FRENCH_LANGUAGE_ID) || '';
+}
+
+function shouldRejectNonFrenchProduct(product, products = []) {
+  const hasAnyExplicitFrench = products.some(item => productHasLanguage(item, CARDMARKET_FRENCH_LANGUAGE_ID));
+  return hasAnyExplicitFrench && !productHasLanguage(product, CARDMARKET_FRENCH_LANGUAGE_ID);
+}
+
 export function selectBestCardmarketProduct(products = [], listing = {}) {
   const hints = extractCardmarketHints(listing);
   const query = normalizeText(buildCardmarketSearchQuery(listing));
@@ -312,12 +348,17 @@ export function selectBestCardmarketProduct(products = [], listing = {}) {
   let best = null;
   let bestScore = -Infinity;
   for (const product of products) {
+    if (shouldRejectNonFrenchProduct(product, products)) continue;
+
     const name = normalizeText(productName(product));
+    const frenchName = normalizeText(productFrenchName(product));
     const expansion = normalizeText(product.expansionName || product.expansion?.enName || '');
     const number = normalizeText(product.number || '');
     let score = 0;
 
+    if (frenchName) score += 50;
     for (const token of queryTokens) {
+      if (frenchName.includes(token)) score += 20;
       if (name.includes(token)) score += 12;
     }
     if (hints.numberPrefix && number === normalizeText(hints.numberPrefix)) score += 35;
@@ -373,7 +414,10 @@ export function summarizeCardmarketProduct(product, listing = {}) {
     method: 'cardmarket_priceguide',
     confidence: product?.idProduct && (sell || trend) ? 'medium' : 'low',
     product_id: product?.idProduct || null,
-    product_name: productName(product),
+    product_name: productDisplayName(product, CARDMARKET_FRENCH_LANGUAGE_ID) || productName(product),
+    product_name_en: product?.enName || null,
+    product_language: 'fr',
+    product_language_id: CARDMARKET_FRENCH_LANGUAGE_ID,
     product_url: product?.website ? `https://www.cardmarket.com${product.website}` : null,
     expansion_name: product?.expansionName || product?.expansion?.enName || null,
     card_number: product?.number || hints.numberPrefix || null,
@@ -416,6 +460,9 @@ export function applyCardmarketEstimateToListing(listing, summary) {
       estimate_condition_label: summary.condition_label,
       estimate_cardmarket_product_id: summary.product_id,
       estimate_cardmarket_product_name: summary.product_name,
+      estimate_cardmarket_product_name_en: summary.product_name_en,
+      estimate_cardmarket_product_language: summary.product_language,
+      estimate_cardmarket_product_language_id: summary.product_language_id,
       estimate_cardmarket_product_url: summary.product_url,
       estimate_cardmarket_expansion: summary.expansion_name,
       card_condition_key: summary.condition_key,

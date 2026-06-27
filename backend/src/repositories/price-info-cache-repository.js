@@ -1,4 +1,4 @@
-import { get, run } from '../db/database.js';
+import { all, get, run } from '../db/database.js';
 
 function safeJsonParse(value) {
   try {
@@ -51,6 +51,25 @@ export class PriceInfoCacheRepository {
       updated_at: createdAt,
       expires_at: expiresAt,
     };
+  }
+  list({ provider = 'cardmarket', limit = 50 } = {}, now = new Date()) {
+    const rows = all(
+      `SELECT provider, cache_key, payload, created_at, updated_at, expires_at
+       FROM price_info_cache
+       WHERE provider = ? AND expires_at > ?
+       ORDER BY updated_at DESC
+       LIMIT ?`,
+      [provider, now.toISOString(), Math.max(1, Math.min(Number(limit || 50), 200))]
+    );
+
+    return rows.map(row => ({
+      provider: row.provider,
+      cache_key: row.cache_key,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+      expires_at: row.expires_at,
+      payload: safeJsonParse(row.payload),
+    }));
   }
 }
 

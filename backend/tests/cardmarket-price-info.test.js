@@ -85,14 +85,46 @@ describe('cardmarket price info', () => {
 
   test('extracts card hints and a compact search/cache key', () => {
     expect(extractCardmarketHints(kabutoListing)).toMatchObject({
+      card_name_key: 'kabuto',
+      card_name_label: 'Kabuto',
       number: '50/62',
       numberPrefix: '50',
       expansion_key: 'fossil',
+      edition: '1ed',
       first_edition: true,
       condition: { key: 'near_mint', label: 'NM' },
     });
-    expect(buildCardmarketSearchQuery(kabutoListing)).toBe('KABUTO');
-    expect(buildCardmarketCacheKey(kabutoListing)).toBe('kabuto|50/62|fossil|1ed|near_mint');
+    expect(buildCardmarketSearchQuery(kabutoListing)).toBe('Kabuto');
+    expect(buildCardmarketCacheKey(kabutoListing)).toBe('kabuto|50/62|fossil|1ed');
+  });
+
+  test('canonicalizes noisy Voltali/Jolteon titles to one cache key per card variant', () => {
+    const variants4 = [
+      { title: 'VOLTALI HOLO - 4/64 JUNGLE EDITION 2 FR' },
+      { title: 'Voltali 4/64 HOLO Jungle Edition 2 Exc. 🇫🇷🔥' },
+      { title: 'Holo Jolteon Jungle TCG GAMEFREAK Électrique 4/64' },
+    ];
+    expect(new Set(variants4.map(buildCardmarketCacheKey))).toEqual(new Set(['jolteon|4/64|jungle']));
+    expect(new Set(variants4.map(buildCardmarketSearchQuery))).toEqual(new Set(['Jolteon']));
+
+    const variants20 = [
+      { title: ': Voltali 20/64 Edition 2 Jungle Wizards FR' },
+      { title: 'Voltali Edition 2 Jungle 20/64' },
+    ];
+    expect(new Set(variants20.map(buildCardmarketCacheKey))).toEqual(new Set(['jolteon|20/64|jungle']));
+  });
+
+  test('skips Cardmarket API for graded cards because priceGuide is raw-card pricing', async () => {
+    const fetchImpl = async () => {
+      throw new Error('fetch should not be called for graded cards');
+    };
+    const listing = { title: 'Voltali 20 Jungle 1999 PCA 8', price: 60 };
+    const enriched = await enrichListingWithCardmarketPrice(listing, {
+      ...credentials,
+      fetchImpl,
+      cacheRepo: false,
+    });
+    expect(enriched).toBe(listing);
   });
 
   test('finds products and product detail using mocked Cardmarket API', async () => {

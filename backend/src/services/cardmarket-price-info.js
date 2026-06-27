@@ -39,6 +39,80 @@ function normalizeCachePart(value) {
     .replace(/\s+/g, '-');
 }
 
+const POKEMON_ALIASES = [
+  { canonical: 'jolteon', names: ['jolteon', 'voltali'] },
+  { canonical: 'vaporeon', names: ['vaporeon', 'aquali'] },
+  { canonical: 'flareon', names: ['flareon', 'pyroli'] },
+  { canonical: 'kabuto', names: ['kabuto'] },
+  { canonical: 'gastly', names: ['gastly', 'fantominus'] },
+  { canonical: 'haunter', names: ['haunter', 'spectrum'] },
+  { canonical: 'gengar', names: ['gengar', 'ectoplasma'] },
+  { canonical: 'dragonite', names: ['dragonite', 'dracolosse'] },
+  { canonical: 'charizard', names: ['charizard', 'dracaufeu', 'dracofeu'] },
+  { canonical: 'blastoise', names: ['blastoise', 'tortank'] },
+  { canonical: 'venusaur', names: ['venusaur', 'florizarre'] },
+  { canonical: 'snorlax', names: ['snorlax', 'ronflex'] },
+  { canonical: 'raichu', names: ['raichu'] },
+  { canonical: 'alakazam', names: ['alakazam'] },
+  { canonical: 'scyther', names: ['scyther', 'insecateur', 'insécateur'] },
+  { canonical: 'pinsir', names: ['pinsir', 'scarabrute'] },
+  { canonical: 'kangaskhan', names: ['kangaskhan', 'kangourex'] },
+  { canonical: 'mr-mime', names: ['mr mime', 'm mime', 'm. mime', 'mr-mime'] },
+];
+
+function detectCanonicalCardName(value) {
+  const text = normalizeText(value);
+  for (const alias of POKEMON_ALIASES) {
+    if (alias.names.some(name => new RegExp(`(^|\\s)${normalizeText(name).replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}(\\s|$)`).test(text))) {
+      return alias.canonical;
+    }
+  }
+  return null;
+}
+
+function titleCaseCanonicalName(canonicalName) {
+  if (!canonicalName) return null;
+  return canonicalName
+    .split('-')
+    .filter(Boolean)
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+function parseCollectorNumber(normalizedText) {
+  const slashMatch = normalizedText.match(/\b(\d{1,3})\s*\/\s*(\d{2,3})\b/);
+  if (slashMatch) {
+    return {
+      number: `${slashMatch[1]}/${slashMatch[2]}`,
+      numberPrefix: slashMatch[1],
+    };
+  }
+
+  const knownSetSize = normalizedText.match(/\b(?:jungle|fossil(?:e)?|team\s+rocket|rocket|base\s+set|set\s+de\s+base)\b.*?\b(?:no\s*)?(\d{1,3})\b|\b(?:no\s*)?(\d{1,3})\b.*?\b(?:jungle|fossil(?:e)?|team\s+rocket|rocket|base\s+set|set\s+de\s+base)\b/);
+  if (knownSetSize) {
+    const number = knownSetSize[1] || knownSetSize[2];
+    return { number, numberPrefix: number };
+  }
+
+  return { number: null, numberPrefix: null };
+}
+
+function parseGrading(value) {
+  const text = normalizeText(value);
+  const graderMatch = text.match(/\b(psa|pca|cgg|bgs|sgc)\s*(\d{1,2}(?:\.5)?)(?:\s*\/\s*10)?\b/);
+  if (!graderMatch) return null;
+  return {
+    company: graderMatch[1].toUpperCase(),
+    grade: graderMatch[2],
+  };
+}
+
+function parseEdition(value) {
+  const text = normalizeText(value);
+  if (/\b(1ed|1st|1ere|1ere\s+edition|1st\s+edition|edition\s+1)\b/.test(text)) return '1ed';
+  return null;
+}
+
 function parseNumber(value) {
   const number = Number(value);
   return Number.isFinite(number) && number > 0 ? number : null;
@@ -156,7 +230,7 @@ function extractProducts(payload) {
 export function extractCardmarketHints(listing = {}) {
   const text = `${listing.title || ''} ${listing.description || ''}`;
   const normalized = normalizeText(text);
-  const numberMatch = normalized.match(/\b(\d{1,3})\s*\/\s*(\d{2,3})\b/);
+  const collector = parseCollectorNumber(normalized);
   const expansions = [
     { key: 'fossil', label: 'Fossil', pattern: /\bfossil(?:e)?\b/ },
     { key: 'jungle', label: 'Jungle', pattern: /\bjungle\b/ },
@@ -164,23 +238,31 @@ export function extractCardmarketHints(listing = {}) {
     { key: 'team_rocket', label: 'Team Rocket', pattern: /\b(team\s+rocket|rocket)\b/ },
   ];
   const expansion = expansions.find(item => item.pattern.test(normalized)) || null;
-  const firstEdition = /\b(1ed|1st|1ere|1ere\s+edition|1st\s+edition|edition\s+1)\b/.test(normalized);
+  const edition = parseEdition(text);
+  const canonicalCardName = detectCanonicalCardName(text);
 
   return {
-    number: numberMatch ? `${numberMatch[1]}/${numberMatch[2]}` : null,
-    numberPrefix: numberMatch ? numberMatch[1] : null,
+    card_name_key: canonicalCardName,
+    card_name_label: titleCaseCanonicalName(canonicalCardName),
+    number: collector.number,
+    numberPrefix: collector.numberPrefix,
     expansion_key: expansion?.key || null,
     expansion_label: expansion?.label || null,
-    first_edition: firstEdition,
+    edition,
+    first_edition: edition === '1ed',
+    grading: parseGrading(text),
     condition: detectListingCondition(listing),
   };
 }
 
 export function buildCardmarketSearchQuery(listing = {}) {
+  const hints = extractCardmarketHints(listing);
+  if (hints.card_name_label) return hints.card_name_label;
+
   const title = String(listing.title || '').replace(/\b\d{1,3}\s*\/\s*\d{2,3}\b/g, ' ');
   const cleaned = title
     .replace(/\b(pokemon|pokémon|carte|cards?|cartes?|wizards?|wizard|fossil(?:e)?|jungle|team\s+rocket|rocket|base\s+set|set\s+de\s+base)\b/gi, ' ')
-    .replace(/\b(1ed|1st|1ere|edition\s+1|fr|vf|near\s+mint|nm|excellent|played|lp|mint|neuf|annee|année|19\d{2}|20\d{2})\b/gi, ' ')
+    .replace(/\b(1ed|1st|1ere|edition\s+1|edition\s+2|fr|vf|jp|japan|japon|near\s+mint|nm|excellent|exc|played|lp|mint|neuf|holo|reverse|pca|psa|cgg|bgs|sgc|annee|année|19\d{2}|20\d{2})\b/gi, ' ')
     .replace(/[^\p{L}\p{N}'-]+/gu, ' ')
     .replace(/\s+/g, ' ')
     .trim();
@@ -190,13 +272,13 @@ export function buildCardmarketSearchQuery(listing = {}) {
 
 export function buildCardmarketCacheKey(listing = {}) {
   const hints = extractCardmarketHints(listing);
-  const query = buildCardmarketSearchQuery(listing);
+  const query = hints.card_name_key || buildCardmarketSearchQuery(listing);
   return [
     normalizeCachePart(query),
     normalizeCachePart(hints.number || ''),
     normalizeCachePart(hints.expansion_key || ''),
-    hints.first_edition ? '1ed' : '',
-    normalizeCachePart(hints.condition?.key || ''),
+    hints.edition || '',
+    hints.grading ? `${normalizeCachePart(hints.grading.company)}-${normalizeCachePart(hints.grading.grade)}` : '',
   ].filter(Boolean).join('|');
 }
 
@@ -350,12 +432,18 @@ export async function enrichListingWithCardmarketPrice(listing, options = {}) {
   const cacheRepo = options.cacheRepo === false ? null : (options.cacheRepo || priceInfoCacheRepository);
   const cacheTtlHours = options.cacheTtlHours || config.priceInfo.cacheTtlHours || 48;
   const cacheKey = buildCardmarketCacheKey(listing);
+  const hints = extractCardmarketHints(listing);
 
   if (!cacheKey) return listing;
+  if (hints.grading) {
+    logger.info(`[price-info] Cardmarket skipped graded card ${hints.grading.company} ${hints.grading.grade} cache_key="${cacheKey}"`);
+    return listing;
+  }
 
   try {
     const cached = cacheRepo?.get?.('cardmarket', cacheKey);
     if (cached?.payload?.summary) {
+      logger.info(`[price-info] Cardmarket cache hit cache_key="${cacheKey}" product="${cached.payload.summary.product_name || cached.payload.summary.product_id || 'unknown'}"`);
       return applyCardmarketEstimateToListing(listing, {
         ...cached.payload.summary,
         from_cache: true,
@@ -366,13 +454,20 @@ export async function enrichListingWithCardmarketPrice(listing, options = {}) {
     logger.info(`[price-info] Cardmarket priceguide search query="${query}" cache_key="${cacheKey}"`);
     const products = await findCardmarketProducts(query, options);
     const bestProduct = selectBestCardmarketProduct(products, listing);
-    if (!bestProduct?.idProduct) return listing;
+    if (!bestProduct?.idProduct) {
+      logger.info(`[price-info] Cardmarket no product match query="${query}" cache_key="${cacheKey}" candidates=${products.length}`);
+      return listing;
+    }
 
     const product = await getCardmarketProduct(bestProduct.idProduct, options);
     const summary = summarizeCardmarketProduct(product, listing);
-    if (!summary.calibrated) return listing;
+    if (!summary.calibrated) {
+      logger.info(`[price-info] Cardmarket product has no usable priceguide product_id=${bestProduct.idProduct} cache_key="${cacheKey}"`);
+      return listing;
+    }
 
     cacheRepo?.set?.('cardmarket', cacheKey, { summary }, cacheTtlHours);
+    logger.info(`[price-info] Cardmarket calibrated product="${summary.product_name || summary.product_id}" cache_key="${cacheKey}" range=${summary.value_min}-${summary.value_max} trend=${summary.trend_price ?? 'n/a'} sell=${summary.sell_price ?? 'n/a'}`);
     return applyCardmarketEstimateToListing(listing, summary);
   } catch (error) {
     if (error instanceof CardmarketConfigError || error.code === 'cardmarket_config_missing') {

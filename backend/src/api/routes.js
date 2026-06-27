@@ -7,6 +7,7 @@ import { ListingRepository } from '../repositories/listing-repository.js';
 import { ScrapeRunRepository } from '../repositories/scrape-run-repository.js';
 import { ListingHistoryRepository } from '../repositories/listing-history-repository.js';
 import { AlertRepository } from '../repositories/alert-repository.js';
+import { priceInfoCacheRepository } from '../repositories/price-info-cache-repository.js';
 import { getDatabaseInfo } from '../db/database.js';
 import { createScrapeJobManager, ScrapeAlreadyRunningError } from '../services/scrape-job-manager.js';
 import { assertValidListingStatus, normalizeListingStatus } from '../services/listing-status.js';
@@ -146,11 +147,38 @@ router.get('/docs', (req, res) => {
       { method: 'POST', path: '/api/scrape/start', description: 'Start a marketplace scrape and save results' },
       { method: 'GET', path: '/api/jobs/status', description: 'Get current scrape job status' },
       { method: 'GET', path: '/api/alerts', description: 'Get recent high-score and price-drop alerts' },
+      { method: 'GET', path: '/api/price-info/cache', description: 'Inspect cached market price estimates' },
       { method: 'GET', path: '/api/scrape-runs', description: 'Get scrape runs history' },
       { method: 'GET', path: '/api/stats', description: 'Get statistics' },
       { method: 'GET', path: '/api/debug/db', description: 'Debug database path/count (dev)' }
     ]
   });
+});
+
+/**
+ * GET /api/price-info/cache
+ * Inspect cached market price estimates.
+ */
+router.get('/price-info/cache', authenticate, (req, res) => {
+  try {
+    const provider = req.query.provider || 'cardmarket';
+    const limit = validateInteger(req.query.limit, 50, 1, 200);
+    const entries = priceInfoCacheRepository.list({ provider, limit });
+    res.json({
+      provider,
+      count: entries.length,
+      entries: entries.map(entry => ({
+        provider: entry.provider,
+        cache_key: entry.cache_key,
+        updated_at: entry.updated_at,
+        expires_at: entry.expires_at,
+        summary: entry.payload?.summary || entry.payload,
+      })),
+    });
+  } catch (error) {
+    logger.error('Error fetching price info cache:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 // Debug endpoint removed for security - use logging or proper monitoring tools

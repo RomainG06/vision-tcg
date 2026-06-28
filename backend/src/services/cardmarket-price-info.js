@@ -49,7 +49,9 @@ const POKEMON_ALIASES = [
   { canonical: 'gastly', fr: 'Fantominus', en: 'Gastly', names: ['gastly', 'fantominus'] },
   { canonical: 'haunter', fr: 'Spectrum', en: 'Haunter', names: ['haunter', 'spectrum'] },
   { canonical: 'gengar', fr: 'Ectoplasma', en: 'Gengar', names: ['gengar', 'ectoplasma'] },
+  { canonical: 'dark-dragonite', fr: 'Dracolosse Obscur', en: 'Dark Dragonite', names: ['dark dragonite', 'dracolosse obscur'] },
   { canonical: 'dragonite', fr: 'Dracolosse', en: 'Dragonite', names: ['dragonite', 'dracolosse'] },
+  { canonical: 'dark-charizard', fr: 'Dracaufeu Obscur', en: 'Dark Charizard', names: ['dark charizard', 'dracaufeu obscur', 'dracofeu obscur'] },
   { canonical: 'charizard', fr: 'Dracaufeu', en: 'Charizard', names: ['charizard', 'dracaufeu', 'dracofeu'] },
   { canonical: 'blastoise', fr: 'Tortank', en: 'Blastoise', names: ['blastoise', 'tortank'] },
   { canonical: 'venusaur', fr: 'Florizarre', en: 'Venusaur', names: ['venusaur', 'florizarre'] },
@@ -351,7 +353,6 @@ export function buildCardmarketCacheKey(listing = {}) {
     normalizeCachePart(hints.number || ''),
     normalizeCachePart(hints.expansion_key || ''),
     hints.edition || '',
-    hints.grading ? `${normalizeCachePart(hints.grading.company)}-${normalizeCachePart(hints.grading.grade)}` : '',
   ].filter(Boolean).join('|');
 }
 
@@ -459,7 +460,7 @@ export function summarizeCardmarketProduct(product, listing = {}) {
   return {
     calibrated: true,
     method: 'cardmarket_priceguide',
-    confidence: product?.idProduct && (sell || trend) ? 'medium' : 'low',
+    confidence: hints.grading ? 'low' : (product?.idProduct && (sell || trend) ? 'medium' : 'low'),
     product_id: product?.idProduct || null,
     product_name: productDisplayName(product, CARDMARKET_FRENCH_LANGUAGE_ID) || productName(product),
     product_name_en: product?.enName || null,
@@ -470,6 +471,8 @@ export function summarizeCardmarketProduct(product, listing = {}) {
     card_number: product?.number || hints.numberPrefix || null,
     condition_key: conditionKey,
     condition_label: hints.condition?.label || null,
+    grading: hints.grading,
+    grading_note: hints.grading ? `Référence Cardmarket carte brute, pas une cote ${hints.grading.company} ${hints.grading.grade}` : null,
     sell_price: sell,
     trend_price: trend,
     low_price: low,
@@ -505,6 +508,8 @@ export function applyCardmarketEstimateToListing(listing, summary) {
       estimate_low_ex_price: summary.low_ex_price,
       estimate_condition_key: summary.condition_key,
       estimate_condition_label: summary.condition_label,
+      estimate_grading: summary.grading,
+      estimate_grading_note: summary.grading_note,
       estimate_cardmarket_product_id: summary.product_id,
       estimate_cardmarket_product_name: summary.product_name,
       estimate_cardmarket_product_name_en: summary.product_name_en,
@@ -520,6 +525,64 @@ export function applyCardmarketEstimateToListing(listing, summary) {
   };
 }
 
+export async function debugCardmarketPriceInfo(listing = {}, options = {}) {
+  const hints = extractCardmarketHints(listing);
+  const query = buildCardmarketSearchQuery(listing);
+  const cacheKey = buildCardmarketCacheKey(listing);
+  const result = {
+    enabled: config.cardmarket.enabled,
+    query,
+    cache_key: cacheKey,
+    hints,
+    credentials_present: Boolean(config.cardmarket.consumerKey && config.cardmarket.consumerSecret && config.cardmarket.accessToken && config.cardmarket.accessTokenSecret),
+    product_count: 0,
+    candidates: [],
+    selected_product: null,
+    priceguide_keys: [],
+    summary: null,
+    error: null,
+  };
+
+  try {
+    const products = await findCardmarketProducts(query, options);
+    result.product_count = products.length;
+    result.candidates = products.slice(0, 10).map(product => ({
+      idProduct: product.idProduct,
+      enName: product.enName,
+      frName: productFrenchName(product) || null,
+      expansionName: product.expansionName || product.expansion?.enName || null,
+      number: product.number || null,
+      hasFrenchLocalization: productHasLanguage(product, CARDMARKET_FRENCH_LANGUAGE_ID),
+    }));
+
+    const bestProduct = selectBestCardmarketProduct(products, listing);
+    if (!bestProduct?.idProduct) return result;
+
+    const product = await getCardmarketProduct(bestProduct.idProduct, options);
+    const priceGuide = extractPriceGuide(product);
+    const summary = summarizeCardmarketProduct(product, listing);
+    result.selected_product = {
+      idProduct: product.idProduct,
+      enName: product.enName,
+      frName: productFrenchName(product) || null,
+      expansionName: product.expansionName || product.expansion?.enName || null,
+      number: product.number || null,
+      hasFrenchLocalization: productHasLanguage(product, CARDMARKET_FRENCH_LANGUAGE_ID),
+    };
+    result.priceguide_keys = priceGuide && typeof priceGuide === 'object' ? Object.keys(priceGuide) : [];
+    result.raw_priceguide = priceGuide;
+    result.summary = summary;
+    return result;
+  } catch (error) {
+    result.error = {
+      name: error.name,
+      code: error.code,
+      message: error.message,
+    };
+    return result;
+  }
+}
+
 export async function enrichListingWithCardmarketPrice(listing, options = {}) {
   if (!config.cardmarket.enabled || options.enabled === false) return listing;
 
@@ -529,10 +592,6 @@ export async function enrichListingWithCardmarketPrice(listing, options = {}) {
   const hints = extractCardmarketHints(listing);
 
   if (!cacheKey) return listing;
-  if (hints.grading) {
-    logger.info(`[price-info] Cardmarket skipped graded card ${hints.grading.company} ${hints.grading.grade} cache_key="${cacheKey}"`);
-    return listing;
-  }
 
   try {
     const cached = cacheRepo?.get?.('cardmarket', cacheKey);

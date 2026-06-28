@@ -116,9 +116,40 @@ describe('cardmarket price info', () => {
     expect(new Set(variants20.map(buildCardmarketCacheKey))).toEqual(new Set(['fr|jolteon|20/64|jungle']));
   });
 
-  test('skips Cardmarket API for graded cards because priceGuide is raw-card pricing', async () => {
-    const fetchImpl = async () => {
-      throw new Error('fetch should not be called for graded cards');
+  test('canonicalizes Dark Charizard to French Team Rocket query/cache key', () => {
+    const listing = { title: 'Dark Charizard 21/82 1st Edition Team Rocket Psa 9' };
+    expect(extractCardmarketHints(listing)).toMatchObject({
+      card_name_key: 'dark-charizard',
+      card_name_label: 'Dracaufeu Obscur',
+      number: '21/82',
+      expansion_key: 'team_rocket',
+      edition: '1ed',
+      grading: { company: 'PSA', grade: '9' },
+    });
+    expect(buildCardmarketSearchQuery(listing)).toBe('Dracaufeu Obscur');
+    expect(buildCardmarketCacheKey(listing)).toBe('fr|dark-charizard|21/82|team_rocket|1ed');
+  });
+
+  test('uses Cardmarket as a low-confidence raw-card reference for graded cards', async () => {
+    const fetchImpl = async (url) => {
+      if (String(url).includes('/products/find')) {
+        return { ok: true, status: 200, text: async () => JSON.stringify({ product: [{
+          idProduct: 444,
+          enName: 'Jolteon',
+          gameName: 'Pokemon',
+          expansionName: 'Jungle',
+          number: '20',
+          localization: [{ idLanguage: 2, languageName: 'French', productName: 'Voltali' }],
+        }] }) };
+      }
+      return { ok: true, status: 200, text: async () => JSON.stringify({ product: {
+        idProduct: 444,
+        enName: 'Jolteon',
+        expansionName: 'Jungle',
+        number: '20',
+        localization: [{ idLanguage: 2, languageName: 'French', productName: 'Voltali' }],
+        priceGuide: { SELL: 22, LOW: 12, LOWEX: 18, TREND: 25 },
+      } }) };
     };
     const listing = { title: 'Voltali 20 Jungle 1999 PCA 8', price: 60 };
     const enriched = await enrichListingWithCardmarketPrice(listing, {
@@ -126,7 +157,15 @@ describe('cardmarket price info', () => {
       fetchImpl,
       cacheRepo: false,
     });
-    expect(enriched).toBe(listing);
+    expect(enriched.score_breakdown).toMatchObject({
+      estimate_method: 'cardmarket_priceguide',
+      estimate_confidence: 'low',
+      estimate_grading: { company: 'PCA', grade: '8' },
+      estimate_grading_note: 'Référence Cardmarket carte brute, pas une cote PCA 8',
+      estimate_cardmarket_product_name: 'Voltali',
+      estimated_value_min: 12,
+      estimated_value_max: 25,
+    });
   });
 
   test('finds products and product detail using mocked Cardmarket API', async () => {

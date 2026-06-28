@@ -7,6 +7,7 @@ import { ListingRepository } from '../repositories/listing-repository.js';
 import { ScrapeRunRepository } from '../repositories/scrape-run-repository.js';
 import { SeenListingRepository } from '../repositories/seen-listing-repository.js';
 import { logger } from '../utils/logger.js';
+import { config } from '../utils/config.js';
 import { selectExplorationCandidates, splitQualityListings } from './listing-quality.js';
 import { filterByBudget } from './hunt-filters.js';
 import { buildHuntQueries, buildPrimaryHuntQuery, dedupeListingsBySourceExternalId } from './hunt-queries.js';

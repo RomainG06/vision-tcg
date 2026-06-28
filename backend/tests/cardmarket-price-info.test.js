@@ -171,6 +171,33 @@ describe('cardmarket price info', () => {
     });
   });
 
+  test('parses Cardmarket priceGuide aliases and localized numeric strings', () => {
+    const summary = summarizeCardmarketProduct({
+      idProduct: 555,
+      enName: 'Jolteon',
+      expansionName: 'Jungle',
+      number: '4',
+      localization: [{ idLanguage: 2, languageName: 'French', productName: 'Voltali' }],
+      priceguide: {
+        trendPrice: '58,90 €',
+        avgSellPrice: '52.10',
+        lowPrice: '40,00',
+        lowExPrice: '45,50',
+      },
+    }, { title: 'Voltali 4/64 Jungle FR' });
+
+    expect(summary).toMatchObject({
+      calibrated: true,
+      product_name: 'Voltali',
+      trend_price: 58.9,
+      sell_price: 52.1,
+      low_price: 40,
+      low_ex_price: 45.5,
+      value_min: 40,
+      value_max: 59,
+    });
+  });
+
   test('selects French localized candidate over English-only candidate', () => {
     const products = [
       {

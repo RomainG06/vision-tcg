@@ -138,8 +138,54 @@ function parseEdition(value) {
 }
 
 function parseNumber(value) {
-  const number = Number(value);
+  if (value === null || value === undefined || value === '') return null;
+  const normalized = typeof value === 'string'
+    ? value.replace(/[^0-9,.-]+/g, '').replace(',', '.')
+    : value;
+  const number = Number(normalized);
   return Number.isFinite(number) && number > 0 ? number : null;
+}
+
+function pickPriceGuideValue(priceGuide = {}, keys = []) {
+  if (!priceGuide || typeof priceGuide !== 'object') return null;
+  const candidates = [];
+  for (const key of keys) {
+    candidates.push(priceGuide[key]);
+  }
+
+  const lowerMap = new Map(Object.entries(priceGuide).map(([key, value]) => [String(key).toLowerCase(), value]));
+  for (const key of keys) {
+    candidates.push(lowerMap.get(String(key).toLowerCase()));
+  }
+
+  for (const value of candidates) {
+    const parsed = parseNumber(value);
+    if (parsed !== null) return parsed;
+  }
+  return null;
+}
+
+function normalizePriceGuide(priceGuide = {}) {
+  if (Array.isArray(priceGuide)) {
+    return Object.fromEntries(priceGuide.flatMap((entry) => {
+      if (!entry || typeof entry !== 'object') return [];
+      const key = entry.type || entry.name || entry.key || entry.label;
+      const value = entry.value ?? entry.price ?? entry.amount;
+      return key ? [[key, value]] : [];
+    }));
+  }
+  return priceGuide && typeof priceGuide === 'object' ? priceGuide : {};
+}
+
+function extractPriceGuide(product = {}) {
+  return normalizePriceGuide(
+    product?.priceGuide
+    || product?.priceguide
+    || product?.price_guide
+    || product?.prices
+    || product?.price
+    || {}
+  );
 }
 
 function roundEuro(value) {
@@ -377,13 +423,13 @@ export function selectBestCardmarketProduct(products = [], listing = {}) {
 }
 
 export function summarizeCardmarketProduct(product, listing = {}) {
-  const priceGuide = product?.priceGuide || {};
+  const priceGuide = extractPriceGuide(product);
   const hints = extractCardmarketHints(listing);
-  const sell = parseNumber(priceGuide.SELL);
-  const trend = parseNumber(priceGuide.TREND);
-  const low = parseNumber(priceGuide.LOW);
-  const lowEx = parseNumber(priceGuide.LOWEX ?? priceGuide['LOWEX+']);
-  const avg = parseNumber(priceGuide.AVG);
+  const sell = pickPriceGuideValue(priceGuide, ['SELL', 'sell', 'sellPrice', 'avgSellPrice', 'averageSellPrice']);
+  const trend = pickPriceGuideValue(priceGuide, ['TREND', 'trend', 'trendPrice', 'avgTrendPrice']);
+  const low = pickPriceGuideValue(priceGuide, ['LOW', 'low', 'lowPrice', 'minPrice']);
+  const lowEx = pickPriceGuideValue(priceGuide, ['LOWEX', 'LOWEX+', 'lowEx', 'lowExPrice', 'lowExPlus', 'lowPriceEX']);
+  const avg = pickPriceGuideValue(priceGuide, ['AVG', 'avg', 'average', 'averagePrice', 'avgPrice']);
   const conditionKey = hints.condition?.key || null;
 
   let lowRef = low || lowEx || sell || trend || avg;
@@ -406,6 +452,7 @@ export function summarizeCardmarketProduct(product, listing = {}) {
       calibrated: false,
       reason: 'cardmarket_priceguide_missing',
       product_id: product?.idProduct || null,
+      priceguide_keys: priceGuide && typeof priceGuide === 'object' ? Object.keys(priceGuide) : [],
     };
   }
 
@@ -509,7 +556,7 @@ export async function enrichListingWithCardmarketPrice(listing, options = {}) {
     const product = await getCardmarketProduct(bestProduct.idProduct, options);
     const summary = summarizeCardmarketProduct(product, listing);
     if (!summary.calibrated) {
-      logger.info(`[price-info] Cardmarket product has no usable priceguide product_id=${bestProduct.idProduct} cache_key="${cacheKey}"`);
+      logger.info(`[price-info] Cardmarket product has no usable priceguide product_id=${bestProduct.idProduct} cache_key="${cacheKey}" priceguide_keys=${(summary.priceguide_keys || []).join(',') || 'none'}`);
       return listing;
     }
 

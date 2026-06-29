@@ -1,5 +1,6 @@
 import { describe, test, expect } from '@jest/globals';
 import { scoreListing, scoreListings, filterListings } from '../src/services/scorer.js';
+import { explainListingScore } from '../src/scoring/scorer-simple.js';
 
 const mockProfile = {
   search: {
@@ -237,5 +238,23 @@ describe('Scorer', () => {
     
     expect(filtered.length).toBe(1);
     expect(filtered[0].title).toContain('Pokemon');
+  });
+
+  test('does not give lot bonus for collector numbers in single-card titles', () => {
+    const florizarre = explainListingScore({
+      title: 'Florizarre 15/102 carte francaise PCA ink rare premiere edition set de base wotc',
+      price: 50,
+    });
+    const aquali = explainListingScore({
+      title: 'Aquali holographique 12/64 carte Pokemon français set de base WIzards 1999-2000',
+      price: 50,
+    });
+
+    expect(florizarre.score_breakdown.signals).not.toContain('lot_detected');
+    expect(aquali.score_breakdown.signals).not.toContain('lot_detected');
+    expect(florizarre.score_breakdown.subscores.lot.points).toBe(0);
+    expect(aquali.score_breakdown.subscores.lot.points).toBe(0);
+    expect(florizarre.score).toBeLessThan(60);
+    expect(aquali.score).toBeLessThan(60);
   });
 });

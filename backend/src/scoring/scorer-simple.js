@@ -22,7 +22,9 @@ function detectSeries(text) {
 
 
 function detectLot(text) {
-  const explicitCount = text.match(/\b([2-9]|[1-9]\d+)\s*(cartes?|cards?)\b/i);
+  // Avoid treating collector numbers like "15/102 carte" or "12/64 carte" as "102 cartes" lots.
+  // Lot counts need an actual plural count mention such as "24 cartes" or "40 cards".
+  const explicitCount = text.match(/(?<!\/)\b([2-9]|[1-9]\d+)\s*(cartes|cards)\b/i);
   const lotSignal = /\b(lot|collection|vrac|classeur|set complet|complete set)\b/i.test(text);
   const singleSignal = /\b(carte seule|carte unique|à l'unité|a l'unite|unitaire|single card)\b/i.test(text);
   return {

@@ -99,6 +99,9 @@ describe('Listing quality filter', () => {
   test('does not tag obvious single-card listings as lots', () => {
     expect(isLotListingText('Dracaufeu set de base holo FR carte seule')).toBe(false);
     expect(isLotListingText('Carte unique Mewtwo Wizards français')).toBe(false);
+    expect(isLotListingText('Florizarre 15/102 carte francaise PCA ink rare premiere edition set de base wotc')).toBe(false);
+    expect(isLotListingText('Aquali holographique 12/64 carte Pokemon français set de base WIzards 1999-2000')).toBe(false);
+    expect(isLotListingText('Lot 64 cartes Pokemon Wizards FR')).toBe(true);
 
     const quality = evaluateListingQuality({
       title: 'Dracaufeu set de base holo FR carte seule',

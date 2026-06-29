@@ -35,6 +35,8 @@ const PLATFORM_OPTIONS = {
   },
 };
 
+const DEFAULT_SELECTED_SOURCES = ['vinted', 'ebay'];
+
 const statusCopy = {
   idle: {
     badge: 'Radar prêt',
@@ -153,7 +155,7 @@ const LISTING_TYPE_OPTIONS = {
 
 function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
   const [series, setSeries] = useState('all');
-  const [selectedSources, setSelectedSources] = useState(['vinted']);
+  const [selectedSources, setSelectedSources] = useState(DEFAULT_SELECTED_SOURCES);
   const [targetCards, setTargetCards] = useState([]);
   const [targetModalOpen, setTargetModalOpen] = useState(false);
   const [listingType, setListingType] = useState('cards');
@@ -197,9 +199,10 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
 
     try {
       const startedAt = Date.now();
+      const payloadSources = selectedSources.length > 0 ? selectedSources : DEFAULT_SELECTED_SOURCES;
       const scrapeOptions = {
         profile: 'wizards-fr',
-        sources: selectedSources,
+        sources: payloadSources,
         maxResults: SENSITIVITY[sensitivity].maxResults,
         saveToDb: true,
         filters: {

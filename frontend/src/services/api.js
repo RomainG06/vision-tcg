@@ -1,5 +1,38 @@
 const API_URL = import.meta.env.VITE_API_URL || '';
 
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function isRetryableApiError(error) {
+  const message = String(error?.message || error || '');
+  return !error?.status
+    || [408, 425, 429, 500, 502, 503, 504].includes(Number(error.status))
+    || /failed to fetch|network|connexion|ECONN|timeout|temporarily/i.test(message);
+}
+
+async function fetchJsonWithRetry(url, init = {}, { attempts = 3, baseDelayMs = 700 } = {}) {
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      const response = await fetch(url, init);
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const error = new Error(data.message || data.error || `HTTP ${response.status}`);
+        error.status = response.status;
+        error.payload = data;
+        throw error;
+      }
+      return data;
+    } catch (error) {
+      lastError = error;
+      if (!isRetryableApiError(error) || attempt >= attempts) throw error;
+      await delay(baseDelayMs * attempt);
+    }
+  }
+  throw lastError;
+}
+
 /**
  * Fetch listings with filters
  */
@@ -104,16 +137,15 @@ export async function fetchScrapeRuns() {
  * MVP endpoint is synchronous: it returns the scrape result once finished.
  */
 export async function startScrape(options = {}) {
-  const response = await fetch(`${API_URL}/api/scrape/start`, {
+  const data = await fetchJsonWithRetry(`${API_URL}/api/scrape/start`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(options),
-  });
+  }, { attempts: 3, baseDelayMs: 900 });
 
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const error = new Error(data.message || data.error || 'Failed to start scrape');
-    error.status = response.status;
+  if (data?.status === 'failed') {
+    const error = new Error(data.message || data.error || 'Marketplace scrape failed');
+    error.status = data.statusCode || 500;
     error.payload = data;
     throw error;
   }

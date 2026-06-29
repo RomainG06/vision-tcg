@@ -163,7 +163,7 @@ function LotDetailModal({ isOpen, onClose, listing, onUpdate, onDelete }) {
   const price = Number(listing.price) || 0;
   const estimatedLow = listing.estimated_value_low ?? listing.estimated_value_min ?? null;
   const estimatedHigh = listing.estimated_value_high ?? listing.estimated_value_max ?? null;
-  const isUncalibratedEstimate = listing.estimate_method === 'price_multiplier_fallback' || listing.estimate_confidence === 'low';
+  const isUncalibratedEstimate = !listing.estimate_method || listing.estimate_method === 'price_multiplier_fallback';
   const distance = listing.distance ?? listing.distance_km ?? null;
   const platform = listing.source ?? listing.platform ?? '—';
   const confidence = listing.confidence ?? 70;
@@ -287,6 +287,16 @@ function LotDetailModal({ isOpen, onClose, listing, onUpdate, onDelete }) {
                   <div style={estimationValueStyle}>
                     {isUncalibratedEstimate ? 'Non calibrée' : `${estimatedLow ?? '?'}–${estimatedHigh ?? '?'} €`}
                   </div>
+                  {!isUncalibratedEstimate && listing.estimate_method === 'ebay_sold_average' && (
+                    <div style={estimateSourceStyle}>
+                      eBay ventes réussies{listing.estimate_condition_label ? ` ${listing.estimate_condition_label}` : ''} · {listing.estimate_sample_count || '?'} comparables
+                    </div>
+                  )}
+                  {!isUncalibratedEstimate && listing.estimate_method === 'cardmarket_priceguide' && (
+                    <div style={estimateSourceStyle}>
+                      Cardmarket{listing.estimate_condition_label ? ` ${listing.estimate_condition_label}` : ''} · {listing.estimate_cardmarket_expansion || 'price guide'}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -747,6 +757,12 @@ const estimationValueStyle = {
   fontWeight: theme.typography.weights.bold,
   color: theme.accents.manaCyan,
   textShadow: `0 0 12px ${theme.accents.manaCyan}60`,
+};
+
+const estimateSourceStyle = {
+  marginTop: theme.spacing.xs,
+  fontSize: theme.typography.sizes.bodySm,
+  color: theme.colors.text.tertiary,
 };
 
 const potentialBlockStyle = {

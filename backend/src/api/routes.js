@@ -7,8 +7,10 @@ import { ListingRepository } from '../repositories/listing-repository.js';
 import { ScrapeRunRepository } from '../repositories/scrape-run-repository.js';
 import { ListingHistoryRepository } from '../repositories/listing-history-repository.js';
 import { AlertRepository } from '../repositories/alert-repository.js';
+import { priceInfoCacheRepository } from '../repositories/price-info-cache-repository.js';
 import { getDatabaseInfo } from '../db/database.js';
 import { createScrapeJobManager, ScrapeAlreadyRunningError } from '../services/scrape-job-manager.js';
+import { debugCardmarketPriceInfo } from '../services/cardmarket-price-info.js';
 import { assertValidListingStatus, normalizeListingStatus } from '../services/listing-status.js';
 
 const router = express.Router();
@@ -72,6 +74,31 @@ function mapListing(listing) {
     estimated_value_max: scoreBreakdown.estimated_value_max || null,
     estimate_method: scoreBreakdown.estimate_method || null,
     estimate_confidence: scoreBreakdown.estimate_confidence || null,
+    estimate_sample_count: scoreBreakdown.estimate_sample_count || null,
+    estimate_reference_marketplace: scoreBreakdown.estimate_reference_marketplace || null,
+    estimate_average_price: scoreBreakdown.estimate_average_price || null,
+    estimate_median_price: scoreBreakdown.estimate_median_price || null,
+    estimate_trend_price: scoreBreakdown.estimate_trend_price || null,
+    estimate_sell_price: scoreBreakdown.estimate_sell_price || null,
+    estimate_low_price: scoreBreakdown.estimate_low_price || null,
+    estimate_low_ex_price: scoreBreakdown.estimate_low_ex_price || null,
+    estimate_cardmarket_product_id: scoreBreakdown.estimate_cardmarket_product_id || null,
+    estimate_cardmarket_product_name: scoreBreakdown.estimate_cardmarket_product_name || null,
+    estimate_cardmarket_product_name_en: scoreBreakdown.estimate_cardmarket_product_name_en || null,
+    estimate_cardmarket_product_language: scoreBreakdown.estimate_cardmarket_product_language || null,
+    estimate_cardmarket_product_language_id: scoreBreakdown.estimate_cardmarket_product_language_id || null,
+    estimate_cardmarket_product_url: scoreBreakdown.estimate_cardmarket_product_url || null,
+    estimate_cardmarket_expansion: scoreBreakdown.estimate_cardmarket_expansion || null,
+    estimate_condition_key: scoreBreakdown.estimate_condition_key || null,
+    estimate_condition_label: scoreBreakdown.estimate_condition_label || null,
+    estimate_grading: scoreBreakdown.estimate_grading || null,
+    estimate_grading_note: scoreBreakdown.estimate_grading_note || null,
+    estimate_total_sample_count: scoreBreakdown.estimate_total_sample_count || null,
+    condition: scoreBreakdown.card_condition_label || scoreBreakdown.estimate_condition_label || null,
+    condition_key: scoreBreakdown.card_condition_key || scoreBreakdown.estimate_condition_key || null,
+    estimated_gain_min: scoreBreakdown.estimated_gain_min ?? null,
+    estimated_gain_max: scoreBreakdown.estimated_gain_max ?? null,
+    ebay_sold_comparables: scoreBreakdown.ebay_sold_comparables || [],
     opportunity_signals: scoreBreakdown.signals || [],
     risk_signals: scoreBreakdown.risks || [],
     score_breakdown: scoreBreakdown,
@@ -126,11 +153,58 @@ router.get('/docs', (req, res) => {
       { method: 'POST', path: '/api/scrape/start', description: 'Start a marketplace scrape and save results' },
       { method: 'GET', path: '/api/jobs/status', description: 'Get current scrape job status' },
       { method: 'GET', path: '/api/alerts', description: 'Get recent high-score and price-drop alerts' },
+      { method: 'GET', path: '/api/price-info/cache', description: 'Inspect cached market price estimates' },
+      { method: 'GET', path: '/api/price-info/cardmarket/probe', description: 'Debug Cardmarket search/detail/priceGuide for a title' },
       { method: 'GET', path: '/api/scrape-runs', description: 'Get scrape runs history' },
       { method: 'GET', path: '/api/stats', description: 'Get statistics' },
       { method: 'GET', path: '/api/debug/db', description: 'Debug database path/count (dev)' }
     ]
   });
+});
+
+/**
+ * GET /api/price-info/cache
+ * Inspect cached market price estimates.
+ */
+router.get('/price-info/cache', authenticate, (req, res) => {
+  try {
+    const provider = req.query.provider || 'cardmarket';
+    const limit = validateInteger(req.query.limit, 50, 1, 200);
+    const entries = priceInfoCacheRepository.list({ provider, limit });
+    res.json({
+      provider,
+      count: entries.length,
+      entries: entries.map(entry => ({
+        provider: entry.provider,
+        cache_key: entry.cache_key,
+        updated_at: entry.updated_at,
+        expires_at: entry.expires_at,
+        summary: entry.payload?.summary || entry.payload,
+      })),
+    });
+  } catch (error) {
+    logger.error('Error fetching price info cache:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * GET /api/price-info/cardmarket/probe?title=...
+ * Debug Cardmarket search/detail/priceGuide for one listing title.
+ */
+router.get('/price-info/cardmarket/probe', authenticate, async (req, res) => {
+  try {
+    const title = String(req.query.title || '').trim();
+    if (!title) {
+      return res.status(400).json({ error: 'Missing title query parameter' });
+    }
+    const price = req.query.price !== undefined ? Number(req.query.price) : null;
+    const result = await debugCardmarketPriceInfo({ title, price });
+    res.json(result);
+  } catch (error) {
+    logger.error('Error probing Cardmarket price info:', error);
+    res.status(500).json({ error: 'Internal server error', message: error.message });
+  }
 });
 
 // Debug endpoint removed for security - use logging or proper monitoring tools

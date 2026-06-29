@@ -7,10 +7,13 @@ import { ListingRepository } from '../repositories/listing-repository.js';
 import { ScrapeRunRepository } from '../repositories/scrape-run-repository.js';
 import { SeenListingRepository } from '../repositories/seen-listing-repository.js';
 import { logger } from '../utils/logger.js';
+import { config } from '../utils/config.js';
 import { selectExplorationCandidates, splitQualityListings } from './listing-quality.js';
 import { filterByBudget } from './hunt-filters.js';
 import { buildHuntQueries, buildPrimaryHuntQuery, dedupeListingsBySourceExternalId } from './hunt-queries.js';
 import { buildActionableScanSummary } from './scan-summary.js';
+import { enrichListingsWithEbaySoldPrices } from './price-info.js';
+import { isTransientMarketplaceError } from './marketplace-retry.js';
 
 const listingRepo = new ListingRepository();
 const scrapeRunRepo = new ScrapeRunRepository();
@@ -92,6 +95,37 @@ function rotateQueries(queries = [], offset = 0) {
   const normalizedOffset = Math.abs(Number(offset) || 0) % queries.length;
   if (normalizedOffset === 0) return [...queries];
   return [...queries.slice(normalizedOffset), ...queries.slice(0, normalizedOffset)];
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function fetchListingsWithRetry(source, query, fetcher, options = {}) {
+  const maxAttempts = Math.max(1, Number(options.retryMax || config.scraping.retryMax || 3));
+  const baseDelayMs = Math.max(100, Number(options.retryBackoffMs || config.scraping.retryBackoffMs || 1000));
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      const listings = await fetcher(query, options);
+      Object.defineProperty(listings, 'marketplace_attempts', {
+        value: attempt,
+        enumerable: false,
+        configurable: true,
+      });
+      return listings;
+    } catch (error) {
+      lastError = error;
+      const retryable = isTransientMarketplaceError(error);
+      if (!retryable || attempt >= maxAttempts) throw error;
+      const delayMs = Math.min(5000, baseDelayMs * attempt);
+      logger.warn(`[scrape] ${source} transient connection failure query="${query}" attempt=${attempt}/${maxAttempts}; retrying in ${delayMs}ms: ${error.message}`);
+      await sleep(delayMs);
+    }
+  }
+
+  throw lastError;
 }
 
 const SCAN_MODE_PRESETS = {
@@ -204,7 +238,7 @@ export async function startScrape(options = {}) {
         for (const currentQuery of executionQueries) {
           const beforeCount = queryRawListings.length;
           try {
-            const fetchedListings = await FETCHERS[source](currentQuery, {
+            const fetchedListings = await fetchListingsWithRetry(source, currentQuery, FETCHERS[source], {
               maxResults: perQueryLimit,
               scanDepth,
               excludeExternalIds: [...dynamicExcludeIds],
@@ -217,6 +251,8 @@ export async function startScrape(options = {}) {
               order: filters.order || filters.sort || 'newest_first',
               maxScrollPasses,
               waitForCaptcha,
+              retryMax: filters.marketplaceRetryMax || filters.marketplace_retry_max,
+              retryBackoffMs: filters.marketplaceRetryBackoffMs || filters.marketplace_retry_backoff_ms,
             });
             const prefilterSummary = fetchedListings.prefilter_summary || null;
             const gridRawFound = Number(fetchedListings.grid_raw_found ?? prefilterSummary?.total ?? fetchedListings.length);
@@ -243,6 +279,7 @@ export async function startScrape(options = {}) {
               raw_found: gridRawFound,
               selected_for_details: querySelectedForDetails,
               fetched_details: fetchedListings.length,
+              attempts: Number(fetchedListings.marketplace_attempts || 1),
               scan_mode: scanModePreset.scanMode,
               scan_depth: scanDepth,
               max_scroll_passes: maxScrollPasses,
@@ -330,7 +367,12 @@ export async function startScrape(options = {}) {
           errors.push({ source, type: 'quality_filtered', count: rejectedCount });
         }
 
-        const { normalized, invalid } = normalizeListings(qualityListings, source, runId);
+        const enrichedQualityListings = await enrichListingsWithEbaySoldPrices(qualityListings, {
+          enabled: filters.priceInfo !== false && filters.price_info !== false,
+          maxComparables: filters.priceInfoMaxComparables || filters.price_info_max_comparables,
+          minComparables: filters.priceInfoMinComparables || filters.price_info_min_comparables,
+        });
+        const { normalized, invalid } = normalizeListings(enrichedQualityListings, source, runId);
 
         if (invalid.length > 0) {
           for (const item of invalid) {

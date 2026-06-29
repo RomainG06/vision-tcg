@@ -224,11 +224,11 @@ export function buildPriceInfoQuery(listing) {
     .trim() || sanitizeSearchQuery(listing?.title || 'pokemon wizards');
 }
 
-function priceProviders() {
+export function priceProviders() {
   return String(config.priceInfo.provider || 'cardmarket,ebay_sold')
     .split(',')
     .map(provider => provider.trim().toLowerCase())
-    .filter(Boolean);
+    .filter(provider => provider && (provider !== 'cardmarket' || config.cardmarket.enabled));
 }
 
 function hasCalibratedEstimate(listing) {

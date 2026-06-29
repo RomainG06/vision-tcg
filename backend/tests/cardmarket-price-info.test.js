@@ -5,6 +5,7 @@ import {
   buildCardmarketOAuthHeader,
   buildCardmarketSearchQuery,
   buildCardmarketUrl,
+  debugCardmarketPriceInfo,
   enrichListingWithCardmarketPrice,
   extractCardmarketHints,
   findCardmarketProducts,
@@ -98,6 +99,28 @@ describe('cardmarket price info', () => {
     });
     expect(buildCardmarketSearchQuery(kabutoListing)).toBe('Kabuto');
     expect(buildCardmarketCacheKey(kabutoListing)).toBe('fr|kabuto|50/62|fossil|1ed');
+  });
+
+  test('probe exits without network call when Cardmarket is disabled', async () => {
+    const fetchImpl = async () => {
+      throw new Error('fetch should not be called when Cardmarket is disabled');
+    };
+
+    const result = await debugCardmarketPriceInfo({ title: 'Dark Charizard 21/82 Team Rocket PSA 9' }, {
+      ...credentials,
+      enabled: false,
+      fetchImpl,
+    });
+
+    expect(result).toMatchObject({
+      enabled: true,
+      skipped: true,
+      reason: 'cardmarket_disabled',
+      query: 'Dracaufeu Obscur',
+      cache_key: 'fr|dark-charizard|21/82|team_rocket',
+      product_count: 0,
+      error: null,
+    });
   });
 
   test('canonicalizes noisy Voltali/Jolteon titles to one cache key per card variant', () => {

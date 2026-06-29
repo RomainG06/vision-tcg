@@ -543,6 +543,12 @@ export async function debugCardmarketPriceInfo(listing = {}, options = {}) {
     error: null,
   };
 
+  if (!config.cardmarket.enabled || options.enabled === false) {
+    result.skipped = true;
+    result.reason = 'cardmarket_disabled';
+    return result;
+  }
+
   try {
     const products = await findCardmarketProducts(query, options);
     result.product_count = products.length;

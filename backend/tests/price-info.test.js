@@ -7,8 +7,10 @@ import {
   EbaySoldAccessDeniedError,
   fetchEbaySoldComparables,
   normalizeCardCondition,
+  priceProviders,
   summarizeSoldComparables,
 } from '../src/services/price-info.js';
+import { config } from '../src/utils/config.js';
 
 const mockSoldResponse = {
   itemSales: [
@@ -36,6 +38,20 @@ const mockSoldResponse = {
 };
 
 describe('price-info eBay sold estimates', () => {
+  test('filters Cardmarket provider when CARDMARKET_ENABLED=false', () => {
+    const previousProvider = config.priceInfo.provider;
+    const previousCardmarketEnabled = config.cardmarket.enabled;
+    config.priceInfo.provider = 'cardmarket,ebay_sold';
+    config.cardmarket.enabled = false;
+
+    try {
+      expect(priceProviders()).toEqual(['ebay_sold']);
+    } finally {
+      config.priceInfo.provider = previousProvider;
+      config.cardmarket.enabled = previousCardmarketEnabled;
+    }
+  });
+
   test('normalizes card condition from marketplace/card vocabulary', () => {
     expect(normalizeCardCondition('Fantominus Near Mint')).toMatchObject({ key: 'near_mint', label: 'NM' });
     expect(normalizeCardCondition('Fantominus NM')).toMatchObject({ key: 'near_mint', label: 'NM' });

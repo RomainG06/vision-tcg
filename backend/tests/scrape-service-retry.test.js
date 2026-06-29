@@ -1,7 +1,25 @@
 import { describe, expect, test } from '@jest/globals';
 import { isTransientMarketplaceError } from '../src/services/marketplace-retry.js';
+import { getScanModePreset } from '../src/services/scan-mode.js';
 
 describe('scrape marketplace retry classification', () => {
+  test('uses balanced scan-mode presets for daily vs deep scans', () => {
+    expect(getScanModePreset({ scanMode: 'quick' })).toMatchObject({
+      scanMode: 'quick',
+      scanDepthMultiplier: 3,
+      minScanDepth: 30,
+      maxScrollPasses: 3,
+      allowSeenRescue: false,
+    });
+    expect(getScanModePreset({ scanMode: 'deep' })).toMatchObject({
+      scanMode: 'deep',
+      scanDepthMultiplier: 8,
+      minScanDepth: 100,
+      maxScrollPasses: 8,
+      allowSeenRescue: true,
+    });
+  });
+
   test('detects transient connection/browser marketplace errors', () => {
     expect(isTransientMarketplaceError(new Error('connexion marketplace impossible'))).toBe(true);
     expect(isTransientMarketplaceError(new Error('fetch failed'))).toBe(true);

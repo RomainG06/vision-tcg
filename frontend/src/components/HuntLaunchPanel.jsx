@@ -14,14 +14,14 @@ const SERIES_OPTIONS = [
 ];
 
 const SENSITIVITY = {
-  prudent: { label: 'Prudent', maxResults: 5, maxQueries: 12, hint: 'Moins de bruit, meilleures certitudes.' },
-  balanced: { label: 'Équilibré', maxResults: 10, maxQueries: 23, hint: 'Bon compromis pour le MVP.' },
-  aggressive: { label: 'Agressif', maxResults: 20, maxQueries: 45, hint: 'Plus de pistes, plus de faux positifs.' },
+  prudent: { label: 'Prudent', maxResults: 5, maxQueries: 8, hint: 'Peu de requêtes, seuil qualité haut : idéal pour limiter le bruit.' },
+  balanced: { label: 'Équilibré', maxResults: 10, maxQueries: 15, hint: 'Bon compromis quotidien entre couverture et précision.' },
+  aggressive: { label: 'Large', maxResults: 20, maxQueries: 25, hint: 'Élargit la chasse avec plus de résultats et plus de bruit potentiel.' },
 };
 
 const SCAN_MODES = {
-  quick: { label: 'Rapide', hint: 'Analyse les nouvelles annonces avec moins de profondeur. Idéal pour une chasse quotidienne.' },
-  deep: { label: 'Approfondi', hint: 'Reparcourt plus largement les annonces pour détecter les opportunités manquées. Plus lent.' },
+  quick: { label: 'Quotidien', hint: 'Parcourt les premières annonces par recherche. Rapide et adapté aux contrôles fréquents.' },
+  deep: { label: 'Approfondi', hint: 'Parcourt plusieurs pages par recherche pour retrouver des opportunités manquées. Plus lent.' },
 };
 
 const PLATFORM_OPTIONS = {
@@ -129,7 +129,7 @@ function getSummaryAdvice(summary) {
   if (saved > 0) return 'Priorité MVP : ouvre les meilleures cartes, mets en Watchlist celles à contacter, puis marque les autres comme Vu ou Ignoré.';
   if (seenExcluded > 0 && !summary?.rescanSeen) return 'Aucune nouvelle piste : beaucoup d’annonces ont déjà été analysées. Active “Ré-analyser les déjà vues” pour recalibrer avec le scoring actuel.';
   if (budgetFiltered > 0) return 'Aucune piste gardée : plusieurs annonces semblent hors budget. Augmente le budget ou filtre une série moins chère.';
-  if (qualityFiltered > 0) return 'Aucune piste gardée : le radar a surtout vu du bruit ou des annonces hors série. Essaie le mode Agressif ou Toutes Wizards FR.';
+  if (qualityFiltered > 0) return 'Aucune piste gardée : le radar a surtout vu du bruit ou des annonces hors série. Essaie la sélectivité Large ou Toutes Wizards FR.';
   return 'Aucune piste exploitable pour l’instant. Relance plus tard ou élargis la série ciblée.';
 }
 
@@ -390,7 +390,7 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
           </div>
 
           <div style={styles.field}>
-            <span style={styles.label}>Mode de scan</span>
+            <span style={styles.label}>Étendue du scan</span>
             <div style={styles.scanModeGrid}>
               {Object.entries(SCAN_MODES).map(([value, option]) => (
                 <button
@@ -490,7 +490,7 @@ function HuntLaunchPanel({ onHuntComplete, onViewResults, hasResults }) {
           </div>
 
           <div style={styles.field}>
-            <span style={styles.label}>Sensibilité radar</span>
+            <span style={styles.label}>Sélectivité radar</span>
             <div style={styles.segmented}>
               {Object.entries(SENSITIVITY).map(([value, option]) => (
                 <button

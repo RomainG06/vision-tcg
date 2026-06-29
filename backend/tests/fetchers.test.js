@@ -60,8 +60,21 @@ describe('Fetchers', () => {
       expect(url.pathname).toBe('/buy/browse/v1/item_summary/search');
       expect(url.searchParams.get('q')).toBe('lot pokemon jungle');
       expect(url.searchParams.get('limit')).toBe('5');
+      expect(url.searchParams.get('offset')).toBeNull();
       expect(url.searchParams.get('filter')).toContain('price:[20..1500]');
       expect(url.searchParams.get('filter')).toContain('priceCurrency:EUR');
+    });
+
+    it('builds Browse API search URL with pagination offset', () => {
+      const url = new URL(buildEbaySearchUrl('lot pokemon jungle', {
+        accessToken: 'token',
+        maxResults: 20,
+        offset: 40,
+        env: 'production',
+      }));
+
+      expect(url.searchParams.get('limit')).toBe('20');
+      expect(url.searchParams.get('offset')).toBe('40');
     });
 
     it('maps eBay item summaries to internal listing contract', () => {
@@ -84,6 +97,62 @@ describe('Fetchers', () => {
         image_url: 'https://img.example/item.jpg',
         location: 'Nice, FR',
       });
+    });
+
+    it('follows eBay Browse pagination until scanDepth or next exhaustion', async () => {
+      const searchOffsets = [];
+      const makeItem = (id) => ({
+        itemId: `item-${id}`,
+        title: `Lot Pokémon page item ${id}`,
+        price: { value: String(20 + id), currency: 'EUR' },
+        itemWebUrl: `https://www.ebay.fr/itm/item-${id}`,
+      });
+      const fetchImpl = async (url, request) => {
+        if (String(url).includes('/identity/v1/oauth2/token')) {
+          return {
+            ok: true,
+            status: 200,
+            text: async () => JSON.stringify({ access_token: 'mock-token', expires_in: 7200 }),
+          };
+        }
+
+        expect(request.headers.Authorization).toBe('Bearer mock-token');
+        const parsedUrl = new URL(String(url));
+        const offset = Number(parsedUrl.searchParams.get('offset') || 0);
+        searchOffsets.push(offset);
+        const nextOffset = offset + 2;
+        return {
+          ok: true,
+          status: 200,
+          text: async () => JSON.stringify({
+            total: 5,
+            href: String(url),
+            next: nextOffset < 5 ? `https://api.ebay.com/buy/browse/v1/item_summary/search?q=pokemon&limit=2&offset=${nextOffset}` : undefined,
+            itemSummaries: offset === 0
+              ? [makeItem(1), makeItem(2)]
+              : offset === 2
+                ? [makeItem(3), makeItem(4)]
+                : [makeItem(5)],
+          }),
+        };
+      };
+
+      const listings = await fetchEbay('pokemon jungle', {
+        fetchImpl,
+        clientId: 'client-id',
+        clientSecret: 'client-secret',
+        marketplaceId: 'EBAY_FR',
+        maxResults: 2,
+        scanDepth: 5,
+        maxScrollPasses: 5,
+      });
+
+      expect(searchOffsets).toEqual([0, 2, 4]);
+      expect(listings).toHaveLength(5);
+      expect(listings.prefilter_summary.scanned).toBe(5);
+      expect(listings.ebay_api.pages_fetched).toBe(3);
+      expect(listings.ebay_api.scan_depth).toBe(5);
+      expect(listings.ebay_api.pagination_exhausted).toBe(true);
     });
 
     it('fetches eBay listings with mocked OAuth and Browse API calls', async () => {

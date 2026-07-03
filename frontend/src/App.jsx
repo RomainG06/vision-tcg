@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import FilterBar from './components/FilterBar';
 import LotList from './components/LotList';
 import HuntLaunchPanel from './components/HuntLaunchPanel';
-import { fetchListings, fetchStats, fetchAlerts, updateListing, deleteListing, deleteAllListings } from './services/api';
+import LoginPage from './components/LoginPage';
+import { fetchListings, fetchStats, fetchAlerts, updateListing, deleteListing, deleteAllListings, loginWithAccessToken, verifySession, getAuthToken, getStoredUser, clearAuthSession } from './services/api';
 import theme from './theme';
 import TcgIcon from './components/TcgIcon';
 
@@ -22,11 +23,46 @@ function App() {
   const [error, setError] = useState(null);
   const [lastHunt, setLastHunt] = useState(null);
   const [notice, setNotice] = useState(null);
+  const [authChecking, setAuthChecking] = useState(true);
+  const [user, setUser] = useState(() => getStoredUser());
   const resultsRef = useRef(null);
 
-  // Load initial data
+  // Validate stored session, then load initial data.
   useEffect(() => {
-    loadData();
+    let mounted = true;
+    async function bootstrap() {
+      try {
+        const token = getAuthToken();
+        if (!token) {
+          if (mounted) {
+            setAuthChecking(false);
+            setLoading(false);
+          }
+          return;
+        }
+
+        const currentUser = await verifySession();
+        if (!mounted) return;
+        setUser(currentUser);
+        setAuthChecking(false);
+        if (currentUser) {
+          await loadData();
+        } else {
+          setLoading(false);
+        }
+      } catch (err) {
+        if (!mounted) return;
+        clearAuthSession();
+        setUser(null);
+        setError(null);
+        setAuthChecking(false);
+        setLoading(false);
+      }
+    }
+    bootstrap();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   // Apply filters
@@ -173,6 +209,39 @@ function App() {
     }
   };
 
+  const handleLogin = async (accessToken) => {
+    const session = await loginWithAccessToken(accessToken);
+    setUser(session.user);
+    setError(null);
+    setLoading(true);
+    await loadData();
+  };
+
+  const handleLogout = () => {
+    clearAuthSession();
+    setUser(null);
+    setListings([]);
+    setFilteredListings([]);
+    setStats(null);
+    setAlertsData({ alerts: [], summary: null, history: null });
+    setLastHunt(null);
+    setNotice(null);
+    setLoading(false);
+  };
+
+  if (authChecking) {
+    return (
+      <div style={styles.loading}>
+        <div style={styles.loadingSpinner}></div>
+        <div style={styles.loadingText}>Validation de la session...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <LoginPage onLogin={handleLogin} />;
+  }
+
   if (loading) {
     return (
       <div style={styles.loading}>
@@ -206,6 +275,9 @@ function App() {
             <span style={styles.subtitleHighlight}>Pokémon Wizards FR</span>
           </p>
         </div>
+        <button type="button" onClick={handleLogout} style={styles.logoutButton}>
+          Déconnexion
+        </button>
       </header>
 
       <div style={styles.container}>
@@ -345,6 +417,11 @@ const styles = {
     padding: 'clamp(12px, 2.5vw, 24px)',
   },
   header: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: theme.spacing.lg,
+    flexWrap: 'wrap',
     textAlign: 'center',
     marginBottom: theme.spacing.xxxl,
     paddingBottom: theme.spacing.xl,
@@ -380,6 +457,15 @@ const styles = {
   },
   subtitleHighlight: {
     color: theme.accents.manaCyan,
+    fontWeight: theme.typography.weights.semibold,
+  },
+  logoutButton: {
+    padding: '10px 14px',
+    borderRadius: theme.borders.radiusLg,
+    border: '1px solid rgba(148, 163, 184, 0.24)',
+    background: 'rgba(18, 22, 51, 0.72)',
+    color: theme.colors.text.secondary,
+    cursor: 'pointer',
     fontWeight: theme.typography.weights.semibold,
   },
   container: {

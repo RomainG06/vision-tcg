@@ -1,4 +1,38 @@
 const API_URL = import.meta.env.VITE_API_URL || '';
+const AUTH_TOKEN_STORAGE_KEY = 'vision-tcg.authToken';
+const AUTH_USER_STORAGE_KEY = 'vision-tcg.authUser';
+
+export function getAuthToken() {
+  return localStorage.getItem(AUTH_TOKEN_STORAGE_KEY) || '';
+}
+
+export function getStoredUser() {
+  const raw = localStorage.getItem(AUTH_USER_STORAGE_KEY);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+export function setAuthSession({ token, user }) {
+  localStorage.setItem(AUTH_TOKEN_STORAGE_KEY, token);
+  if (user) localStorage.setItem(AUTH_USER_STORAGE_KEY, JSON.stringify(user));
+}
+
+export function clearAuthSession() {
+  localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY);
+  localStorage.removeItem(AUTH_USER_STORAGE_KEY);
+}
+
+function authHeaders(extra = {}) {
+  const token = getAuthToken();
+  return {
+    ...extra,
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
 
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -33,6 +67,35 @@ async function fetchJsonWithRetry(url, init = {}, { attempts = 3, baseDelayMs = 
   throw lastError;
 }
 
+export async function loginWithAccessToken(accessToken) {
+  const response = await fetch(`${API_URL}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token: accessToken }),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const error = new Error(data.message || data.error || 'Connexion refusée');
+    error.status = response.status;
+    throw error;
+  }
+  setAuthSession({ token: data.token, user: data.user });
+  return data;
+}
+
+export async function verifySession() {
+  const response = await fetch(`${API_URL}/api/auth/me`, {
+    headers: authHeaders(),
+  });
+  if (!response.ok) {
+    clearAuthSession();
+    return null;
+  }
+  const data = await response.json();
+  if (data.user) setAuthSession({ token: getAuthToken(), user: data.user });
+  return data.user || null;
+}
+
 /**
  * Fetch listings with filters
  */
@@ -48,7 +111,9 @@ export async function fetchListings(filters = {}) {
   if (filters.limit) params.append('limit', filters.limit);
   if (filters.offset) params.append('offset', filters.offset);
 
-  const response = await fetch(`${API_URL}/api/listings?${params}`);
+  const response = await fetch(`${API_URL}/api/listings?${params}`, {
+    headers: authHeaders(),
+  });
   if (!response.ok) throw new Error('Failed to fetch listings');
 
   const data = await response.json();
@@ -59,7 +124,9 @@ export async function fetchListings(filters = {}) {
  * Fetch single listing
  */
 export async function fetchListing(id) {
-  const response = await fetch(`${API_URL}/api/listings/${id}`);
+  const response = await fetch(`${API_URL}/api/listings/${id}`, {
+    headers: authHeaders(),
+  });
   if (!response.ok) throw new Error('Failed to fetch listing');
 
   return response.json();
@@ -78,7 +145,7 @@ export async function updateListing(id, updates) {
   
   const response = await fetch(`${API_URL}/api/listings/${id}`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: authHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(updates)
   });
 
@@ -90,6 +157,7 @@ export async function updateListing(id, updates) {
 export async function deleteListing(id) {
   const response = await fetch(`${API_URL}/api/listings/${id}`, {
     method: 'DELETE',
+    headers: authHeaders(),
   });
 
   if (!response.ok) throw new Error('Failed to delete listing');
@@ -99,6 +167,7 @@ export async function deleteListing(id) {
 export async function deleteAllListings() {
   const response = await fetch(`${API_URL}/api/listings`, {
     method: 'DELETE',
+    headers: authHeaders(),
   });
 
   if (!response.ok) throw new Error('Failed to clear listings');
@@ -109,14 +178,18 @@ export async function deleteAllListings() {
  * Fetch statistics
  */
 export async function fetchStats() {
-  const response = await fetch(`${API_URL}/api/stats`);
+  const response = await fetch(`${API_URL}/api/stats`, {
+    headers: authHeaders(),
+  });
   if (!response.ok) throw new Error('Failed to fetch stats');
 
   return response.json();
 }
 
 export async function fetchAlerts({ limit = 5 } = {}) {
-  const response = await fetch(`${API_URL}/api/alerts?limit=${limit}`);
+  const response = await fetch(`${API_URL}/api/alerts?limit=${limit}`, {
+    headers: authHeaders(),
+  });
   if (!response.ok) throw new Error('Failed to fetch alerts');
 
   return response.json();
@@ -126,7 +199,9 @@ export async function fetchAlerts({ limit = 5 } = {}) {
  * Fetch scrape runs history
  */
 export async function fetchScrapeRuns() {
-  const response = await fetch(`${API_URL}/api/scrape-runs`);
+  const response = await fetch(`${API_URL}/api/scrape-runs`, {
+    headers: authHeaders(),
+  });
   if (!response.ok) throw new Error('Failed to fetch scrape runs');
 
   return response.json();
@@ -139,7 +214,7 @@ export async function fetchScrapeRuns() {
 export async function startScrape(options = {}) {
   const data = await fetchJsonWithRetry(`${API_URL}/api/scrape/start`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: authHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(options),
   }, { attempts: 3, baseDelayMs: 900 });
 
@@ -154,7 +229,9 @@ export async function startScrape(options = {}) {
 }
 
 export async function fetchJobStatus() {
-  const response = await fetch(`${API_URL}/api/jobs/status`);
+  const response = await fetch(`${API_URL}/api/jobs/status`, {
+    headers: authHeaders(),
+  });
   if (!response.ok) throw new Error('Failed to fetch job status');
   return response.json();
 }

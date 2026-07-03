@@ -16,6 +16,13 @@ function optionalString(value) {
   return text.length > 0 ? text : undefined;
 }
 
+function parseCsv(value) {
+  return String(value || '')
+    .split(',')
+    .map(item => item.trim())
+    .filter(Boolean);
+}
+
 export const config = {
   port: process.env.PORT || 3000,
   nodeEnv: process.env.NODE_ENV || 'development',
@@ -24,6 +31,10 @@ export const config = {
   // Security
   jwtSecret: process.env.JWT_SECRET || 'dev-secret-change-in-production',
   skipAuth: process.env.SKIP_AUTH === 'true', // Only for development
+  auth: {
+    accessTokens: parseCsv(process.env.ACCESS_TOKENS || process.env.LOGIN_ACCESS_TOKENS || process.env.APP_ACCESS_TOKENS),
+    tokenExpiresIn: optionalString(process.env.JWT_EXPIRES_IN) || '7d',
+  },
 
   // Rate limiting (global)
   rateLimit: {

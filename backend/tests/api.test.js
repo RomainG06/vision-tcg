@@ -57,6 +57,29 @@ describe('API Endpoints', () => {
     });
   });
 
+  describe('POST /api/auth/login', () => {
+    it('should reject missing or invalid access token', async () => {
+      const missing = await request(app).post('/api/auth/login').send({});
+      expect(missing.status).toBe(400);
+
+      const invalid = await request(app).post('/api/auth/login').send({ token: 'wrong-token' });
+      expect(invalid.status).toBe(401);
+    });
+
+    it('should exchange a valid access token for a bearer JWT', async () => {
+      const login = await request(app).post('/api/auth/login').send({ token: 'dev-access-token' });
+      expect(login.status).toBe(200);
+      expect(login.body.token_type).toBe('Bearer');
+      expect(login.body.token).toBeTruthy();
+
+      const me = await request(app)
+        .get('/api/auth/me')
+        .set('Authorization', `Bearer ${login.body.token}`);
+      expect(me.status).toBe(200);
+      expect(me.body.user.userId).toBe('radar-user');
+    });
+  });
+
   describe('GET /api/listings', () => {
     it('should return listings array', async () => {
       const res = await request(app).get('/api/listings?status=all');

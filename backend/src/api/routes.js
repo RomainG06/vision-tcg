@@ -1,6 +1,6 @@
 import express from 'express';
 import { logger } from '../utils/logger.js';
-import { authenticate } from './auth.js';
+import { authenticate, generateToken, validateAccessToken } from './auth.js';
 import { validateInteger, validateFloat, validateEnum } from '../utils/url-validator.js';
 import { config } from '../utils/config.js';
 import { ListingRepository } from '../repositories/listing-repository.js';
@@ -142,6 +142,8 @@ router.get('/docs', (req, res) => {
     endpoints: [
       { method: 'GET', path: '/health', description: 'Health check' },
       { method: 'GET', path: '/api/docs', description: 'This documentation' },
+      { method: 'POST', path: '/api/auth/login', description: 'Exchange an access token for a session JWT' },
+      { method: 'GET', path: '/api/auth/me', description: 'Validate current session token' },
       { method: 'GET', path: '/api/listings', description: 'List all listings with filters' },
       { method: 'GET', path: '/api/listings/:id', description: 'Get single listing' },
       { method: 'GET', path: '/api/listings/:id/history', description: 'Get listing price/history tracking' },
@@ -160,6 +162,35 @@ router.get('/docs', (req, res) => {
       { method: 'GET', path: '/api/debug/db', description: 'Debug database path/count (dev)' }
     ]
   });
+});
+
+router.post('/auth/login', (req, res) => {
+  const accessToken = String(req.body?.token || '').trim();
+  if (!accessToken) {
+    return res.status(400).json({ error: 'Missing token', message: 'Token d’accès requis.' });
+  }
+
+  if (!validateAccessToken(accessToken)) {
+    return res.status(401).json({ error: 'Invalid token', message: 'Token invalide ou expiré.' });
+  }
+
+  const user = {
+    userId: 'radar-user',
+    role: 'user',
+    email: 'collector@visiontcg.local',
+  };
+  const token = generateToken(user, config.auth?.tokenExpiresIn || '7d');
+
+  res.json({
+    token,
+    token_type: 'Bearer',
+    expires_in: config.auth?.tokenExpiresIn || '7d',
+    user,
+  });
+});
+
+router.get('/auth/me', authenticate, (req, res) => {
+  res.json({ user: req.user || null });
 });
 
 /**

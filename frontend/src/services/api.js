@@ -34,6 +34,20 @@ function authHeaders(extra = {}) {
   };
 }
 
+function buildApiError(message, status, payload) {
+  const error = new Error(message);
+  error.status = status;
+  error.payload = payload;
+  return error;
+}
+
+async function assertOk(response, fallbackMessage) {
+  const data = await response.json().catch(() => ({}));
+  if (response.status === 401) clearAuthSession();
+  if (!response.ok) throw buildApiError(data.message || data.error || fallbackMessage, response.status, data);
+  return data;
+}
+
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -50,13 +64,7 @@ async function fetchJsonWithRetry(url, init = {}, { attempts = 3, baseDelayMs = 
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
       const response = await fetch(url, init);
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        const error = new Error(data.message || data.error || `HTTP ${response.status}`);
-        error.status = response.status;
-        error.payload = data;
-        throw error;
-      }
+      const data = await assertOk(response, `HTTP ${response.status}`);
       return data;
     } catch (error) {
       lastError = error;
@@ -73,12 +81,7 @@ export async function loginWithAccessToken(accessToken) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ token: accessToken }),
   });
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const error = new Error(data.message || data.error || 'Connexion refusée');
-    error.status = response.status;
-    throw error;
-  }
+  const data = await assertOk(response, 'Connexion refusée');
   setAuthSession({ token: data.token, user: data.user });
   return data;
 }
@@ -91,7 +94,7 @@ export async function verifySession() {
     clearAuthSession();
     return null;
   }
-  const data = await response.json();
+  const data = await response.json().catch(() => ({}));
   if (data.user) setAuthSession({ token: getAuthToken(), user: data.user });
   return data.user || null;
 }
@@ -114,9 +117,7 @@ export async function fetchListings(filters = {}) {
   const response = await fetch(`${API_URL}/api/listings?${params}`, {
     headers: authHeaders(),
   });
-  if (!response.ok) throw new Error('Failed to fetch listings');
-
-  const data = await response.json();
+  const data = await assertOk(response, 'Failed to fetch listings');
   return data.listings || [];
 }
 
@@ -127,9 +128,7 @@ export async function fetchListing(id) {
   const response = await fetch(`${API_URL}/api/listings/${id}`, {
     headers: authHeaders(),
   });
-  if (!response.ok) throw new Error('Failed to fetch listing');
-
-  return response.json();
+  return assertOk(response, 'Failed to fetch listing');
 }
 
 /**
@@ -149,9 +148,7 @@ export async function updateListing(id, updates) {
     body: JSON.stringify(updates)
   });
 
-  if (!response.ok) throw new Error('Failed to update listing');
-
-  return response.json();
+  return assertOk(response, 'Failed to update listing');
 }
 
 export async function deleteListing(id) {
@@ -160,7 +157,7 @@ export async function deleteListing(id) {
     headers: authHeaders(),
   });
 
-  if (!response.ok) throw new Error('Failed to delete listing');
+  if (!response.ok) await assertOk(response, 'Failed to delete listing');
   return true;
 }
 
@@ -170,8 +167,7 @@ export async function deleteAllListings() {
     headers: authHeaders(),
   });
 
-  if (!response.ok) throw new Error('Failed to clear listings');
-  return response.json();
+  return assertOk(response, 'Failed to clear listings');
 }
 
 /**
@@ -181,18 +177,14 @@ export async function fetchStats() {
   const response = await fetch(`${API_URL}/api/stats`, {
     headers: authHeaders(),
   });
-  if (!response.ok) throw new Error('Failed to fetch stats');
-
-  return response.json();
+  return assertOk(response, 'Failed to fetch stats');
 }
 
 export async function fetchAlerts({ limit = 5 } = {}) {
   const response = await fetch(`${API_URL}/api/alerts?limit=${limit}`, {
     headers: authHeaders(),
   });
-  if (!response.ok) throw new Error('Failed to fetch alerts');
-
-  return response.json();
+  return assertOk(response, 'Failed to fetch alerts');
 }
 
 /**
@@ -202,9 +194,7 @@ export async function fetchScrapeRuns() {
   const response = await fetch(`${API_URL}/api/scrape-runs`, {
     headers: authHeaders(),
   });
-  if (!response.ok) throw new Error('Failed to fetch scrape runs');
-
-  return response.json();
+  return assertOk(response, 'Failed to fetch scrape runs');
 }
 
 /**
@@ -232,6 +222,5 @@ export async function fetchJobStatus() {
   const response = await fetch(`${API_URL}/api/jobs/status`, {
     headers: authHeaders(),
   });
-  if (!response.ok) throw new Error('Failed to fetch job status');
-  return response.json();
+  return assertOk(response, 'Failed to fetch job status');
 }

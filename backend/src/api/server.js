@@ -40,6 +40,16 @@ const globalLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false
 });
+
+// Login is public: keep a stricter limiter to reduce token guessing.
+const loginLimiter = rateLimit({
+  windowMs: config.auth.loginRateLimit.windowMs,
+  max: config.auth.loginRateLimit.max,
+  message: { error: 'Too many login attempts', message: 'Trop de tentatives de connexion. Réessaie plus tard.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api/auth/login', loginLimiter);
 app.use('/api/', globalLimiter);
 
 // Strict rate limiting for scraping endpoints (1 request per minute)

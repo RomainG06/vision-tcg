@@ -34,6 +34,10 @@ export const config = {
   auth: {
     accessTokens: parseCsv(process.env.ACCESS_TOKENS || process.env.LOGIN_ACCESS_TOKENS || process.env.APP_ACCESS_TOKENS),
     tokenExpiresIn: optionalString(process.env.JWT_EXPIRES_IN) || '7d',
+    loginRateLimit: {
+      windowMs: parseInt(process.env.LOGIN_RATE_LIMIT_WINDOW_MS || String(5 * 60 * 1000)),
+      max: parseInt(process.env.LOGIN_RATE_LIMIT_MAX || '5'),
+    },
   },
 
   // Rate limiting (global)

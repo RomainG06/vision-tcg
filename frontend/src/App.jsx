@@ -83,7 +83,13 @@ function App() {
       setAlertsData(alertsPayload);
       return listingsData;
     } catch (err) {
-      setError(err.message);
+      if (err.status === 401) {
+        clearAuthSession();
+        setUser(null);
+        setError(null);
+      } else {
+        setError(err.message);
+      }
     } finally {
       if (showLoading) setLoading(false);
     }

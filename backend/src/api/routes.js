@@ -3,7 +3,8 @@ import listingsRouter from './routes/listings.routes.js';
 import scrapeRouter from './routes/scrape.routes.js';
 import alertsRouter from './routes/alerts.routes.js';
 import priceInfoRouter from './routes/price-info.routes.js';
-import statsRouter from './routes/stats.routes.js';
+import scrapeRunsRouter from './routes/stats.routes.js';
+import statsGeneralRouter from './routes/stats-general.routes.js';
 
 const router = express.Router();
 
@@ -12,8 +13,8 @@ router.use('/listings', listingsRouter);
 router.use('/scrape', scrapeRouter);
 router.use('/alerts', alertsRouter);
 router.use('/price-info', priceInfoRouter);
-router.use('/stats', statsRouter);
-router.use('/scrape-runs', statsRouter); // scrape-runs is part of stats router
+router.use('/scrape-runs', scrapeRunsRouter);
+router.use('/stats', statsGeneralRouter);
 
 // Legacy compatibility: /jobs/status -> /scrape/status
 router.get('/jobs/status', (req, res) => {

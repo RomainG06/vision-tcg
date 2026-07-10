@@ -14,6 +14,7 @@ import { buildHuntQueries, buildPrimaryHuntQuery, dedupeListingsBySourceExternal
 import { buildActionableScanSummary } from './scan-summary.js';
 import { enrichListingsWithEbaySoldPrices } from './price-info.js';
 import { isTransientMarketplaceError } from './marketplace-retry.js';
+import { getScanModePreset } from './scan-mode.js';
 
 const listingRepo = new ListingRepository();
 const scrapeRunRepo = new ScrapeRunRepository();
@@ -126,27 +127,6 @@ async function fetchListingsWithRetry(source, query, fetcher, options = {}) {
   }
 
   throw lastError;
-}
-
-const SCAN_MODE_PRESETS = {
-  quick: {
-    scanDepthMultiplier: 5,
-    minScanDepth: 50,
-    maxScrollPasses: 8,
-    allowSeenRescue: false,
-  },
-  deep: {
-    scanDepthMultiplier: 12,
-    minScanDepth: 150,
-    maxScrollPasses: 24,
-    allowSeenRescue: true,
-  },
-};
-
-function getScanModePreset(filters = {}) {
-  const requested = filters.scanMode || filters.scan_mode || filters.mode || 'quick';
-  const scanMode = SCAN_MODE_PRESETS[requested] ? requested : 'quick';
-  return { scanMode, ...SCAN_MODE_PRESETS[scanMode] };
 }
 
 export async function startScrape(options = {}) {

@@ -238,7 +238,9 @@ export function annotateListingQuality(listing, options = {}) {
 export function isLotListingText(text = '') {
   if (!text) return false;
   const normalized = String(text);
-  const hasExplicitCount = /\b([2-9]|[1-9]\d+)\s*(cartes?|cards?)\b/i.test(normalized);
+  // Avoid treating collector numbers like "15/102 carte" or "12/64 carte" as lot sizes.
+  // Lot counts need an actual plural count mention such as "24 cartes" or "40 cards".
+  const hasExplicitCount = /(?<!\/)\b([2-9]|[1-9]\d+)\s*(cartes|cards)\b/i.test(normalized);
   const hasLotSignal = LOT_PATTERN.test(normalized);
 
   if (SINGLE_CARD_PATTERN.test(normalized) && !hasExplicitCount && !hasLotSignal) {

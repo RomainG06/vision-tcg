@@ -29,6 +29,8 @@ export function buildEbaySearchUrl(query, options = {}) {
 
   url.searchParams.set('q', sanitizeSearchQuery(query));
   url.searchParams.set('limit', String(maxResults));
+  const offset = Math.max(0, Number(options.offset || 0));
+  if (offset > 0) url.searchParams.set('offset', String(offset));
   url.searchParams.set('sort', options.order === 'price_asc' ? 'price' : 'newlyListed');
 
   const filters = [];
@@ -101,39 +103,63 @@ export async function fetchEbay(query, options = {}) {
     env: options.env,
   });
 
-  const url = buildEbaySearchUrl(query, options);
   const marketplaceId = options.marketplaceId || options.marketplace_id || config.ebay.marketplaceId;
-  logger.info(`[eBay] Browse search query="${query}" marketplace=${marketplaceId}`);
+  const pageLimit = Math.max(1, Math.min(Number(options.maxResults || options.limit || config.ebay.maxResults || 50), 200));
+  const scanDepth = Math.max(pageLimit, Number(options.scanDepth || options.scan_depth || pageLimit));
+  const maxPages = Math.max(1, Number(options.maxScrollPasses || options.max_scroll_passes || Math.ceil(scanDepth / pageLimit)));
+  logger.info(`[eBay] Browse search query="${query}" marketplace=${marketplaceId} page_limit=${pageLimit} scan_depth=${scanDepth}`);
 
-  const response = await fetchImpl(url, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/json',
-      'X-EBAY-C-MARKETPLACE-ID': marketplaceId,
-      'Accept-Language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
-    },
-  });
+  const requestHeaders = {
+    Authorization: `Bearer ${token}`,
+    Accept: 'application/json',
+    'X-EBAY-C-MARKETPLACE-ID': marketplaceId,
+    'Accept-Language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
+  };
 
-  const text = await response.text();
-  let json = null;
-  try {
-    json = text ? JSON.parse(text) : null;
-  } catch {
-    json = null;
+  const allItems = [];
+  let nextUrl = buildEbaySearchUrl(query, { ...options, maxResults: pageLimit, offset: 0 });
+  let firstHref = null;
+  let lastNext = null;
+  let total = null;
+  let pagesFetched = 0;
+
+  while (nextUrl && pagesFetched < maxPages && allItems.length < scanDepth) {
+    const response = await fetchImpl(nextUrl, {
+      method: 'GET',
+      headers: requestHeaders,
+    });
+
+    const text = await response.text();
+    let json = null;
+    try {
+      json = text ? JSON.parse(text) : null;
+    } catch {
+      json = null;
+    }
+
+    if (!response.ok) {
+      const apiMessage = json?.errors?.[0]?.message || json?.message || text.slice(0, 200) || `HTTP ${response.status}`;
+      throw new Error(`eBay Browse API failed (${response.status}): ${apiMessage}`);
+    }
+
+    pagesFetched += 1;
+    firstHref = firstHref || json?.href || nextUrl;
+    lastNext = json?.next || null;
+    total = total ?? (Number.isFinite(Number(json?.total)) ? Number(json.total) : null);
+
+    const pageItems = Array.isArray(json?.itemSummaries) ? json.itemSummaries : [];
+    const remaining = Math.max(0, scanDepth - allItems.length);
+    allItems.push(...pageItems.slice(0, remaining));
+
+    if (!json?.next || pageItems.length === 0 || allItems.length >= scanDepth) break;
+    nextUrl = json.next;
   }
 
-  if (!response.ok) {
-    const apiMessage = json?.errors?.[0]?.message || json?.message || text.slice(0, 200) || `HTTP ${response.status}`;
-    throw new Error(`eBay Browse API failed (${response.status}): ${apiMessage}`);
-  }
-
-  const items = Array.isArray(json?.itemSummaries) ? json.itemSummaries : [];
   const seenIds = new Set(Array.from(options.excludeExternalIds || []).map(String));
   const deduped = new Set();
   const listings = [];
 
-  for (const item of items) {
+  for (const item of allItems) {
     const listing = mapEbayItemSummary(item);
     const id = String(listing?.external_id || '');
     if (!listing || !id || seenIds.has(id) || deduped.has(id)) continue;
@@ -141,22 +167,29 @@ export async function fetchEbay(query, options = {}) {
     listings.push(listing);
   }
 
+  const totalRaw = total ?? allItems.length;
   return attachEbayMetadata(listings, {
-    grid_raw_found: Number(json?.total || items.length || listings.length),
+    grid_raw_found: totalRaw,
     selected_for_details: listings.length,
     selected_external_ids: listings.map(listing => listing.external_id),
     prefilter_summary: {
-      total: Number(json?.total || items.length || listings.length),
+      total: totalRaw,
+      scanned: allItems.length,
       selected: listings.length,
-      already_seen: items.length - listings.length,
-      duplicate: Math.max(0, items.length - new Set(items.map(item => item.itemId || item.legacyItemId)).size),
-      invalid_url: Math.max(0, items.length - listings.length),
+      already_seen: allItems.length - listings.length,
+      duplicate: Math.max(0, allItems.length - new Set(allItems.map(item => item.itemId || item.legacyItemId)).size),
+      invalid_url: Math.max(0, allItems.length - listings.length),
     },
     ebay_api: {
       mode: 'browse_api',
       marketplace_id: marketplaceId,
-      href: json?.href || null,
-      next: json?.next || null,
+      href: firstHref,
+      next: lastNext,
+      pages_fetched: pagesFetched,
+      page_limit: pageLimit,
+      scan_depth: scanDepth,
+      max_pages: maxPages,
+      pagination_exhausted: !lastNext || allItems.length >= scanDepth || pagesFetched >= maxPages,
     },
   });
 }

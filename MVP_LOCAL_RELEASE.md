@@ -57,7 +57,7 @@ http://localhost:5173
 2. Configurer une chasse:
    - série: Team Rocket ou Toutes Wizards FR
    - budget: 200 à 1500 selon test
-   - sensibilité: Équilibré ou Agressif
+   - sélectivité: Équilibré ou Large
 3. Lancer la chasse.
 4. Lire le résumé actionnable:
    - pistes exploitables

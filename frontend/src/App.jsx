@@ -1,16 +1,24 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import FilterBar from './components/FilterBar';
 import LotList from './components/LotList';
 import HuntLaunchPanel from './components/HuntLaunchPanel';
-import { fetchListings, fetchStats, fetchAlerts, updateListing, deleteListing, deleteAllListings } from './services/api';
+import { useListings } from './hooks/useListings';
 import theme from './theme';
 import TcgIcon from './components/TcgIcon';
 
 function App() {
-  const [listings, setListings] = useState([]);
-  const [filteredListings, setFilteredListings] = useState([]);
-  const [stats, setStats] = useState(null);
-  const [alertsData, setAlertsData] = useState({ alerts: [], summary: null, history: null });
+  const {
+    listings,
+    stats,
+    alertsData,
+    loading,
+    error,
+    loadData,
+    updateListingById,
+    deleteListingById,
+    clearAll,
+  } = useListings();
+
   const [filters, setFilters] = useState({
     status: 'all',
     sortBy: 'date',
@@ -18,42 +26,18 @@ function App() {
     maxPrice: 1500,
     maxDistance: 50,
   });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [lastHunt, setLastHunt] = useState(null);
   const [notice, setNotice] = useState(null);
   const resultsRef = useRef(null);
 
-  // Load initial data
+  // Chargement initial
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
-  // Apply filters
-  useEffect(() => {
-    applyFilters();
-  }, [listings, filters, lastHunt]);
-
-  const loadData = async ({ showLoading = true } = {}) => {
-    try {
-      if (showLoading) setLoading(true);
-      const [listingsData, statsData, alertsPayload] = await Promise.all([
-        fetchListings({ limit: 500 }),
-        fetchStats(),
-        fetchAlerts({ limit: 5 }),
-      ]);
-      setListings(listingsData);
-      setStats(statsData);
-      setAlertsData(alertsPayload);
-      return listingsData;
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      if (showLoading) setLoading(false);
-    }
-  };
-
-  const applyFilters = () => {
+  // useMemo : recalcule uniquement quand listings, filters ou lastHunt changent
+  // Évite un useState supplémentaire et un cycle de rendu inutile
+  const filteredListings = useMemo(() => {
     let filtered = [...listings];
 
     if (filters.status !== 'all') {
@@ -69,7 +53,7 @@ function App() {
         distance <= filters.maxDistance;
     });
 
-    filtered.sort((a, b) => {
+    return [...filtered].sort((a, b) => {
       const lastScanDelta = Number((lastHunt?.highlightedIds || []).includes(b.id)) - Number((lastHunt?.highlightedIds || []).includes(a.id));
       if (lastScanDelta !== 0) return lastScanDelta;
 
@@ -80,13 +64,11 @@ function App() {
       if (runDelta !== 0) return runDelta;
       return new Date(b.scraped_at || b.published_at || 0) - new Date(a.scraped_at || a.published_at || 0);
     });
+  }, [listings, filters, lastHunt]);
 
-    setFilteredListings(filtered);
-  };
-
-  const handleFilterChange = (newFilters) => {
-    setFilters({ ...filters, ...newFilters });
-  };
+  const handleFilterChange = useCallback((newFilters) => {
+    setFilters(prev => ({ ...prev, ...newFilters }));
+  }, []);
 
   const scrollToResults = () => {
     resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -101,9 +83,9 @@ function App() {
     const highlightedIds = idsFromScan.length > 0
       ? idsFromScan
       : [...(refreshedListings || [])]
-          .sort((a, b) => (b.score || 0) - (a.score || 0))
-          .slice(0, 5)
-          .map((listing) => listing.id);
+        .sort((a, b) => (b.score || 0) - (a.score || 0))
+        .slice(0, 5)
+        .map((listing) => listing.id);
 
     setLastHunt({
       at: new Date(),
@@ -114,42 +96,27 @@ function App() {
     setTimeout(scrollToResults, 120);
   };
 
-  const handleListingUpdate = async (id, updates) => {
+  const handleListingUpdate = useCallback(async (id, updates) => {
     try {
-      const updated = await updateListing(id, updates);
-      
-      // Update local state with the returned listing
-      setListings(prevListings =>
-        prevListings.map(l => l.id === id ? updated : l)
-      );
-      
-      // Reload stats to reflect new counts
-      const [statsData, alertsPayload] = await Promise.all([fetchStats(), fetchAlerts({ limit: 5 })]);
-      setStats(statsData);
-      setAlertsData(alertsPayload);
-      return updated;
+      return await updateListingById(id, updates);
     } catch (err) {
       console.error('Failed to update listing:', err);
       throw err;
     }
-  };
+  }, [updateListingById]);
 
-  const handleListingDelete = async (id) => {
+  const handleListingDelete = useCallback(async (id) => {
     try {
-      await deleteListing(id);
-      setListings(prevListings => prevListings.filter(l => l.id !== id));
+      await deleteListingById(id);
       setLastHunt(prev => prev ? {
         ...prev,
-        highlightedIds: prev.highlightedIds.filter(highlightedId => highlightedId !== id),
+        highlightedIds: prev.highlightedIds.filter(hId => hId !== id),
       } : prev);
-      const [statsData, alertsPayload] = await Promise.all([fetchStats(), fetchAlerts({ limit: 5 })]);
-      setStats(statsData);
-      setAlertsData(alertsPayload);
     } catch (err) {
       console.error('Failed to delete listing:', err);
       throw err;
     }
-  };
+  }, [deleteListingById]);
 
   const handleClearAllListings = async () => {
     const total = stats?.total_listings ?? stats?.total ?? listings.length;
@@ -157,13 +124,8 @@ function App() {
     if (!window.confirm(`Supprimer les ${total} annonces du dashboard ?\n\nLa mémoire anti-rescan et l'historique de scan sont conservés.`)) return;
 
     try {
-      const result = await deleteAllListings();
-      setListings([]);
-      setFilteredListings([]);
+      const result = await clearAll();
       setLastHunt(null);
-      const [statsData, alertsPayload] = await Promise.all([fetchStats(), fetchAlerts({ limit: 5 })]);
-      setStats(statsData);
-      setAlertsData(alertsPayload);
       setNotice(`${result.deleted ?? total} annonces supprimées du dashboard.`);
       setTimeout(() => setNotice(null), 3500);
     } catch (err) {

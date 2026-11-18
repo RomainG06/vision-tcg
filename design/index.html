@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vision TCG — Design System Index</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0A0E27 0%, #121633 100%);
+      color: #F8FAFC;
+      padding: 32px 24px;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+      padding-bottom: 32px;
+      border-bottom: 2px solid #E6B85C;
+    }
+
+    h1 {
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #F8FAFC;
+      text-shadow: 0 0 20px rgba(230, 184, 92, 0.3);
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: #CBD5E1;
+      margin-bottom: 16px;
+    }
+
+    .versions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .version-card {
+      background: #1A1F3A;
+      border: 1px solid;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .version-heroic {
+      border-color: #C77DFF;
+    }
+
+    .version-hunting {
+      border-color: #E6B85C;
+    }
+
+    .version-label {
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    .version-heroic .version-label {
+      color: #C77DFF;
+    }
+
+    .version-hunting .version-label {
+      color: #E6B85C;
+    }
+
+    .version-status {
+      font-size: 12px;
+      color: #94A3B8;
+      margin-bottom: 16px;
+    }
+
+    .version-links {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .link-btn {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.2s;
+      border: 1px solid;
+      text-align: center;
+    }
+
+    .link-heroic {
+      background: #C77DFF;
+      background: linear-gradient(135deg, rgba(199, 125, 255, 0.2), rgba(199, 125, 255, 0.05));
+      border-color: #C77DFF;
+      color: #C77DFF;
+    }
+
+    .link-hunting {
+      background: #E6B85C;
+      background: linear-gradient(135deg, rgba(230, 184, 92, 0.2), rgba(230, 184, 92, 0.05));
+      border-color: #E6B85C;
+      color: #E6B85C;
+    }
+
+    .link-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 64px;
+    }
+
+    .section {
+      background: #1A1F3A;
+      border: 1px solid #E6B85C;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(230, 184, 92, 0.1);
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #E6B85C;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .file-list {
+      list-style: none;
+    }
+
+    .file-item {
+      padding: 8px;
+      margin-bottom: 8px;
+      background: #121633;
+      border-left: 2px solid #E6B85C;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .file-name {
+      font-family: 'JetBrains Mono', monospace;
+      color: #00D9FF;
+      font-weight: 600;
+    }
+
+    .file-desc {
+      color: #CBD5E1;
+      margin-top: 4px;
+      font-size: 11px;
+    }
+
+    .icon {
+      font-size: 18px;
+    }
+
+    @media (max-width: 768px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+      .versions {
+        grid-template-columns: 1fr;
+      }
+      h1 {
+        font-size: 32px;
+      }
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 64px;
+      padding-top: 32px;
+      border-top: 1px solid #E6B85C;
+      color: #CBD5E1;
+      font-size: 12px;
+    }
+
+    .badge-system {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .badge {
+      background: #0A0E27;
+      border: 1px solid #E6B85C;
+      border-radius: 4px;
+      padding: 8px;
+      text-align: center;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      color: #E6B85C;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>🎯 Vision TCG — Design System Index</h1>
+      <div class="subtitle">Two complete design directions: Heroic Fantasy Magic vs. Hunting Dashboard</div>
+
+      <div class="versions">
+        <div class="version-card version-heroic">
+          <div class="version-label">🧙 Heroic Fantasy Magic</div>
+          <div class="version-status">Mystical, pixelated, magical accents<br>Modern + Pixel fusion</div>
+          <div class="version-links">
+            <a href="preview-heroic.html" class="link-btn link-heroic">View Preview</a>
+            <a href="README-design.md" class="link-btn link-heroic">Docs</a>
+          </div>
+        </div>
+
+        <div class="version-card version-hunting">
+          <div class="version-label">🎯 Hunting Dashboard</div>
+          <div class="version-status">Premium dark mode, collector energy<br>Crypto/Trading dashboard inspired</div>
+          <div class="version-links">
+            <a href="preview-hunting.html" class="link-btn link-hunting">View Preview</a>
+            <a href="README-hunting-design.md" class="link-btn link-hunting">Docs</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Grid -->
+    <div class="content">
+      <!-- Heroic Fantasy Section -->
+      <div class="section">
+        <h2><span class="icon">🧙</span> Heroic Fantasy Magic</h2>
+        <p style="color: #CBD5E1; margin-bottom: 16px; font-size: 13px;">
+          Mystical theme with pixelated magical elements integrated throughout modern clean interface. Scintillating effects, glowing auras, fantasy heroes.
+        </p>
+
+        <h3 style="font-size: 12px; color: #E6B85C; margin-top: 16px; margin-bottom: 12px; font-weight: 600;">📚 Assets</h3>
+        <ul class="file-list">
+          <li class="file-item">
+            <div class="file-name">tokens.json</div>
+            <div class="file-desc">Enhanced design tokens with magical effects</div>
+          </li>
+          <li class="file-item">
+            <div class="file-name">logo-eye.svg</div>
+            <div class="file-desc">Magical brand logo with scintillation</div>
+          </li>
+          <li class="file-item">
+            <div class="file-name">icon-*.svg (5 icons)</div>
+            <div class="file-desc">Heroic fantasy navigation icons (sword, crystal, grimoire, scroll, crown)</div>
+          </li>
+          <li class="file-item">
+            <div class="file-name">hero-screen*.svg</div>
+            <div class="file-desc">Desktop & mobile mockups with magical effects</div>
+          </li>
+          <li class="file-item">
+            <div class="file-name">preview-heroic.html</div>
+            <div class="file-desc">Interactive browser preview</div>
+          </li>
+        </ul>
+
+        <h3 style="font-size: 12px; color: #E6B85C; margin-top: 16px; margin-bottom: 12px; font-weight: 600;">🎨 Key Features</h3>
+        <div class="badge-system">
+          <div class="badge">Mystical theme</div>
+          <div class="badge">5 Hero icons</div>
+          <div class="badge">Pixel FX</div>
+          <div class="badge">Glowing auras</div>
+          <div class="badge">Scintillation</div>
+        </div>
+      </div>
+
+      <!-- Hunting Dashboard Section -->
+      <div class="section">
+        <h2><span class="icon">🎯</span> Hunting Dashboard</h2>
+        <p style="color: #CBD5E1; margin-bottom: 16px; font-size: 13px;">
+          Premium dark-mode for collectors hunting opportunities. Crypto/trading dashboard aesthetics with hunting metaphors. Radar, scoring, watchlist, profiles.
+        </p>
+
+        <h3 style="font-size: 12px; color: #E6B85C; margin-top: 16px; margin-bottom: 12px; font-weight: 600;">📚 Assets</h3>
+        <ul class="file-list">
+          <li class="file-item">
+            <div class="file-name">hunting-tokens.json</div>
+            <div class="file-desc">Premium color palette, scoring system, animation specs</div>
+          </li>
+          <li class="file-item">
+            <div class="file-name">logo-hunting-radar.svg</div>
+            <div class="file-desc">Animated radar icon with sweep & targets</div>
+          </li>
+          <li class="file-item">
+            <div class="file-item">
+              <div class="file-name">opportunity-card-legendary.svg</div>
+              <div class="file-desc">Opportunity card component (Legendary tier)</div>
+            </li>
+          <li class="file-item">
+            <div class="file-name">hunting-dashboard.svg</div>
+            <div class="file-desc">Main dashboard mockup (1440×900)</div>
+          </li>
+          <li class="file-item">
+            <div class="file-name">hunt-profile.svg</div>
+            <div class="file-desc">Hunt profile configuration page</div>
+          </li>
+          <li class="file-item">
+            <div class="file-name">preview-hunting.html</div>
+            <div class="file-desc">Interactive design system browser</div>
+          </li>
+        </ul>
+
+        <h3 style="font-size: 12px; color: #E6B85C; margin-top: 16px; margin-bottom: 12px; font-weight: 600;">🎨 Key Features</h3>
+        <div class="badge-system">
+          <div class="badge">Dark premium</div>
+          <div class="badge">Radar sweep</div>
+          <div class="badge">5-tier scoring</div>
+          <div class="badge">13 badge types</div>
+          <div class="badge">Hunting metaphors</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparison Table -->
+    <div class="section" style="grid-column: 1 / -1; margin-bottom: 32px;">
+      <h2><span class="icon">⚖️</span> Design Comparison</h2>
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+          <thead>
+            <tr style="border-bottom: 2px solid #E6B85C;">
+              <th style="text-align: left; padding: 12px; color: #E6B85C;">Aspect</th>
+              <th style="text-align: left; padding: 12px; color: #C77DFF;">🧙 Heroic Fantasy</th>
+              <th style="text-align: left; padding: 12px; color: #E6B85C;">🎯 Hunting Dashboard</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid rgba(230, 184, 92, 0.2);">
+              <td style="padding: 12px;">Aesthetic</td>
+              <td style="padding: 12px;">Mystical + Modern</td>
+              <td style="padding: 12px;">Premium Dark + Data</td>
+            </tr>
+            <tr style="border-bottom: 1px solid rgba(230, 184, 92, 0.2);">
+              <td style="padding: 12px;">Inspiration</td>
+              <td style="padding: 12px;">Fantasy, Magic, RPG</td>
+              <td style="padding: 12px;">Trading, Crypto, Collector</td>
+            </tr>
+            <tr style="border-bottom: 1px solid rgba(230, 184, 92, 0.2);">
+              <td style="padding: 12px;">Color Palette</td>
+              <td style="padding: 12px;">Arcane Purple, Mana Cyan</td>
+              <td style="padding: 12px;">Hunter Gold, Rarity Tiers</td>
+            </tr>
+            <tr style="border-bottom: 1px solid rgba(230, 184, 92, 0.2);">
+              <td style="padding: 12px;">Main Feature</td>
+              <td style="padding: 12px;">5 Heroic Icons</td>
+              <td style="padding: 12px;">Radar + Scoring System</td>
+            </tr>
+            <tr style="border-bottom: 1px solid rgba(230, 184, 92, 0.2);">
+              <td style="padding: 12px;">Animations</td>
+              <td style="padding: 12px;">Scintillation, Glow, Particle</td>
+              <td style="padding: 12px;">Radar Sweep, Score Glow, Pulse</td>
+            </tr>
+            <tr style="border-bottom: 1px solid rgba(230, 184, 92, 0.2);">
+              <td style="padding: 12px;">Use Case</td>
+              <td style="padding: 12px;">Brand, Navigation</td>
+              <td style="padding: 12px;">Collector Platform</td>
+            </tr>
+            <tr>
+              <td style="padding: 12px;">Tone</td>
+              <td style="padding: 12px;">Heroic, Magical, Adventurous</td>
+              <td style="padding: 12px;">Professional, Energetic, Focused</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="section" style="grid-column: 1 / -1;">
+      <h2><span class="icon">🔗</span> Quick Navigation</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-top: 16px;">
+        <div style="background: #121633; padding: 12px; border-radius: 6px; border-left: 2px solid #E6B85C;">
+          <div style="font-weight: 600; color: #E6B85C; margin-bottom: 8px; font-size: 12px;">🎯 Heroic Fantasy Preview</div>
+          <a href="preview-heroic.html" style="color: #00D9FF; text-decoration: none; font-size: 11px;">View Full System →</a>
+        </div>
+        <div style="background: #121633; padding: 12px; border-radius: 6px; border-left: 2px solid #E6B85C;">
+          <div style="font-weight: 600; color: #E6B85C; margin-bottom: 8px; font-size: 12px;">🎯 Hunting Dashboard Preview</div>
+          <a href="preview-hunting.html" style="color: #00D9FF; text-decoration: none; font-size: 11px;">View Full System →</a>
+        </div>
+        <div style="background: #121633; padding: 12px; border-radius: 6px; border-left: 2px solid #E6B85C;">
+          <div style="font-weight: 600; color: #E6B85C; margin-bottom: 8px; font-size: 12px;">📖 Heroic Design Docs</div>
+          <a href="README-design.md" style="color: #00D9FF; text-decoration: none; font-size: 11px;">Full Documentation →</a>
+        </div>
+        <div style="background: #121633; padding: 12px; border-radius: 6px; border-left: 2px solid #E6B85C;">
+          <div style="font-weight: 600; color: #E6B85C; margin-bottom: 8px; font-size: 12px;">📖 Hunting Design Docs</div>
+          <a href="README-hunting-design.md" style="color: #00D9FF; text-decoration: none; font-size: 11px;">Full Documentation →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p style="margin-bottom: 12px;">
+        <strong>Vision TCG — Design System Package</strong> | June 2026
+      </p>
+      <p>Two complete design directions ready for developer handoff.</p>
+      <p style="margin-top: 16px; color: #64748B;">
+        All files: <code style="background: #0A0E27; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 11px;">/opt/data/vision-tcg/design/</code>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

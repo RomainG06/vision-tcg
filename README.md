@@ -1,51 +1,174 @@
-Projet: pokemon-scraper (lots Wizards)
+# Vision TCG - MVP Radar
 
-But
-Automatiser la recherche d'annonces (lots de cartes Pokémon du bloc Wizards) sur eBay.fr, Leboncoin, Vinted et Facebook Marketplace.
+Radar local de détection/priorisation d’annonces Pokémon Wizards FR.
 
-État actuel
-- Prototype headless Puppeteer + stealth qui collecte des liens via Bing et tente d'extraire informations simples depuis les pages (titre, prix, localisation, indication "édition française", nombre de cartes si indiqué).
-- Protection anti-bot (DataDome / CAPTCHA / Error Pages) détectée sur plusieurs sites. Le scraper fonctionne mais renvoie 0 résultats exhaustifs sans proxies résidents ou authentification.
+Focus MVP: Vinted + dashboard hunting, score explicable, résumé de scan, mémoire anti-rescan, watchlist/statuts.
 
-Arborescence
-- scraper.js         : script principal (puppeteer-extra + stealth) qui parcourt Bing, visite les pages et extrait informations.
-- package.json       : dépendances listées (puppeteer-extra, puppeteer-extra-plugin-stealth, puppeteer optionnel)
-- .env.example       : variables d'environnement à renseigner (EBAY_APP_ID, CHROMIUM_PATH, etc.)
-- run.sh             : wrapper d'exécution (exemple)
+## 🚀 Démarrage rapide
 
-Installation (sur le VPS)
-1) Node.js (v20+) installé. Exemple (déjà installé sur cet environnement): /tmp/node-v20.20.2-linux-x64/bin/node
-2) Installer les dépendances dans le dossier du projet (depuis le projet):
-   PUPPETEER_SKIP_DOWNLOAD=1 /tmp/node-v20.20.2-linux-x64/bin/npm install --prefix /opt/data/pokemon-scraper
-   - PUPPETEER_SKIP_DOWNLOAD=1 empêche Puppeteer de retélécharger Chromium si tu souhaites utiliser le binaire système (/usr/bin/chromium).
-3) Lancer le scraper (exemple):
-   /tmp/node-v20.20.2-linux-x64/bin/node /opt/data/pokemon-scraper/scraper.js
+### Prérequis
+- Node.js v22+
+- Git
 
-Utilisation et configuration
-- Le script lit ces variables d'environnement (ou utilise les valeurs par défaut):
-  - CHROMIUM_PATH : chemin vers le binaire Chromium (par défaut: /usr/bin/chromium)
-  - SEARCH_RADIUS  : rayon pour les recherches locales (non utilisé automatiquement par Bing, mais indiqué)
-  - EBAY_APP_ID    : App ID eBay (production pour accès API, facultatif)
+### Installation
 
-Sécurité et clés
-- Ne met pas de clés sensibles directement dans les fichiers du projet. Utilise des variables d'environnement ou un gestionnaire de secrets.
-- Ce dépôt prototype ne contient pas d'App ID / secrets. Le fichier .env.example montre le format.
+```powershell
+# Cloner le repo
+git clone https://github.com/RomainG06/vision-tcg.git
+cd vision-tcg
+git checkout feature/ui-hunting-radar
 
-Améliorations possibles
-- Intégration via l'API eBay (Production AppID + OAuth) pour lister les vraies annonces de façon fiable.
-- Utilisation d'un proxy résidentiel pour diminuer les blocages anti-bot.
-- Ajout d'un cache / base de données (SQLite) pour historique et déduplication.
-- Extraction plus fiable des photos et calcul €/carte.
+# Backend
+cd backend
+copy .env.example .env
+npm install
+npm run dev  # Démarre sur http://localhost:3001
 
-Fichiers générés par l'automatisation (exemples)
-- /tmp/auto_results.json
-- /tmp/search_results.json
-- /tmp/lbc_scrape.html
+# Frontend (nouveau terminal)
+cd ../frontend
+copy .env.example .env
+npm install
+npm run dev  # Démarre sur http://localhost:5173
+```
 
-Si tu veux, je peux:
-- Committer ce dossier dans un dépôt Git local (/opt/data/pokemon-scraper/.git) et te fournir la commande pour le cloner ailleurs.
-- Pousser vers un repo distant si tu me fournis un accès (ou je te fournis un patch).
+### Accès
 
-Dis-moi la prochaine étape :
-- Je lance une passe de test avec ta clef Sandbox (utile pour vérifier le pipeline mais pas pour obtenir des annonces live),
-- Ou tu fournis la AppID Production et/ou un proxy résidentiel pour lancer la collecte réelle et livrer la sélection (top 8–12 annonces) automatiquement.
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:3001
+- **Health check**: http://localhost:3001/health
+
+## 📦 Structure du projet
+
+```
+vision-tcg/
+├── backend/          # API Express + SQLite
+│   ├── src/
+│   │   ├── api/      # Routes et serveur
+│   │   ├── db/       # Base de données
+│   │   ├── fetchers/ # Scrapers (Leboncoin, Vinted)
+│   │   ├── scoring/  # Système de scoring
+│   │   └── utils/    # Config, logger, cookies
+│   └── data/         # Base SQLite (dev.db)
+├── frontend/         # React + Vite
+│   └── src/
+│       ├── components/  # Composants UI
+│       ├── services/    # API client
+│       └── theme.js     # Design system
+└── README.md
+```
+
+Guide détaillé: voir [`MVP_LOCAL_RELEASE.md`](./MVP_LOCAL_RELEASE.md).
+
+## 🛠️ Scripts disponibles
+
+### Backend
+```powershell
+npm run dev           # Mode dev avec hot-reload (port 3001)
+npm start             # Mode production (lit PORT depuis .env, défaut code 3000)
+npm test -- --runInBand
+```
+
+### Frontend
+```powershell
+npm run dev     # Mode dev (port 5173)
+npm run build   # Build production
+npm run preview # Preview du build
+```
+
+## 🔧 Configuration
+
+### Backend
+Port par défaut : `3001` (configuré dans `package.json` via `cross-env`)
+
+### Frontend
+Créer `frontend/.env` (déjà configuré) :
+```
+VITE_API_URL=http://localhost:3001
+```
+
+## 🐛 Résolution des problèmes
+
+### "Port already in use"
+```powershell
+# Windows : tuer le processus sur le port 3001
+netstat -ano | findstr :3001
+taskkill /PID <PID> /F
+
+# Ou changer le port :
+cd backend
+cross-env PORT=3002 npm run dev
+```
+
+### "Cannot find module"
+```powershell
+# Réinstaller les dépendances
+cd backend
+rm -r node_modules package-lock.json
+npm install
+
+cd ../frontend
+rm -r node_modules package-lock.json
+npm install
+```
+
+### "Failed to fetch" dans le frontend
+1. Vérifier que le backend tourne sur http://localhost:3001
+2. Vérifier `frontend/.env` : `VITE_API_URL=http://localhost:3001`
+3. Redémarrer le frontend après modification de `.env`
+
+## 📊 État des features
+
+✅ **Backend** :
+- API Express fonctionnelle
+- Base SQLite avec migrations auto
+- Scoring des annonces
+- 2 fetchers : Leboncoin + Vinted
+
+✅ **Frontend** :
+- Dashboard React hunting
+- Liste et détail des annonces
+- Filtres prix/distance/statut + tri
+- Watchlist, Vu, Ignoré, Contacté
+- Résumé de scan actionnable
+
+✅ **Scraping MVP** :
+- Mode headful (Chrome visible)
+- Vinted prioritaire
+- Gestion CAPTCHA: screenshot/debug + intervention humaine si nécessaire
+- Mémoire anti-rescan + option “Ré-analyser les déjà vues”
+- UPSERT en DB (pas de doublons)
+
+## 🎯 Prochaines étapes
+
+- [ ] Dockerisation
+- [ ] CI/CD GitHub Actions
+- [ ] Déploiement VPS
+- [ ] Cron job scraping quotidien
+- [ ] Tests E2E
+
+## 📝 Notes techniques
+
+### Gestion des CAPTCHA
+1. Si CAPTCHA détecté → attente 60s
+2. Résoudre manuellement dans la fenêtre Chrome
+3. Cookies sauvegardés automatiquement
+4. Réutilisation des cookies (~24h de validité)
+
+### Base de données
+- SQLite via `sql.js` (pure JS, pas de compilation native)
+- Auto-migration au démarrage
+- Sauvegarde auto toutes les 30s
+- Fichier : `backend/data/dev.db`
+
+### Scrapers
+- **Vinted** : chemin MVP principal
+- **Leboncoin** : intégré mais souvent bloqué par DataDome/anti-bot; intervention humaine/proxy à décider plus tard
+- **Facebook Marketplace** : hors MVP initial (login/restrictions)
+
+## 🤝 Contribution
+
+Voir [SOUL.md](SOUL.md) pour le contexte et la vision du projet.
+
+## 📄 Licence
+
+Propriétaire - Usage interne uniquement

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vision TCG — Design Preview</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background: #0F1419;
+            color: #F8F9FA;
+            padding: 24px;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        h1 { font-size: 36px; font-weight: 700; margin-bottom: 12px; }
+        .subtitle { font-size: 14px; color: #B8BCC4; margin-bottom: 32px; }
+        
+        .preview-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 64px;
+        }
+        
+        .preview-section {
+            border: 1px solid #3A4557;
+            border-radius: 8px;
+            padding: 24px;
+            background: #1A2332;
+        }
+        
+        .preview-section h2 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: #D4AF37;
+        }
+        
+        .svg-container {
+            background: #0F1419;
+            border: 1px solid #2A3347;
+            border-radius: 4px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            overflow: auto;
+        }
+        
+        .svg-container svg {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .mobile-preview {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        
+        .mobile-preview svg {
+            max-width: 375px;
+            height: auto;
+            border: 8px solid #1A2332;
+            border-radius: 24px;
+        }
+        
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+        
+        .color-swatch {
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #3A4557;
+        }
+        
+        .color-box {
+            width: 100%;
+            height: 60px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        
+        .color-label { font-size: 11px; color: #B8BCC4; }
+        .color-code { font-size: 10px; color: #B8BCC4; opacity: 0.7; margin-top: 4px; font-family: monospace; }
+        
+        .section { margin-bottom: 48px; }
+        
+        @media (max-width: 1024px) {
+            .preview-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Vision TCG — Design System</h1>
+        <p class="subtitle">Modern + Pixel Accent | Dark Mode | Contemporary & Approachable</p>
+        
+        <!-- Desktop Preview -->
+        <div class="section">
+            <h2 style="font-size: 24px; margin-bottom: 16px; color: #D4AF37;">📱 Desktop Hero Screen (1440×900)</h2>
+            <div class="preview-section">
+                <div class="svg-container">
+                    <svg viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" style="width: 100%; max-width: 1200px;">
+                        <defs>
+                            <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#0F1419;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#1A2332;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        
+                        <!-- Background -->
+                        <rect width="1440" height="900" fill="url(#bgGradient)"/>
+                        
+                        <!-- Header -->
+                        <rect width="1440" height="80" fill="#1A2332" stroke="#2A3347" stroke-width="1"/>
+                        
+                        <!-- Logo -->
+                        <circle cx="40" cy="40" r="20" fill="none" stroke="#D4AF37" stroke-width="2"/>
+                        <circle cx="40" cy="40" r="12" fill="#0B3D91"/>
+                        <circle cx="35" cy="35" r="3" fill="#39A0A6"/>
+                        
+                        <text x="75" y="50" font-family="'Inter', sans-serif" font-size="24" font-weight="700" fill="#F8F9FA">Vision TCG</text>
+                        
+                        <!-- Search -->
+                        <rect x="400" y="24" width="400" height="40" rx="20" fill="#2A3347" stroke="#3A4557" stroke-width="1"/>
+                        <text x="420" y="48" font-family="'Inter', sans-serif" font-size="14" fill="#B8BCC4">Search listings...</text>
+                        
+                        <!-- Nav -->
+                        <circle cx="1350" cy="40" r="18" fill="#39A0A6" opacity="0.8"/>
+                        
+                        <!-- Content -->
+                        <text x="48" y="130" font-family="'Inter', sans-serif" font-size="32" font-weight="700" fill="#F8F9FA">Featured Listings</text>
+                        <text x="48" y="160" font-family="'Inter', sans-serif" font-size="14" fill="#B8BCC4">Browse amazing items from our community</text>
+                        
+                        <!-- Card 1 -->
+                        <g>
+                            <rect x="48" y="200" width="400" height="280" rx="12" fill="#252E3E" stroke="#3A4557" stroke-width="1.5"/>
+                            <rect x="64" y="216" width="368" height="140" rx="6" fill="#3A4557"/>
+                            <text x="248" y="291" font-family="'Inter', sans-serif" font-size="13" fill="#B8BCC4" text-anchor="middle" opacity="0.6">Image</text>
+                            <circle cx="416" cy="228" r="6" fill="none" stroke="#39A0A6" stroke-width="1.5" opacity="0.7"/>
+                            <text x="64" y="380" font-family="'Inter', sans-serif" font-size="16" font-weight="600" fill="#F8F9FA">Rare Holographic</text>
+                            <text x="64" y="404" font-family="'Inter', sans-serif" font-size="22" font-weight="700" fill="#D4AF37">$89.99</text>
+                            <circle cx="64" cy="428" r="2" fill="#39A0A6"/>
+                            <text x="74" y="431" font-family="'Inter', sans-serif" font-size="12" fill="#B8BCC4">New York, NY</text>
+                            <g fill="#2A3347" opacity="0.6">
+                                <rect x="64" y="445" width="2" height="2"/>
+                                <rect x="72" y="445" width="2" height="2"/>
+                                <rect x="80" y="445" width="2" height="2"/>
+                                <rect x="88" y="445" width="2" height="2"/>
+                            </g>
+                        </g>
+                        
+                        <!-- Card 2 -->
+                        <g>
+                            <rect x="520" y="200" width="400" height="280" rx="12" fill="#252E3E" stroke="#3A4557" stroke-width="1.5"/>
+                            <rect x="536" y="216" width="368" height="140" rx="6" fill="#3A4557"/>
+                            <text x="720" y="291" font-family="'Inter', sans-serif" font-size="13" fill="#B8BCC4" text-anchor="middle" opacity="0.6">Image</text>
+                            <circle cx="888" cy="228" r="6" fill="none" stroke="#39A0A6" stroke-width="1.5" opacity="0.7"/>
+                            <text x="536" y="380" font-family="'Inter', sans-serif" font-size="16" font-weight="600" fill="#F8F9FA">Vintage Collection</text>
+                            <text x="536" y="404" font-family="'Inter', sans-serif" font-size="22" font-weight="700" fill="#D4AF37">$45.50</text>
+                            <circle cx="536" cy="428" r="2" fill="#39A0A6"/>
+                            <text x="546" y="431" font-family="'Inter', sans-serif" font-size="12" fill="#B8BCC4">Los Angeles, CA</text>
+                        </g>
+                        
+                        <!-- Card 3 -->
+                        <g>
+                            <rect x="992" y="200" width="400" height="280" rx="12" fill="#252E3E" stroke="#3A4557" stroke-width="1.5"/>
+                            <rect x="1008" y="216" width="368" height="140" rx="6" fill="#3A4557"/>
+                            <text x="1192" y="291" font-family="'Inter', sans-serif" font-size="13" fill="#B8BCC4" text-anchor="middle" opacity="0.6">Image</text>
+                            <circle cx="1360" cy="228" r="6" fill="none" stroke="#39A0A6" stroke-width="1.5" opacity="0.7"/>
+                            <text x="1008" y="380" font-family="'Inter', sans-serif" font-size="16" font-weight="600" fill="#F8F9FA">Limited Edition</text>
+                            <text x="1008" y="404" font-family="'Inter', sans-serif" font-size="22" font-weight="700" fill="#D4AF37">$125.00</text>
+                            <circle cx="1008" cy="428" r="2" fill="#39A0A6"/>
+                            <text x="1018" y="431" font-family="'Inter', sans-serif" font-size="12" fill="#B8BCC4">Chicago, IL</text>
+                        </g>
+                        
+                        <!-- Pixel corners -->
+                        <g stroke="#D4AF37" stroke-width="2" fill="none" opacity="0.3">
+                            <path d="M 16 16 L 32 16 L 32 32"/>
+                            <path d="M 1424 16 L 1408 16 L 1408 32"/>
+                            <path d="M 16 884 L 32 884 L 32 868"/>
+                            <path d="M 1424 884 L 1408 884 L 1408 868"/>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Preview -->
+        <div class="section">
+            <h2 style="font-size: 24px; margin-bottom: 16px; color: #D4AF37;">📱 Mobile Hero Screen (375×812)</h2>
+            <div class="preview-section" style="display: flex; justify-content: center;">
+                <div style="width: 375px;">
+                    <svg viewBox="0 0 375 812" xmlns="http://www.w3.org/2000/svg" style="width: 100%; border: 12px solid #1A2332; border-radius: 24px;">
+                        <defs>
+                            <linearGradient id="bgGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#0F1419;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#1A2332;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        
+                        <rect width="375" height="812" fill="url(#bgGradient2)"/>
+                        
+                        <!-- Header -->
+                        <rect y="44" width="375" height="60" fill="#1A2332" stroke="#2A3347" stroke-width="1"/>
+                        <circle cx="24" cy="74" r="12" fill="none" stroke="#D4AF37" stroke-width="1.5"/>
+                        <circle cx="24" cy="74" r="7" fill="#0B3D91"/>
+                        <circle cx="21" cy="71" r="2" fill="#39A0A6"/>
+                        <text x="48" y="82" font-family="'Inter', sans-serif" font-size="18" font-weight="700" fill="#F8F9FA">Vision TCG</text>
+                        
+                        <!-- Search -->
+                        <rect x="16" y="116" width="343" height="40" rx="20" fill="#2A3347" stroke="#3A4557" stroke-width="1"/>
+                        <text x="36" y="141" font-family="'Inter', sans-serif" font-size="12" fill="#B8BCC4">Search...</text>
+                        
+                        <!-- Card 1 -->
+                        <g>
+                            <rect x="12" y="176" width="351" height="240" rx="10" fill="#252E3E" stroke="#3A4557" stroke-width="1.5"/>
+                            <rect x="24" y="188" width="327" height="120" rx="6" fill="#3A4557"/>
+                            <text x="187.5" y="248" font-family="'Inter', sans-serif" font-size="12" fill="#B8BCC4" text-anchor="middle" opacity="0.6">Image</text>
+                            <circle cx="351" cy="196" r="5" fill="none" stroke="#39A0A6" stroke-width="1.5" opacity="0.7"/>
+                            <text x="24" y="328" font-family="'Inter', sans-serif" font-size="14" font-weight="600" fill="#F8F9FA">Rare Holographic</text>
+                            <text x="24" y="350" font-family="'Inter', sans-serif" font-size="20" font-weight="700" fill="#D4AF37">$89.99</text>
+                            <circle cx="24" cy="370" r="2" fill="#39A0A6"/>
+                            <text x="32" y="373" font-family="'Inter', sans-serif" font-size="11" fill="#B8BCC4">New York, NY</text>
+                        </g>
+                        
+                        <!-- Card 2 -->
+                        <g>
+                            <rect x="12" y="436" width="351" height="240" rx="10" fill="#252E3E" stroke="#3A4557" stroke-width="1.5"/>
+                            <rect x="24" y="448" width="327" height="120" rx="6" fill="#3A4557"/>
+                            <text x="187.5" y="508" font-family="'Inter', sans-serif" font-size="12" fill="#B8BCC4" text-anchor="middle" opacity="0.6">Image</text>
+                            <circle cx="351" cy="456" r="5" fill="none" stroke="#39A0A6" stroke-width="1.5" opacity="0.7"/>
+                            <text x="24" y="588" font-family="'Inter', sans-serif" font-size="14" font-weight="600" fill="#F8F9FA">Vintage Collection</text>
+                            <text x="24" y="610" font-family="'Inter', sans-serif" font-size="20" font-weight="700" fill="#D4AF37">$45.50</text>
+                            <circle cx="24" cy="630" r="2" fill="#39A0A6"/>
+                            <text x="32" y="633" font-family="'Inter', sans-serif" font-size="11" fill="#B8BCC4">Los Angeles, CA</text>
+                        </g>
+                        
+                        <!-- Bottom nav -->
+                        <rect y="752" width="375" height="60" fill="#1A2332" stroke="#2A3347" stroke-width="1"/>
+                        <circle cx="46" cy="782" r="16" fill="#39A0A6" opacity="0.1"/>
+                        <text x="46" y="790" font-family="'Inter', sans-serif" font-size="20" fill="#39A0A6" text-anchor="middle" font-weight="600">🏠</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Color Palette -->
+        <div class="section">
+            <h2 style="font-size: 24px; margin-bottom: 16px; color: #D4AF37;">🎨 Color Palette</h2>
+            <div class="color-palette">
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #0B3D91;"></div>
+                    <div class="color-label">Deep Blue</div>
+                    <div class="color-code">#0B3D91</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #39A0A6;"></div>
+                    <div class="color-label">Accent Cyan</div>
+                    <div class="color-code">#39A0A6</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #D4AF37;"></div>
+                    <div class="color-label">Parchment Gold</div>
+                    <div class="color-code">#D4AF37</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #1A2332;"></div>
+                    <div class="color-label">Card BG</div>
+                    <div class="color-code">#1A2332</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #252E3E;"></div>
+                    <div class="color-label">Hover State</div>
+                    <div class="color-code">#252E3E</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #F8F9FA;"></div>
+                    <div class="color-label">Text Primary</div>
+                    <div class="color-code">#F8F9FA</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Design Philosophy -->
+        <div class="section">
+            <h2 style="font-size: 24px; margin-bottom: 16px; color: #D4AF37;">✨ Key Features</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+                <div style="border: 1px solid #3A4557; padding: 16px; border-radius: 8px;">
+                    <h3 style="color: #39A0A6; margin-bottom: 8px;">Modern Foundation</h3>
+                    <p style="font-size: 13px; color: #B8BCC4;">Contemporary, clean interface inspired by Stripe/Linear/Vercel</p>
+                </div>
+                <div style="border: 1px solid #3A4557; padding: 16px; border-radius: 8px;">
+                    <h3 style="color: #39A0A6; margin-bottom: 8px;">Pixel Accents</h3>
+                    <p style="font-size: 13px; color: #B8BCC4;">Discrete micro-elements (corners, dividers, icons) for character</p>
+                </div>
+                <div style="border: 1px solid #3A4557; padding: 16px; border-radius: 8px;">
+                    <h3 style="color: #39A0A6; margin-bottom: 8px;">Dark Mode First</h3>
+                    <p style="font-size: 13px; color: #B8BCC4;">Optimized for low-light viewing; brand colors remain strong</p>
+                </div>
+                <div style="border: 1px solid #3A4557; padding: 16px; border-radius: 8px;">
+                    <h3 style="color: #39A0A6; margin-bottom: 8px;">Responsive Design</h3>
+                    <p style="font-size: 13px; color: #B8BCC4;">Desktop 1440px (3-col), Mobile 375px (1-col + bottom nav)</p>
+                </div>
+                <div style="border: 1px solid #3A4557; padding: 16px; border-radius: 8px;">
+                    <h3 style="color: #39A0A6; margin-bottom: 8px;">Token-Driven</h3>
+                    <p style="font-size: 13px; color: #B8BCC4;">Complete tokens.json with colors, typography, spacing, effects</p>
+                </div>
+                <div style="border: 1px solid #3A4557; padding: 16px; border-radius: 8px;">
+                    <h3 style="color: #39A0A6; margin-bottom: 8px;">Accessible</h3>
+                    <p style="font-size: 13px; color: #B8BCC4;">WCAG AA contrast ratios; semantic color for status</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

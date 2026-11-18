@@ -1,5 +1,5 @@
 {
-  "name": "pokemon-scraper",
+  "name": "vision-tcg",
   "version": "0.1.0",
   "description": "Scraper pour lots cartes Pokemon (Wizards)",
   "main": "scraper.js",

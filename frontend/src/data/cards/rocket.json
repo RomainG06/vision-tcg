@@ -1,0 +1,2362 @@
+[
+  {
+    "id": "rocket-1",
+    "tcgApiId": "base5-1",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Alakazam Obscur",
+    "englishName": "Dark Alakazam",
+    "number": "1/83",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Alakazam Obscur",
+      "Dark Alakazam",
+      "Alakazam Obscur team rocket",
+      "Dark Alakazam team rocket",
+      "Alakazam Obscur 1/83",
+      "Dark Alakazam 1/83"
+    ],
+    "aliases": [
+      "Alakazam Obscur",
+      "Dark Alakazam",
+      "Alakazam Obscur team rocket",
+      "Dark Alakazam team rocket",
+      "Alakazam Obscur 1/83",
+      "Dark Alakazam 1/83"
+    ]
+  },
+  {
+    "id": "rocket-2",
+    "tcgApiId": "base5-2",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Arbok Obscur",
+    "englishName": "Dark Arbok",
+    "number": "2/83",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Arbok Obscur",
+      "Dark Arbok",
+      "Arbok Obscur team rocket",
+      "Dark Arbok team rocket",
+      "Arbok Obscur 2/83",
+      "Dark Arbok 2/83"
+    ],
+    "aliases": [
+      "Arbok Obscur",
+      "Dark Arbok",
+      "Arbok Obscur team rocket",
+      "Dark Arbok team rocket",
+      "Arbok Obscur 2/83",
+      "Dark Arbok 2/83"
+    ]
+  },
+  {
+    "id": "rocket-3",
+    "tcgApiId": "base5-3",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Tortank Obscur",
+    "englishName": "Dark Blastoise",
+    "number": "3/83",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Tortank Obscur",
+      "Dark Blastoise",
+      "Tortank Obscur team rocket",
+      "Dark Blastoise team rocket",
+      "Tortank Obscur 3/83",
+      "Dark Blastoise 3/83"
+    ],
+    "aliases": [
+      "Tortank Obscur",
+      "Dark Blastoise",
+      "Tortank Obscur team rocket",
+      "Dark Blastoise team rocket",
+      "Tortank Obscur 3/83",
+      "Dark Blastoise 3/83"
+    ]
+  },
+  {
+    "id": "rocket-4",
+    "tcgApiId": "base5-4",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Dracaufeu Obscur",
+    "englishName": "Dark Charizard",
+    "number": "4/83",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Dracaufeu Obscur",
+      "Dark Charizard",
+      "Dracaufeu Obscur team rocket",
+      "Dark Charizard team rocket",
+      "Dracaufeu Obscur 4/83",
+      "Dark Charizard 4/83"
+    ],
+    "aliases": [
+      "Dracaufeu Obscur",
+      "Dark Charizard",
+      "Dracaufeu Obscur team rocket",
+      "Dark Charizard team rocket",
+      "Dracaufeu Obscur 4/83",
+      "Dark Charizard 4/83"
+    ]
+  },
+  {
+    "id": "rocket-5",
+    "tcgApiId": "base5-5",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Dracolosse Obscur",
+    "englishName": "Dark Dragonite",
+    "number": "5/83",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Dracolosse Obscur",
+      "Dark Dragonite",
+      "Dracolosse Obscur team rocket",
+      "Dark Dragonite team rocket",
+      "Dracolosse Obscur 5/83",
+      "Dark Dragonite 5/83"
+    ],
+    "aliases": [
+      "Dracolosse Obscur",
+      "Dark Dragonite",
+      "Dracolosse Obscur team rocket",
+      "Dark Dragonite team rocket",
+      "Dracolosse Obscur 5/83",
+      "Dark Dragonite 5/83"
+    ]
+  },
+  {
+    "id": "rocket-6",
+    "tcgApiId": "base5-6",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Triopikeur Obscur",
+    "englishName": "Dark Dugtrio",
+    "number": "6/83",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Triopikeur Obscur",
+      "Dark Dugtrio",
+      "Triopikeur Obscur team rocket",
+      "Dark Dugtrio team rocket",
+      "Triopikeur Obscur 6/83",
+      "Dark Dugtrio 6/83"
+    ],
+    "aliases": [
+      "Triopikeur Obscur",
+      "Dark Dugtrio",
+      "Triopikeur Obscur team rocket",
+      "Dark Dugtrio team rocket",
+      "Triopikeur Obscur 6/83",
+      "Dark Dugtrio 6/83"
+    ]
+  },
+  {
+    "id": "rocket-7",
+    "tcgApiId": "base5-7",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Nosferalto Obscur",
+    "englishName": "Dark Golbat",
+    "number": "7/83",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Nosferalto Obscur",
+      "Dark Golbat",
+      "Nosferalto Obscur team rocket",
+      "Dark Golbat team rocket",
+      "Nosferalto Obscur 7/83",
+      "Dark Golbat 7/83"
+    ],
+    "aliases": [
+      "Nosferalto Obscur",
+      "Dark Golbat",
+      "Nosferalto Obscur team rocket",
+      "Dark Golbat team rocket",
+      "Nosferalto Obscur 7/83",
+      "Dark Golbat 7/83"
+    ]
+  },
+  {
+    "id": "rocket-8",
+    "tcgApiId": "base5-8",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Léviator Obscur",
+    "englishName": "Dark Gyarados",
+    "number": "8/83",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Léviator Obscur",
+      "Dark Gyarados",
+      "Léviator Obscur team rocket",
+      "Dark Gyarados team rocket",
+      "Léviator Obscur 8/83",
+      "Dark Gyarados 8/83"
+    ],
+    "aliases": [
+      "Léviator Obscur",
+      "Dark Gyarados",
+      "Léviator Obscur team rocket",
+      "Dark Gyarados team rocket",
+      "Léviator Obscur 8/83",
+      "Dark Gyarados 8/83"
+    ]
+  },
+  {
+    "id": "rocket-9",
+    "tcgApiId": "base5-9",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Hypnomade Obscur",
+    "englishName": "Dark Hypno",
+    "number": "9/83",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Hypnomade Obscur",
+      "Dark Hypno",
+      "Hypnomade Obscur team rocket",
+      "Dark Hypno team rocket",
+      "Hypnomade Obscur 9/83",
+      "Dark Hypno 9/83"
+    ],
+    "aliases": [
+      "Hypnomade Obscur",
+      "Dark Hypno",
+      "Hypnomade Obscur team rocket",
+      "Dark Hypno team rocket",
+      "Hypnomade Obscur 9/83",
+      "Dark Hypno 9/83"
+    ]
+  },
+  {
+    "id": "rocket-10",
+    "tcgApiId": "base5-10",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Mackogneur Obscur",
+    "englishName": "Dark Machamp",
+    "number": "10/83",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Mackogneur Obscur",
+      "Dark Machamp",
+      "Mackogneur Obscur team rocket",
+      "Dark Machamp team rocket",
+      "Mackogneur Obscur 10/83",
+      "Dark Machamp 10/83"
+    ],
+    "aliases": [
+      "Mackogneur Obscur",
+      "Dark Machamp",
+      "Mackogneur Obscur team rocket",
+      "Dark Machamp team rocket",
+      "Mackogneur Obscur 10/83",
+      "Dark Machamp 10/83"
+    ]
+  },
+  {
+    "id": "rocket-11",
+    "tcgApiId": "base5-11",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Magnéton Obscur",
+    "englishName": "Dark Magneton",
+    "number": "11/83",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Magnéton Obscur",
+      "Dark Magneton",
+      "Magnéton Obscur team rocket",
+      "Dark Magneton team rocket",
+      "Magnéton Obscur 11/83",
+      "Dark Magneton 11/83"
+    ],
+    "aliases": [
+      "Magnéton Obscur",
+      "Dark Magneton",
+      "Magnéton Obscur team rocket",
+      "Dark Magneton team rocket",
+      "Magnéton Obscur 11/83",
+      "Dark Magneton 11/83"
+    ]
+  },
+  {
+    "id": "rocket-12",
+    "tcgApiId": "base5-12",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Flagadoss Obscur",
+    "englishName": "Dark Slowbro",
+    "number": "12/83",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Flagadoss Obscur",
+      "Dark Slowbro",
+      "Flagadoss Obscur team rocket",
+      "Dark Slowbro team rocket",
+      "Flagadoss Obscur 12/83",
+      "Dark Slowbro 12/83"
+    ],
+    "aliases": [
+      "Flagadoss Obscur",
+      "Dark Slowbro",
+      "Flagadoss Obscur team rocket",
+      "Dark Slowbro team rocket",
+      "Flagadoss Obscur 12/83",
+      "Dark Slowbro 12/83"
+    ]
+  },
+  {
+    "id": "rocket-13",
+    "tcgApiId": "base5-13",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Rafflesia Obscur",
+    "englishName": "Dark Vileplume",
+    "number": "13/83",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Rafflesia Obscur",
+      "Dark Vileplume",
+      "Rafflesia Obscur team rocket",
+      "Dark Vileplume team rocket",
+      "Rafflesia Obscur 13/83",
+      "Dark Vileplume 13/83"
+    ],
+    "aliases": [
+      "Rafflesia Obscur",
+      "Dark Vileplume",
+      "Rafflesia Obscur team rocket",
+      "Dark Vileplume team rocket",
+      "Rafflesia Obscur 13/83",
+      "Dark Vileplume 13/83"
+    ]
+  },
+  {
+    "id": "rocket-14",
+    "tcgApiId": "base5-14",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Smogogo Obscur",
+    "englishName": "Dark Weezing",
+    "number": "14/83",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Smogogo Obscur",
+      "Dark Weezing",
+      "Smogogo Obscur team rocket",
+      "Dark Weezing team rocket",
+      "Smogogo Obscur 14/83",
+      "Dark Weezing 14/83"
+    ],
+    "aliases": [
+      "Smogogo Obscur",
+      "Dark Weezing",
+      "Smogogo Obscur team rocket",
+      "Dark Weezing team rocket",
+      "Smogogo Obscur 14/83",
+      "Dark Weezing 14/83"
+    ]
+  },
+  {
+    "id": "rocket-15",
+    "tcgApiId": "base5-15",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Here Comes Team Rocket!",
+    "englishName": "Here Comes Team Rocket!",
+    "number": "15/83",
+    "rarity": "Rare Holo",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Here Comes Team Rocket!",
+      "Here Comes Team Rocket! team rocket",
+      "Here Comes Team Rocket! 15/83"
+    ],
+    "aliases": [
+      "Here Comes Team Rocket!",
+      "Here Comes Team Rocket! team rocket",
+      "Here Comes Team Rocket! 15/83"
+    ]
+  },
+  {
+    "id": "rocket-16",
+    "tcgApiId": "base5-16",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Rocket's Sneak Attack",
+    "englishName": "Rocket's Sneak Attack",
+    "number": "16/83",
+    "rarity": "Rare Holo",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Rocket's Sneak Attack",
+      "Rocket's Sneak Attack team rocket",
+      "Rocket's Sneak Attack 16/83"
+    ],
+    "aliases": [
+      "Rocket's Sneak Attack",
+      "Rocket's Sneak Attack team rocket",
+      "Rocket's Sneak Attack 16/83"
+    ]
+  },
+  {
+    "id": "rocket-17",
+    "tcgApiId": "base5-17",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Rainbow Energy",
+    "englishName": "Rainbow Energy",
+    "number": "17/83",
+    "rarity": "Rare Holo",
+    "supertype": "Energy",
+    "subtypes": [
+      "Special"
+    ],
+    "queryTerms": [
+      "Rainbow Energy",
+      "Rainbow Energy team rocket",
+      "Rainbow Energy 17/83"
+    ],
+    "aliases": [
+      "Rainbow Energy",
+      "Rainbow Energy team rocket",
+      "Rainbow Energy 17/83"
+    ]
+  },
+  {
+    "id": "rocket-18",
+    "tcgApiId": "base5-18",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Alakazam Obscur",
+    "englishName": "Dark Alakazam",
+    "number": "18/83",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Alakazam Obscur",
+      "Dark Alakazam",
+      "Alakazam Obscur team rocket",
+      "Dark Alakazam team rocket",
+      "Alakazam Obscur 18/83",
+      "Dark Alakazam 18/83"
+    ],
+    "aliases": [
+      "Alakazam Obscur",
+      "Dark Alakazam",
+      "Alakazam Obscur team rocket",
+      "Dark Alakazam team rocket",
+      "Alakazam Obscur 18/83",
+      "Dark Alakazam 18/83"
+    ]
+  },
+  {
+    "id": "rocket-19",
+    "tcgApiId": "base5-19",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Arbok Obscur",
+    "englishName": "Dark Arbok",
+    "number": "19/83",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Arbok Obscur",
+      "Dark Arbok",
+      "Arbok Obscur team rocket",
+      "Dark Arbok team rocket",
+      "Arbok Obscur 19/83",
+      "Dark Arbok 19/83"
+    ],
+    "aliases": [
+      "Arbok Obscur",
+      "Dark Arbok",
+      "Arbok Obscur team rocket",
+      "Dark Arbok team rocket",
+      "Arbok Obscur 19/83",
+      "Dark Arbok 19/83"
+    ]
+  },
+  {
+    "id": "rocket-20",
+    "tcgApiId": "base5-20",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Tortank Obscur",
+    "englishName": "Dark Blastoise",
+    "number": "20/83",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Tortank Obscur",
+      "Dark Blastoise",
+      "Tortank Obscur team rocket",
+      "Dark Blastoise team rocket",
+      "Tortank Obscur 20/83",
+      "Dark Blastoise 20/83"
+    ],
+    "aliases": [
+      "Tortank Obscur",
+      "Dark Blastoise",
+      "Tortank Obscur team rocket",
+      "Dark Blastoise team rocket",
+      "Tortank Obscur 20/83",
+      "Dark Blastoise 20/83"
+    ]
+  },
+  {
+    "id": "rocket-21",
+    "tcgApiId": "base5-21",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Dracaufeu Obscur",
+    "englishName": "Dark Charizard",
+    "number": "21/83",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Dracaufeu Obscur",
+      "Dark Charizard",
+      "Dracaufeu Obscur team rocket",
+      "Dark Charizard team rocket",
+      "Dracaufeu Obscur 21/83",
+      "Dark Charizard 21/83"
+    ],
+    "aliases": [
+      "Dracaufeu Obscur",
+      "Dark Charizard",
+      "Dracaufeu Obscur team rocket",
+      "Dark Charizard team rocket",
+      "Dracaufeu Obscur 21/83",
+      "Dark Charizard 21/83"
+    ]
+  },
+  {
+    "id": "rocket-22",
+    "tcgApiId": "base5-22",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Dracolosse Obscur",
+    "englishName": "Dark Dragonite",
+    "number": "22/83",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Dracolosse Obscur",
+      "Dark Dragonite",
+      "Dracolosse Obscur team rocket",
+      "Dark Dragonite team rocket",
+      "Dracolosse Obscur 22/83",
+      "Dark Dragonite 22/83"
+    ],
+    "aliases": [
+      "Dracolosse Obscur",
+      "Dark Dragonite",
+      "Dracolosse Obscur team rocket",
+      "Dark Dragonite team rocket",
+      "Dracolosse Obscur 22/83",
+      "Dark Dragonite 22/83"
+    ]
+  },
+  {
+    "id": "rocket-23",
+    "tcgApiId": "base5-23",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Triopikeur Obscur",
+    "englishName": "Dark Dugtrio",
+    "number": "23/83",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Triopikeur Obscur",
+      "Dark Dugtrio",
+      "Triopikeur Obscur team rocket",
+      "Dark Dugtrio team rocket",
+      "Triopikeur Obscur 23/83",
+      "Dark Dugtrio 23/83"
+    ],
+    "aliases": [
+      "Triopikeur Obscur",
+      "Dark Dugtrio",
+      "Triopikeur Obscur team rocket",
+      "Dark Dugtrio team rocket",
+      "Triopikeur Obscur 23/83",
+      "Dark Dugtrio 23/83"
+    ]
+  },
+  {
+    "id": "rocket-24",
+    "tcgApiId": "base5-24",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Nosferalto Obscur",
+    "englishName": "Dark Golbat",
+    "number": "24/83",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Nosferalto Obscur",
+      "Dark Golbat",
+      "Nosferalto Obscur team rocket",
+      "Dark Golbat team rocket",
+      "Nosferalto Obscur 24/83",
+      "Dark Golbat 24/83"
+    ],
+    "aliases": [
+      "Nosferalto Obscur",
+      "Dark Golbat",
+      "Nosferalto Obscur team rocket",
+      "Dark Golbat team rocket",
+      "Nosferalto Obscur 24/83",
+      "Dark Golbat 24/83"
+    ]
+  },
+  {
+    "id": "rocket-25",
+    "tcgApiId": "base5-25",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Léviator Obscur",
+    "englishName": "Dark Gyarados",
+    "number": "25/83",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Léviator Obscur",
+      "Dark Gyarados",
+      "Léviator Obscur team rocket",
+      "Dark Gyarados team rocket",
+      "Léviator Obscur 25/83",
+      "Dark Gyarados 25/83"
+    ],
+    "aliases": [
+      "Léviator Obscur",
+      "Dark Gyarados",
+      "Léviator Obscur team rocket",
+      "Dark Gyarados team rocket",
+      "Léviator Obscur 25/83",
+      "Dark Gyarados 25/83"
+    ]
+  },
+  {
+    "id": "rocket-26",
+    "tcgApiId": "base5-26",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Hypnomade Obscur",
+    "englishName": "Dark Hypno",
+    "number": "26/83",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Hypnomade Obscur",
+      "Dark Hypno",
+      "Hypnomade Obscur team rocket",
+      "Dark Hypno team rocket",
+      "Hypnomade Obscur 26/83",
+      "Dark Hypno 26/83"
+    ],
+    "aliases": [
+      "Hypnomade Obscur",
+      "Dark Hypno",
+      "Hypnomade Obscur team rocket",
+      "Dark Hypno team rocket",
+      "Hypnomade Obscur 26/83",
+      "Dark Hypno 26/83"
+    ]
+  },
+  {
+    "id": "rocket-27",
+    "tcgApiId": "base5-27",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Mackogneur Obscur",
+    "englishName": "Dark Machamp",
+    "number": "27/83",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Mackogneur Obscur",
+      "Dark Machamp",
+      "Mackogneur Obscur team rocket",
+      "Dark Machamp team rocket",
+      "Mackogneur Obscur 27/83",
+      "Dark Machamp 27/83"
+    ],
+    "aliases": [
+      "Mackogneur Obscur",
+      "Dark Machamp",
+      "Mackogneur Obscur team rocket",
+      "Dark Machamp team rocket",
+      "Mackogneur Obscur 27/83",
+      "Dark Machamp 27/83"
+    ]
+  },
+  {
+    "id": "rocket-28",
+    "tcgApiId": "base5-28",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Magnéton Obscur",
+    "englishName": "Dark Magneton",
+    "number": "28/83",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Magnéton Obscur",
+      "Dark Magneton",
+      "Magnéton Obscur team rocket",
+      "Dark Magneton team rocket",
+      "Magnéton Obscur 28/83",
+      "Dark Magneton 28/83"
+    ],
+    "aliases": [
+      "Magnéton Obscur",
+      "Dark Magneton",
+      "Magnéton Obscur team rocket",
+      "Dark Magneton team rocket",
+      "Magnéton Obscur 28/83",
+      "Dark Magneton 28/83"
+    ]
+  },
+  {
+    "id": "rocket-29",
+    "tcgApiId": "base5-29",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Flagadoss Obscur",
+    "englishName": "Dark Slowbro",
+    "number": "29/83",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Flagadoss Obscur",
+      "Dark Slowbro",
+      "Flagadoss Obscur team rocket",
+      "Dark Slowbro team rocket",
+      "Flagadoss Obscur 29/83",
+      "Dark Slowbro 29/83"
+    ],
+    "aliases": [
+      "Flagadoss Obscur",
+      "Dark Slowbro",
+      "Flagadoss Obscur team rocket",
+      "Dark Slowbro team rocket",
+      "Flagadoss Obscur 29/83",
+      "Dark Slowbro 29/83"
+    ]
+  },
+  {
+    "id": "rocket-30",
+    "tcgApiId": "base5-30",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Rafflesia Obscur",
+    "englishName": "Dark Vileplume",
+    "number": "30/83",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Rafflesia Obscur",
+      "Dark Vileplume",
+      "Rafflesia Obscur team rocket",
+      "Dark Vileplume team rocket",
+      "Rafflesia Obscur 30/83",
+      "Dark Vileplume 30/83"
+    ],
+    "aliases": [
+      "Rafflesia Obscur",
+      "Dark Vileplume",
+      "Rafflesia Obscur team rocket",
+      "Dark Vileplume team rocket",
+      "Rafflesia Obscur 30/83",
+      "Dark Vileplume 30/83"
+    ]
+  },
+  {
+    "id": "rocket-31",
+    "tcgApiId": "base5-31",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Smogogo Obscur",
+    "englishName": "Dark Weezing",
+    "number": "31/83",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Smogogo Obscur",
+      "Dark Weezing",
+      "Smogogo Obscur team rocket",
+      "Dark Weezing team rocket",
+      "Smogogo Obscur 31/83",
+      "Dark Weezing 31/83"
+    ],
+    "aliases": [
+      "Smogogo Obscur",
+      "Dark Weezing",
+      "Smogogo Obscur team rocket",
+      "Dark Weezing team rocket",
+      "Smogogo Obscur 31/83",
+      "Dark Weezing 31/83"
+    ]
+  },
+  {
+    "id": "rocket-32",
+    "tcgApiId": "base5-32",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Reptincel Obscur",
+    "englishName": "Dark Charmeleon",
+    "number": "32/83",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Reptincel Obscur",
+      "Dark Charmeleon",
+      "Reptincel Obscur team rocket",
+      "Dark Charmeleon team rocket",
+      "Reptincel Obscur 32/83",
+      "Dark Charmeleon 32/83"
+    ],
+    "aliases": [
+      "Reptincel Obscur",
+      "Dark Charmeleon",
+      "Reptincel Obscur team rocket",
+      "Dark Charmeleon team rocket",
+      "Reptincel Obscur 32/83",
+      "Dark Charmeleon 32/83"
+    ]
+  },
+  {
+    "id": "rocket-33",
+    "tcgApiId": "base5-33",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Draco Obscur",
+    "englishName": "Dark Dragonair",
+    "number": "33/83",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Draco Obscur",
+      "Dark Dragonair",
+      "Draco Obscur team rocket",
+      "Dark Dragonair team rocket",
+      "Draco Obscur 33/83",
+      "Dark Dragonair 33/83"
+    ],
+    "aliases": [
+      "Draco Obscur",
+      "Dark Dragonair",
+      "Draco Obscur team rocket",
+      "Dark Dragonair team rocket",
+      "Draco Obscur 33/83",
+      "Dark Dragonair 33/83"
+    ]
+  },
+  {
+    "id": "rocket-34",
+    "tcgApiId": "base5-34",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Électrode Obscur",
+    "englishName": "Dark Electrode",
+    "number": "34/83",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Électrode Obscur",
+      "Dark Electrode",
+      "Électrode Obscur team rocket",
+      "Dark Electrode team rocket",
+      "Électrode Obscur 34/83",
+      "Dark Electrode 34/83"
+    ],
+    "aliases": [
+      "Électrode Obscur",
+      "Dark Electrode",
+      "Électrode Obscur team rocket",
+      "Dark Electrode team rocket",
+      "Électrode Obscur 34/83",
+      "Dark Electrode 34/83"
+    ]
+  },
+  {
+    "id": "rocket-35",
+    "tcgApiId": "base5-35",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Pyroli Obscur",
+    "englishName": "Dark Flareon",
+    "number": "35/83",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Pyroli Obscur",
+      "Dark Flareon",
+      "Pyroli Obscur team rocket",
+      "Dark Flareon team rocket",
+      "Pyroli Obscur 35/83",
+      "Dark Flareon 35/83"
+    ],
+    "aliases": [
+      "Pyroli Obscur",
+      "Dark Flareon",
+      "Pyroli Obscur team rocket",
+      "Dark Flareon team rocket",
+      "Pyroli Obscur 35/83",
+      "Dark Flareon 35/83"
+    ]
+  },
+  {
+    "id": "rocket-36",
+    "tcgApiId": "base5-36",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Ortide Obscur",
+    "englishName": "Dark Gloom",
+    "number": "36/83",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Ortide Obscur",
+      "Dark Gloom",
+      "Ortide Obscur team rocket",
+      "Dark Gloom team rocket",
+      "Ortide Obscur 36/83",
+      "Dark Gloom 36/83"
+    ],
+    "aliases": [
+      "Ortide Obscur",
+      "Dark Gloom",
+      "Ortide Obscur team rocket",
+      "Dark Gloom team rocket",
+      "Ortide Obscur 36/83",
+      "Dark Gloom 36/83"
+    ]
+  },
+  {
+    "id": "rocket-37",
+    "tcgApiId": "base5-37",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Akwakwak Obscur",
+    "englishName": "Dark Golduck",
+    "number": "37/83",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Akwakwak Obscur",
+      "Dark Golduck",
+      "Akwakwak Obscur team rocket",
+      "Dark Golduck team rocket",
+      "Akwakwak Obscur 37/83",
+      "Dark Golduck 37/83"
+    ],
+    "aliases": [
+      "Akwakwak Obscur",
+      "Dark Golduck",
+      "Akwakwak Obscur team rocket",
+      "Dark Golduck team rocket",
+      "Akwakwak Obscur 37/83",
+      "Dark Golduck 37/83"
+    ]
+  },
+  {
+    "id": "rocket-38",
+    "tcgApiId": "base5-38",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Voltali Obscur",
+    "englishName": "Dark Jolteon",
+    "number": "38/83",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Voltali Obscur",
+      "Dark Jolteon",
+      "Voltali Obscur team rocket",
+      "Dark Jolteon team rocket",
+      "Voltali Obscur 38/83",
+      "Dark Jolteon 38/83"
+    ],
+    "aliases": [
+      "Voltali Obscur",
+      "Dark Jolteon",
+      "Voltali Obscur team rocket",
+      "Dark Jolteon team rocket",
+      "Voltali Obscur 38/83",
+      "Dark Jolteon 38/83"
+    ]
+  },
+  {
+    "id": "rocket-39",
+    "tcgApiId": "base5-39",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Kadabra Obscur",
+    "englishName": "Dark Kadabra",
+    "number": "39/83",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Kadabra Obscur",
+      "Dark Kadabra",
+      "Kadabra Obscur team rocket",
+      "Dark Kadabra team rocket",
+      "Kadabra Obscur 39/83",
+      "Dark Kadabra 39/83"
+    ],
+    "aliases": [
+      "Kadabra Obscur",
+      "Dark Kadabra",
+      "Kadabra Obscur team rocket",
+      "Dark Kadabra team rocket",
+      "Kadabra Obscur 39/83",
+      "Dark Kadabra 39/83"
+    ]
+  },
+  {
+    "id": "rocket-40",
+    "tcgApiId": "base5-40",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Machopeur Obscur",
+    "englishName": "Dark Machoke",
+    "number": "40/83",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Machopeur Obscur",
+      "Dark Machoke",
+      "Machopeur Obscur team rocket",
+      "Dark Machoke team rocket",
+      "Machopeur Obscur 40/83",
+      "Dark Machoke 40/83"
+    ],
+    "aliases": [
+      "Machopeur Obscur",
+      "Dark Machoke",
+      "Machopeur Obscur team rocket",
+      "Dark Machoke team rocket",
+      "Machopeur Obscur 40/83",
+      "Dark Machoke 40/83"
+    ]
+  },
+  {
+    "id": "rocket-41",
+    "tcgApiId": "base5-41",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Grotadmorv Obscur",
+    "englishName": "Dark Muk",
+    "number": "41/83",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Grotadmorv Obscur",
+      "Dark Muk",
+      "Grotadmorv Obscur team rocket",
+      "Dark Muk team rocket",
+      "Grotadmorv Obscur 41/83",
+      "Dark Muk 41/83"
+    ],
+    "aliases": [
+      "Grotadmorv Obscur",
+      "Dark Muk",
+      "Grotadmorv Obscur team rocket",
+      "Dark Muk team rocket",
+      "Grotadmorv Obscur 41/83",
+      "Dark Muk 41/83"
+    ]
+  },
+  {
+    "id": "rocket-42",
+    "tcgApiId": "base5-42",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Persian Obscur",
+    "englishName": "Dark Persian",
+    "number": "42/83",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Persian Obscur",
+      "Dark Persian",
+      "Persian Obscur team rocket",
+      "Dark Persian team rocket",
+      "Persian Obscur 42/83",
+      "Dark Persian 42/83"
+    ],
+    "aliases": [
+      "Persian Obscur",
+      "Dark Persian",
+      "Persian Obscur team rocket",
+      "Dark Persian team rocket",
+      "Persian Obscur 42/83",
+      "Dark Persian 42/83"
+    ]
+  },
+  {
+    "id": "rocket-43",
+    "tcgApiId": "base5-43",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Colossinge Obscur",
+    "englishName": "Dark Primeape",
+    "number": "43/83",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Colossinge Obscur",
+      "Dark Primeape",
+      "Colossinge Obscur team rocket",
+      "Dark Primeape team rocket",
+      "Colossinge Obscur 43/83",
+      "Dark Primeape 43/83"
+    ],
+    "aliases": [
+      "Colossinge Obscur",
+      "Dark Primeape",
+      "Colossinge Obscur team rocket",
+      "Dark Primeape team rocket",
+      "Colossinge Obscur 43/83",
+      "Dark Primeape 43/83"
+    ]
+  },
+  {
+    "id": "rocket-44",
+    "tcgApiId": "base5-44",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Rapidash Obscur",
+    "englishName": "Dark Rapidash",
+    "number": "44/83",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Rapidash Obscur",
+      "Dark Rapidash",
+      "Rapidash Obscur team rocket",
+      "Dark Rapidash team rocket",
+      "Rapidash Obscur 44/83",
+      "Dark Rapidash 44/83"
+    ],
+    "aliases": [
+      "Rapidash Obscur",
+      "Dark Rapidash",
+      "Rapidash Obscur team rocket",
+      "Dark Rapidash team rocket",
+      "Rapidash Obscur 44/83",
+      "Dark Rapidash 44/83"
+    ]
+  },
+  {
+    "id": "rocket-45",
+    "tcgApiId": "base5-45",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Aquali Obscur",
+    "englishName": "Dark Vaporeon",
+    "number": "45/83",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Aquali Obscur",
+      "Dark Vaporeon",
+      "Aquali Obscur team rocket",
+      "Dark Vaporeon team rocket",
+      "Aquali Obscur 45/83",
+      "Dark Vaporeon 45/83"
+    ],
+    "aliases": [
+      "Aquali Obscur",
+      "Dark Vaporeon",
+      "Aquali Obscur team rocket",
+      "Dark Vaporeon team rocket",
+      "Aquali Obscur 45/83",
+      "Dark Vaporeon 45/83"
+    ]
+  },
+  {
+    "id": "rocket-46",
+    "tcgApiId": "base5-46",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Carabaffe Obscur",
+    "englishName": "Dark Wartortle",
+    "number": "46/83",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Carabaffe Obscur",
+      "Dark Wartortle",
+      "Carabaffe Obscur team rocket",
+      "Dark Wartortle team rocket",
+      "Carabaffe Obscur 46/83",
+      "Dark Wartortle 46/83"
+    ],
+    "aliases": [
+      "Carabaffe Obscur",
+      "Dark Wartortle",
+      "Carabaffe Obscur team rocket",
+      "Dark Wartortle team rocket",
+      "Carabaffe Obscur 46/83",
+      "Dark Wartortle 46/83"
+    ]
+  },
+  {
+    "id": "rocket-47",
+    "tcgApiId": "base5-47",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Magicarpe",
+    "englishName": "Magikarp",
+    "number": "47/83",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Magicarpe",
+      "Magikarp",
+      "Magicarpe team rocket",
+      "Magikarp team rocket",
+      "Magicarpe 47/83",
+      "Magikarp 47/83"
+    ],
+    "aliases": [
+      "Magicarpe",
+      "Magikarp",
+      "Magicarpe team rocket",
+      "Magikarp team rocket",
+      "Magicarpe 47/83",
+      "Magikarp 47/83"
+    ]
+  },
+  {
+    "id": "rocket-48",
+    "tcgApiId": "base5-48",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Porygon",
+    "englishName": "Porygon",
+    "number": "48/83",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Porygon",
+      "Porygon team rocket",
+      "Porygon 48/83"
+    ],
+    "aliases": [
+      "Porygon",
+      "Porygon team rocket",
+      "Porygon 48/83"
+    ]
+  },
+  {
+    "id": "rocket-49",
+    "tcgApiId": "base5-49",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Abra",
+    "englishName": "Abra",
+    "number": "49/83",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Abra",
+      "Abra team rocket",
+      "Abra 49/83"
+    ],
+    "aliases": [
+      "Abra",
+      "Abra team rocket",
+      "Abra 49/83"
+    ]
+  },
+  {
+    "id": "rocket-50",
+    "tcgApiId": "base5-50",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Salamèche",
+    "englishName": "Charmander",
+    "number": "50/83",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Salamèche",
+      "Charmander",
+      "Salamèche team rocket",
+      "Charmander team rocket",
+      "Salamèche 50/83",
+      "Charmander 50/83"
+    ],
+    "aliases": [
+      "Salamèche",
+      "Charmander",
+      "Salamèche team rocket",
+      "Charmander team rocket",
+      "Salamèche 50/83",
+      "Charmander 50/83"
+    ]
+  },
+  {
+    "id": "rocket-51",
+    "tcgApiId": "base5-51",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Rattatac Obscur",
+    "englishName": "Dark Raticate",
+    "number": "51/83",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Rattatac Obscur",
+      "Dark Raticate",
+      "Rattatac Obscur team rocket",
+      "Dark Raticate team rocket",
+      "Rattatac Obscur 51/83",
+      "Dark Raticate 51/83"
+    ],
+    "aliases": [
+      "Rattatac Obscur",
+      "Dark Raticate",
+      "Rattatac Obscur team rocket",
+      "Dark Raticate team rocket",
+      "Rattatac Obscur 51/83",
+      "Dark Raticate 51/83"
+    ]
+  },
+  {
+    "id": "rocket-52",
+    "tcgApiId": "base5-52",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Taupiqueur",
+    "englishName": "Diglett",
+    "number": "52/83",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Taupiqueur",
+      "Diglett",
+      "Taupiqueur team rocket",
+      "Diglett team rocket",
+      "Taupiqueur 52/83",
+      "Diglett 52/83"
+    ],
+    "aliases": [
+      "Taupiqueur",
+      "Diglett",
+      "Taupiqueur team rocket",
+      "Diglett team rocket",
+      "Taupiqueur 52/83",
+      "Diglett 52/83"
+    ]
+  },
+  {
+    "id": "rocket-53",
+    "tcgApiId": "base5-53",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Minidraco",
+    "englishName": "Dratini",
+    "number": "53/83",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Minidraco",
+      "Dratini",
+      "Minidraco team rocket",
+      "Dratini team rocket",
+      "Minidraco 53/83",
+      "Dratini 53/83"
+    ],
+    "aliases": [
+      "Minidraco",
+      "Dratini",
+      "Minidraco team rocket",
+      "Dratini team rocket",
+      "Minidraco 53/83",
+      "Dratini 53/83"
+    ]
+  },
+  {
+    "id": "rocket-54",
+    "tcgApiId": "base5-54",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Soporifik",
+    "englishName": "Drowzee",
+    "number": "54/83",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Soporifik",
+      "Drowzee",
+      "Soporifik team rocket",
+      "Drowzee team rocket",
+      "Soporifik 54/83",
+      "Drowzee 54/83"
+    ],
+    "aliases": [
+      "Soporifik",
+      "Drowzee",
+      "Soporifik team rocket",
+      "Drowzee team rocket",
+      "Soporifik 54/83",
+      "Drowzee 54/83"
+    ]
+  },
+  {
+    "id": "rocket-55",
+    "tcgApiId": "base5-55",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Évoli",
+    "englishName": "Eevee",
+    "number": "55/83",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Évoli",
+      "Eevee",
+      "Évoli team rocket",
+      "Eevee team rocket",
+      "Évoli 55/83",
+      "Eevee 55/83"
+    ],
+    "aliases": [
+      "Évoli",
+      "Eevee",
+      "Évoli team rocket",
+      "Eevee team rocket",
+      "Évoli 55/83",
+      "Eevee 55/83"
+    ]
+  },
+  {
+    "id": "rocket-56",
+    "tcgApiId": "base5-56",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Abo",
+    "englishName": "Ekans",
+    "number": "56/83",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Abo",
+      "Ekans",
+      "Abo team rocket",
+      "Ekans team rocket",
+      "Abo 56/83",
+      "Ekans 56/83"
+    ],
+    "aliases": [
+      "Abo",
+      "Ekans",
+      "Abo team rocket",
+      "Ekans team rocket",
+      "Abo 56/83",
+      "Ekans 56/83"
+    ]
+  },
+  {
+    "id": "rocket-57",
+    "tcgApiId": "base5-57",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Tadmorv",
+    "englishName": "Grimer",
+    "number": "57/83",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Tadmorv",
+      "Grimer",
+      "Tadmorv team rocket",
+      "Grimer team rocket",
+      "Tadmorv 57/83",
+      "Grimer 57/83"
+    ],
+    "aliases": [
+      "Tadmorv",
+      "Grimer",
+      "Tadmorv team rocket",
+      "Grimer team rocket",
+      "Tadmorv 57/83",
+      "Grimer 57/83"
+    ]
+  },
+  {
+    "id": "rocket-58",
+    "tcgApiId": "base5-58",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Smogo",
+    "englishName": "Koffing",
+    "number": "58/83",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Smogo",
+      "Koffing",
+      "Smogo team rocket",
+      "Koffing team rocket",
+      "Smogo 58/83",
+      "Koffing 58/83"
+    ],
+    "aliases": [
+      "Smogo",
+      "Koffing",
+      "Smogo team rocket",
+      "Koffing team rocket",
+      "Smogo 58/83",
+      "Koffing 58/83"
+    ]
+  },
+  {
+    "id": "rocket-59",
+    "tcgApiId": "base5-59",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Machoc",
+    "englishName": "Machop",
+    "number": "59/83",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Machoc",
+      "Machop",
+      "Machoc team rocket",
+      "Machop team rocket",
+      "Machoc 59/83",
+      "Machop 59/83"
+    ],
+    "aliases": [
+      "Machoc",
+      "Machop",
+      "Machoc team rocket",
+      "Machop team rocket",
+      "Machoc 59/83",
+      "Machop 59/83"
+    ]
+  },
+  {
+    "id": "rocket-60",
+    "tcgApiId": "base5-60",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Magnéti",
+    "englishName": "Magnemite",
+    "number": "60/83",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Magnéti",
+      "Magnemite",
+      "Magnéti team rocket",
+      "Magnemite team rocket",
+      "Magnéti 60/83",
+      "Magnemite 60/83"
+    ],
+    "aliases": [
+      "Magnéti",
+      "Magnemite",
+      "Magnéti team rocket",
+      "Magnemite team rocket",
+      "Magnéti 60/83",
+      "Magnemite 60/83"
+    ]
+  },
+  {
+    "id": "rocket-61",
+    "tcgApiId": "base5-61",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Férosinge",
+    "englishName": "Mankey",
+    "number": "61/83",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Férosinge",
+      "Mankey",
+      "Férosinge team rocket",
+      "Mankey team rocket",
+      "Férosinge 61/83",
+      "Mankey 61/83"
+    ],
+    "aliases": [
+      "Férosinge",
+      "Mankey",
+      "Férosinge team rocket",
+      "Mankey team rocket",
+      "Férosinge 61/83",
+      "Mankey 61/83"
+    ]
+  },
+  {
+    "id": "rocket-62",
+    "tcgApiId": "base5-62",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Miaouss",
+    "englishName": "Meowth",
+    "number": "62/83",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Miaouss",
+      "Meowth",
+      "Miaouss team rocket",
+      "Meowth team rocket",
+      "Miaouss 62/83",
+      "Meowth 62/83"
+    ],
+    "aliases": [
+      "Miaouss",
+      "Meowth",
+      "Miaouss team rocket",
+      "Meowth team rocket",
+      "Miaouss 62/83",
+      "Meowth 62/83"
+    ]
+  },
+  {
+    "id": "rocket-63",
+    "tcgApiId": "base5-63",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Mystherbe",
+    "englishName": "Oddish",
+    "number": "63/83",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Mystherbe",
+      "Oddish",
+      "Mystherbe team rocket",
+      "Oddish team rocket",
+      "Mystherbe 63/83",
+      "Oddish 63/83"
+    ],
+    "aliases": [
+      "Mystherbe",
+      "Oddish",
+      "Mystherbe team rocket",
+      "Oddish team rocket",
+      "Mystherbe 63/83",
+      "Oddish 63/83"
+    ]
+  },
+  {
+    "id": "rocket-64",
+    "tcgApiId": "base5-64",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Ponyta",
+    "englishName": "Ponyta",
+    "number": "64/83",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Ponyta",
+      "Ponyta team rocket",
+      "Ponyta 64/83"
+    ],
+    "aliases": [
+      "Ponyta",
+      "Ponyta team rocket",
+      "Ponyta 64/83"
+    ]
+  },
+  {
+    "id": "rocket-65",
+    "tcgApiId": "base5-65",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Psykokwak",
+    "englishName": "Psyduck",
+    "number": "65/83",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Psykokwak",
+      "Psyduck",
+      "Psykokwak team rocket",
+      "Psyduck team rocket",
+      "Psykokwak 65/83",
+      "Psyduck 65/83"
+    ],
+    "aliases": [
+      "Psykokwak",
+      "Psyduck",
+      "Psykokwak team rocket",
+      "Psyduck team rocket",
+      "Psykokwak 65/83",
+      "Psyduck 65/83"
+    ]
+  },
+  {
+    "id": "rocket-66",
+    "tcgApiId": "base5-66",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Rattata",
+    "englishName": "Rattata",
+    "number": "66/83",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Rattata",
+      "Rattata team rocket",
+      "Rattata 66/83"
+    ],
+    "aliases": [
+      "Rattata",
+      "Rattata team rocket",
+      "Rattata 66/83"
+    ]
+  },
+  {
+    "id": "rocket-67",
+    "tcgApiId": "base5-67",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Ramoloss",
+    "englishName": "Slowpoke",
+    "number": "67/83",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Ramoloss",
+      "Slowpoke",
+      "Ramoloss team rocket",
+      "Slowpoke team rocket",
+      "Ramoloss 67/83",
+      "Slowpoke 67/83"
+    ],
+    "aliases": [
+      "Ramoloss",
+      "Slowpoke",
+      "Ramoloss team rocket",
+      "Slowpoke team rocket",
+      "Ramoloss 67/83",
+      "Slowpoke 67/83"
+    ]
+  },
+  {
+    "id": "rocket-68",
+    "tcgApiId": "base5-68",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Carapuce",
+    "englishName": "Squirtle",
+    "number": "68/83",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Carapuce",
+      "Squirtle",
+      "Carapuce team rocket",
+      "Squirtle team rocket",
+      "Carapuce 68/83",
+      "Squirtle 68/83"
+    ],
+    "aliases": [
+      "Carapuce",
+      "Squirtle",
+      "Carapuce team rocket",
+      "Squirtle team rocket",
+      "Carapuce 68/83",
+      "Squirtle 68/83"
+    ]
+  },
+  {
+    "id": "rocket-69",
+    "tcgApiId": "base5-69",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Voltorbe",
+    "englishName": "Voltorb",
+    "number": "69/83",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Voltorbe",
+      "Voltorb",
+      "Voltorbe team rocket",
+      "Voltorb team rocket",
+      "Voltorbe 69/83",
+      "Voltorb 69/83"
+    ],
+    "aliases": [
+      "Voltorbe",
+      "Voltorb",
+      "Voltorbe team rocket",
+      "Voltorb team rocket",
+      "Voltorbe 69/83",
+      "Voltorb 69/83"
+    ]
+  },
+  {
+    "id": "rocket-70",
+    "tcgApiId": "base5-70",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Nosferapti",
+    "englishName": "Zubat",
+    "number": "70/83",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Nosferapti",
+      "Zubat",
+      "Nosferapti team rocket",
+      "Zubat team rocket",
+      "Nosferapti 70/83",
+      "Zubat 70/83"
+    ],
+    "aliases": [
+      "Nosferapti",
+      "Zubat",
+      "Nosferapti team rocket",
+      "Zubat team rocket",
+      "Nosferapti 70/83",
+      "Zubat 70/83"
+    ]
+  },
+  {
+    "id": "rocket-71",
+    "tcgApiId": "base5-71",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Here Comes Team Rocket!",
+    "englishName": "Here Comes Team Rocket!",
+    "number": "71/83",
+    "rarity": "Rare",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Here Comes Team Rocket!",
+      "Here Comes Team Rocket! team rocket",
+      "Here Comes Team Rocket! 71/83"
+    ],
+    "aliases": [
+      "Here Comes Team Rocket!",
+      "Here Comes Team Rocket! team rocket",
+      "Here Comes Team Rocket! 71/83"
+    ]
+  },
+  {
+    "id": "rocket-72",
+    "tcgApiId": "base5-72",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Rocket's Sneak Attack",
+    "englishName": "Rocket's Sneak Attack",
+    "number": "72/83",
+    "rarity": "Rare",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Rocket's Sneak Attack",
+      "Rocket's Sneak Attack team rocket",
+      "Rocket's Sneak Attack 72/83"
+    ],
+    "aliases": [
+      "Rocket's Sneak Attack",
+      "Rocket's Sneak Attack team rocket",
+      "Rocket's Sneak Attack 72/83"
+    ]
+  },
+  {
+    "id": "rocket-73",
+    "tcgApiId": "base5-73",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "The Boss's Way",
+    "englishName": "The Boss's Way",
+    "number": "73/83",
+    "rarity": "Uncommon",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "The Boss's Way",
+      "The Boss's Way team rocket",
+      "The Boss's Way 73/83"
+    ],
+    "aliases": [
+      "The Boss's Way",
+      "The Boss's Way team rocket",
+      "The Boss's Way 73/83"
+    ]
+  },
+  {
+    "id": "rocket-74",
+    "tcgApiId": "base5-74",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Challenge!",
+    "englishName": "Challenge!",
+    "number": "74/83",
+    "rarity": "Uncommon",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Challenge!",
+      "Challenge! team rocket",
+      "Challenge! 74/83"
+    ],
+    "aliases": [
+      "Challenge!",
+      "Challenge! team rocket",
+      "Challenge! 74/83"
+    ]
+  },
+  {
+    "id": "rocket-75",
+    "tcgApiId": "base5-75",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Digger",
+    "englishName": "Digger",
+    "number": "75/83",
+    "rarity": "Uncommon",
+    "supertype": "Trainer",
+    "subtypes": [
+      "Rocket's Secret Machine"
+    ],
+    "queryTerms": [
+      "Digger",
+      "Digger team rocket",
+      "Digger 75/83"
+    ],
+    "aliases": [
+      "Digger",
+      "Digger team rocket",
+      "Digger 75/83"
+    ]
+  },
+  {
+    "id": "rocket-76",
+    "tcgApiId": "base5-76",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Imposter Oak's Revenge",
+    "englishName": "Imposter Oak's Revenge",
+    "number": "76/83",
+    "rarity": "Uncommon",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Imposter Oak's Revenge",
+      "Imposter Oak's Revenge team rocket",
+      "Imposter Oak's Revenge 76/83"
+    ],
+    "aliases": [
+      "Imposter Oak's Revenge",
+      "Imposter Oak's Revenge team rocket",
+      "Imposter Oak's Revenge 76/83"
+    ]
+  },
+  {
+    "id": "rocket-77",
+    "tcgApiId": "base5-77",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Nightly Garbage Run",
+    "englishName": "Nightly Garbage Run",
+    "number": "77/83",
+    "rarity": "Uncommon",
+    "supertype": "Trainer",
+    "subtypes": [
+      "Rocket's Secret Machine"
+    ],
+    "queryTerms": [
+      "Nightly Garbage Run",
+      "Nightly Garbage Run team rocket",
+      "Nightly Garbage Run 77/83"
+    ],
+    "aliases": [
+      "Nightly Garbage Run",
+      "Nightly Garbage Run team rocket",
+      "Nightly Garbage Run 77/83"
+    ]
+  },
+  {
+    "id": "rocket-78",
+    "tcgApiId": "base5-78",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Goop Gas Attack",
+    "englishName": "Goop Gas Attack",
+    "number": "78/83",
+    "rarity": "Common",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Goop Gas Attack",
+      "Goop Gas Attack team rocket",
+      "Goop Gas Attack 78/83"
+    ],
+    "aliases": [
+      "Goop Gas Attack",
+      "Goop Gas Attack team rocket",
+      "Goop Gas Attack 78/83"
+    ]
+  },
+  {
+    "id": "rocket-79",
+    "tcgApiId": "base5-79",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Sleep!",
+    "englishName": "Sleep!",
+    "number": "79/83",
+    "rarity": "Common",
+    "supertype": "Trainer",
+    "subtypes": [
+      "Rocket's Secret Machine"
+    ],
+    "queryTerms": [
+      "Sleep!",
+      "Sleep! team rocket",
+      "Sleep! 79/83"
+    ],
+    "aliases": [
+      "Sleep!",
+      "Sleep! team rocket",
+      "Sleep! 79/83"
+    ]
+  },
+  {
+    "id": "rocket-80",
+    "tcgApiId": "base5-80",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Rainbow Energy",
+    "englishName": "Rainbow Energy",
+    "number": "80/83",
+    "rarity": "Rare",
+    "supertype": "Energy",
+    "subtypes": [
+      "Special"
+    ],
+    "queryTerms": [
+      "Rainbow Energy",
+      "Rainbow Energy team rocket",
+      "Rainbow Energy 80/83"
+    ],
+    "aliases": [
+      "Rainbow Energy",
+      "Rainbow Energy team rocket",
+      "Rainbow Energy 80/83"
+    ]
+  },
+  {
+    "id": "rocket-81",
+    "tcgApiId": "base5-81",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Full Heal Energy",
+    "englishName": "Full Heal Energy",
+    "number": "81/83",
+    "rarity": "Uncommon",
+    "supertype": "Energy",
+    "subtypes": [
+      "Special"
+    ],
+    "queryTerms": [
+      "Full Heal Energy",
+      "Full Heal Energy team rocket",
+      "Full Heal Energy 81/83"
+    ],
+    "aliases": [
+      "Full Heal Energy",
+      "Full Heal Energy team rocket",
+      "Full Heal Energy 81/83"
+    ]
+  },
+  {
+    "id": "rocket-82",
+    "tcgApiId": "base5-82",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Potion Energy",
+    "englishName": "Potion Energy",
+    "number": "82/83",
+    "rarity": "Uncommon",
+    "supertype": "Energy",
+    "subtypes": [
+      "Special"
+    ],
+    "queryTerms": [
+      "Potion Energy",
+      "Potion Energy team rocket",
+      "Potion Energy 82/83"
+    ],
+    "aliases": [
+      "Potion Energy",
+      "Potion Energy team rocket",
+      "Potion Energy 82/83"
+    ]
+  },
+  {
+    "id": "rocket-83",
+    "tcgApiId": "base5-83",
+    "setId": "rocket",
+    "setLabel": "Team Rocket",
+    "name": "Raichu Obscur",
+    "englishName": "Dark Raichu",
+    "number": "83/83",
+    "rarity": "Rare Secret",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Raichu Obscur",
+      "Dark Raichu",
+      "Raichu Obscur team rocket",
+      "Dark Raichu team rocket",
+      "Raichu Obscur 83/83",
+      "Dark Raichu 83/83"
+    ],
+    "aliases": [
+      "Raichu Obscur",
+      "Dark Raichu",
+      "Raichu Obscur team rocket",
+      "Dark Raichu team rocket",
+      "Raichu Obscur 83/83",
+      "Dark Raichu 83/83"
+    ]
+  }
+]

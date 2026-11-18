@@ -1,0 +1,153 @@
+<svg viewBox="0 0 420 520" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cardBgLegendary" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2D1810;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1A1F3A;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="scoreLegendary" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:1" />
+    </linearGradient>
+    <filter id="cardGlow">
+      <feDropShadow dx="0" dy="4" stdDeviation="12" flood-opacity="0.6" flood-color="#FFD700"/>
+    </filter>
+    <filter id="scoreGlow">
+      <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Main card background -->
+  <rect x="8" y="8" width="404" height="504" rx="12" fill="url(#cardBgLegendary)" filter="url(#cardGlow)"/>
+  
+  <!-- Card border (legendary gold) -->
+  <rect x="8" y="8" width="404" height="504" rx="12" fill="none" stroke="#FFD700" stroke-width="2" opacity="0.8"/>
+  
+  <!-- Inner subtle border -->
+  <rect x="10" y="10" width="400" height="500" rx="11" fill="none" stroke="#E6B85C" stroke-width="1" opacity="0.5"/>
+  
+  <!-- Header bar with rarity gradient -->
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:0" />
+    </linearGradient>
+  </defs>
+  <rect x="10" y="10" width="400" height="1" fill="url(#headerGrad)"/>
+  
+  <!-- Rarity Label Section -->
+  <g>
+    <text x="24" y="38" font-family="Outfit, sans-serif" font-size="11" font-weight="700" fill="#FFD700" text-transform="uppercase" letter-spacing="2">Opportunité Forte</text>
+    <text x="360" y="38" font-family="JetBrains Mono, monospace" font-size="24" font-weight="700" fill="#FFD700" filter="url(#scoreGlow)" text-anchor="end">87</text>
+  </g>
+  
+  <!-- Divider line -->
+  <line x1="24" y1="50" x2="396" y2="50" stroke="#E6B85C" stroke-width="1" opacity="0.3"/>
+  
+  <!-- Listing Title & Price Section -->
+  <g>
+    <text x="24" y="78" font-family="Outfit, sans-serif" font-size="18" font-weight="700" fill="#F8FAFC">Lot 150 cartes Pokémon Wizards FR</text>
+    
+    <!-- Price highlight box -->
+    <rect x="24" y="90" width="140" height="48" rx="6" fill="#FFD700" opacity="0.08" stroke="#FFD700" stroke-width="1" opacity="0.3"/>
+    <text x="30" y="106" font-family="JetBrains Mono" font-size="12" fill="#CBD5E1">Prix</text>
+    <text x="30" y="130" font-family="JetBrains Mono" font-size="28" font-weight="700" fill="#FFD700">80 €</text>
+    
+    <!-- Estimated value -->
+    <rect x="176" y="90" width="200" height="48" rx="6" fill="#0EA5E9" opacity="0.08" stroke="#0EA5E9" stroke-width="1" opacity="0.3"/>
+    <text x="182" y="106" font-family="JetBrains Mono" font-size="12" fill="#CBD5E1">Valeur estimée</text>
+    <text x="182" y="130" font-family="JetBrains Mono" font-size="24" font-weight="700" fill="#0EA5E9">130–220 €</text>
+  </g>
+  
+  <!-- Source & Location Section -->
+  <g>
+    <line x1="24" y1="152" x2="396" y2="152" stroke="#E6B85C" stroke-width="1" opacity="0.2"/>
+    
+    <text x="24" y="176" font-family="Inter, sans-serif" font-size="12" fill="#94A3B8">Leboncoin</text>
+    <text x="104" y="176" font-family="Inter, sans-serif" font-size="12" fill="#64748B">·</text>
+    <text x="114" y="176" font-family="Inter, sans-serif" font-size="12" fill="#94A3B8">Nice</text>
+    <text x="154" y="176" font-family="Inter, sans-serif" font-size="12" fill="#64748B">·</text>
+    <text x="164" y="176" font-family="Inter, sans-serif" font-size="12" fill="#94A3B8">0 km</text>
+    
+    <text x="24" y="198" font-family="Inter, sans-serif" font-size="12" fill="#64748B">Publié il y a 12 min</text>
+  </g>
+  
+  <!-- Why Interesting Section -->
+  <g>
+    <text x="24" y="230" font-family="Outfit, sans-serif" font-size="13" font-weight="600" fill="#FFD700" letter-spacing="1">POURQUOI C'EST INTÉRESSANT</text>
+    
+    <!-- Reason 1 -->
+    <circle cx="32" cy="254" r="2.5" fill="#10B981"/>
+    <text x="44" y="258" font-family="Inter, sans-serif" font-size="13" fill="#CBD5E1">Lot Wizards détecté</text>
+    
+    <!-- Reason 2 -->
+    <circle cx="32" cy="276" r="2.5" fill="#10B981"/>
+    <text x="44" y="280" font-family="Inter, sans-serif" font-size="13" fill="#CBD5E1">FR probable</text>
+    
+    <!-- Reason 3 -->
+    <circle cx="32" cy="298" r="2.5" fill="#10B981"/>
+    <text x="44" y="302" font-family="Inter, sans-serif" font-size="13" fill="#CBD5E1">Prix sous marché</text>
+    
+    <!-- Reason 4 -->
+    <circle cx="32" cy="320" r="2.5" fill="#10B981"/>
+    <text x="44" y="324" font-family="Inter, sans-serif" font-size="13" fill="#CBD5E1">Proche</text>
+  </g>
+  
+  <!-- Risk Assessment -->
+  <g>
+    <line x1="24" y1="342" x2="396" y2="342" stroke="#E6B85C" stroke-width="1" opacity="0.2"/>
+    
+    <text x="24" y="366" font-family="Outfit, sans-serif" font-size="12" fill="#CBD5E1">Risque:</text>
+    
+    <!-- Risk badge (medium) -->
+    <rect x="104" y="354" width="80" height="26" rx="4" fill="#F59E0B" opacity="0.15" stroke="#F59E0B" stroke-width="1" opacity="0.4"/>
+    <text x="144" y="371" font-family="JetBrains Mono, monospace" font-size="12" font-weight="600" fill="#F59E0B" text-anchor="middle">MOYEN</text>
+  </g>
+  
+  <!-- Badges Section -->
+  <g>
+    <text x="24" y="406" font-family="Outfit, sans-serif" font-size="11" fill="#64748B" letter-spacing="1">BADGES</text>
+    
+    <!-- Badge 1: WIZARDS -->
+    <rect x="24" y="416" width="60" height="24" rx="4" fill="#7C3AED" opacity="0.2" stroke="#7C3AED" stroke-width="1" opacity="0.5"/>
+    <text x="54" y="432" font-family="JetBrains Mono" font-size="10" font-weight="600" fill="#7C3AED" text-anchor="middle">WIZARDS</text>
+    
+    <!-- Badge 2: FR -->
+    <rect x="92" y="416" width="50" height="24" rx="4" fill="#0EA5E9" opacity="0.2" stroke="#0EA5E9" stroke-width="1" opacity="0.5"/>
+    <text x="117" y="432" font-family="JetBrains Mono" font-size="10" font-weight="600" fill="#0EA5E9" text-anchor="middle">FR</text>
+    
+    <!-- Badge 3: LOT -->
+    <rect x="150" y="416" width="50" height="24" rx="4" fill="#10B981" opacity="0.2" stroke="#10B981" stroke-width="1" opacity="0.5"/>
+    <text x="175" y="432" font-family="JetBrains Mono" font-size="10" font-weight="600" fill="#10B981" text-anchor="middle">LOT</text>
+    
+    <!-- Badge 4: HOLO? -->
+    <rect x="208" y="416" width="62" height="24" rx="4" fill="#FFD700" opacity="0.15" stroke="#FFD700" stroke-width="1" opacity="0.4"/>
+    <text x="239" y="432" font-family="JetBrains Mono" font-size="10" font-weight="600" fill="#FFD700" text-anchor="middle">HOLO?</text>
+    
+    <!-- Badge 5: SOUS-COTÉ -->
+    <rect x="278" y="416" width="74" height="24" rx="4" fill="#FF1744" opacity="0.2" stroke="#FF1744" stroke-width="1" opacity="0.5"/>
+    <text x="315" y="432" font-family="JetBrains Mono" font-size="9" font-weight="600" fill="#FF1744" text-anchor="middle">SOUS-COTÉ</text>
+    
+    <!-- Badge 6: PROCHE -->
+    <rect x="360" y="416" width="56" height="24" rx="4" fill="#10B981" opacity="0.2" stroke="#10B981" stroke-width="1" opacity="0.5"/>
+    <text x="388" y="432" font-family="JetBrains Mono" font-size="10" font-weight="600" fill="#10B981" text-anchor="middle">PROCHE</text>
+    
+    <!-- Badge 7: À VÉRIFIER (row 2) -->
+    <rect x="24" y="448" width="74" height="24" rx="4" fill="#F59E0B" opacity="0.15" stroke="#F59E0B" stroke-width="1" opacity="0.4"/>
+    <text x="61" y="464" font-family="JetBrains Mono" font-size="9" font-weight="600" fill="#F59E0B" text-anchor="middle">À VÉRIFIER</text>
+  </g>
+  
+  <!-- Action Buttons -->
+  <g>
+    <!-- View Listing button -->
+    <rect x="24" y="484" width="184" height="28" rx="6" fill="#0EA5E9" opacity="0.2" stroke="#0EA5E9" stroke-width="1.5" opacity="0.6"/>
+    <text x="116" y="503" font-family="Outfit, sans-serif" font-size="12" font-weight="600" fill="#0EA5E9" text-anchor="middle">Voir annonce</text>
+    
+    <!-- Add to Watchlist button -->
+    <rect x="212" y="484" width="184" height="28" rx="6" fill="#FFD700" opacity="0.2" stroke="#FFD700" stroke-width="1.5" opacity="0.6"/>
+    <text x="304" y="503" font-family="Outfit, sans-serif" font-size="12" font-weight="600" fill="#FFD700" text-anchor="middle">Ajouter à watchlist</text>
+  </g>
+</svg>

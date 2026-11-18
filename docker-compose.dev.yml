@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DB_PATH=./dev.db
+      - CHROMIUM_WS=ws://chromium:3000
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - ./results:/app/results
+      - ./screenshots:/app/screenshots
+    command: npm run dev
+
+  chromium:
+    image: browserless/chrome:latest
+    ports:
+      - "3001:3000"
+      - "9222:9222"
+    environment:
+      - CONNECTION_TIMEOUT=600000
+      - MAX_CONCURRENT_SESSIONS=5
+      - ENABLE_CORS=true
+      - DEBUG=browserless*
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev

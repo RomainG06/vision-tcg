@@ -1,0 +1,1732 @@
+[
+  {
+    "id": "fossil-1",
+    "tcgApiId": "base3-1",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Ptéra",
+    "englishName": "Aerodactyl",
+    "number": "1/62",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Ptéra",
+      "Aerodactyl",
+      "Ptéra fossile",
+      "Aerodactyl fossile",
+      "Ptéra 1/62",
+      "Aerodactyl 1/62"
+    ],
+    "aliases": [
+      "Ptéra",
+      "Aerodactyl",
+      "Ptéra fossile",
+      "Aerodactyl fossile",
+      "Ptéra 1/62",
+      "Aerodactyl 1/62"
+    ]
+  },
+  {
+    "id": "fossil-2",
+    "tcgApiId": "base3-2",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Artikodin",
+    "englishName": "Articuno",
+    "number": "2/62",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Artikodin",
+      "Articuno",
+      "Artikodin fossile",
+      "Articuno fossile",
+      "Artikodin 2/62",
+      "Articuno 2/62"
+    ],
+    "aliases": [
+      "Artikodin",
+      "Articuno",
+      "Artikodin fossile",
+      "Articuno fossile",
+      "Artikodin 2/62",
+      "Articuno 2/62"
+    ]
+  },
+  {
+    "id": "fossil-3",
+    "tcgApiId": "base3-3",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Ditto",
+    "englishName": "Ditto",
+    "number": "3/62",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Ditto",
+      "Ditto fossile",
+      "Ditto 3/62"
+    ],
+    "aliases": [
+      "Ditto",
+      "Ditto fossile",
+      "Ditto 3/62"
+    ]
+  },
+  {
+    "id": "fossil-4",
+    "tcgApiId": "base3-4",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Dracolosse",
+    "englishName": "Dragonite",
+    "number": "4/62",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Dracolosse",
+      "Dragonite",
+      "Dracolosse fossile",
+      "Dragonite fossile",
+      "Dracolosse 4/62",
+      "Dragonite 4/62"
+    ],
+    "aliases": [
+      "Dracolosse",
+      "Dragonite",
+      "Dracolosse fossile",
+      "Dragonite fossile",
+      "Dracolosse 4/62",
+      "Dragonite 4/62"
+    ]
+  },
+  {
+    "id": "fossil-5",
+    "tcgApiId": "base3-5",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Ectoplasma",
+    "englishName": "Gengar",
+    "number": "5/62",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Ectoplasma",
+      "Gengar",
+      "Ectoplasma fossile",
+      "Gengar fossile",
+      "Ectoplasma 5/62",
+      "Gengar 5/62"
+    ],
+    "aliases": [
+      "Ectoplasma",
+      "Gengar",
+      "Ectoplasma fossile",
+      "Gengar fossile",
+      "Ectoplasma 5/62",
+      "Gengar 5/62"
+    ]
+  },
+  {
+    "id": "fossil-6",
+    "tcgApiId": "base3-6",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Spectrum",
+    "englishName": "Haunter",
+    "number": "6/62",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Spectrum",
+      "Haunter",
+      "Spectrum fossile",
+      "Haunter fossile",
+      "Spectrum 6/62",
+      "Haunter 6/62"
+    ],
+    "aliases": [
+      "Spectrum",
+      "Haunter",
+      "Spectrum fossile",
+      "Haunter fossile",
+      "Spectrum 6/62",
+      "Haunter 6/62"
+    ]
+  },
+  {
+    "id": "fossil-7",
+    "tcgApiId": "base3-7",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Hitmonlee",
+    "englishName": "Hitmonlee",
+    "number": "7/62",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Hitmonlee",
+      "Hitmonlee fossile",
+      "Hitmonlee 7/62"
+    ],
+    "aliases": [
+      "Hitmonlee",
+      "Hitmonlee fossile",
+      "Hitmonlee 7/62"
+    ]
+  },
+  {
+    "id": "fossil-8",
+    "tcgApiId": "base3-8",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Hypnomade",
+    "englishName": "Hypno",
+    "number": "8/62",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Hypnomade",
+      "Hypno",
+      "Hypnomade fossile",
+      "Hypno fossile",
+      "Hypnomade 8/62",
+      "Hypno 8/62"
+    ],
+    "aliases": [
+      "Hypnomade",
+      "Hypno",
+      "Hypnomade fossile",
+      "Hypno fossile",
+      "Hypnomade 8/62",
+      "Hypno 8/62"
+    ]
+  },
+  {
+    "id": "fossil-9",
+    "tcgApiId": "base3-9",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Kabutops",
+    "englishName": "Kabutops",
+    "number": "9/62",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Kabutops",
+      "Kabutops fossile",
+      "Kabutops 9/62"
+    ],
+    "aliases": [
+      "Kabutops",
+      "Kabutops fossile",
+      "Kabutops 9/62"
+    ]
+  },
+  {
+    "id": "fossil-10",
+    "tcgApiId": "base3-10",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Lokhlass",
+    "englishName": "Lapras",
+    "number": "10/62",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Lokhlass",
+      "Lapras",
+      "Lokhlass fossile",
+      "Lapras fossile",
+      "Lokhlass 10/62",
+      "Lapras 10/62"
+    ],
+    "aliases": [
+      "Lokhlass",
+      "Lapras",
+      "Lokhlass fossile",
+      "Lapras fossile",
+      "Lokhlass 10/62",
+      "Lapras 10/62"
+    ]
+  },
+  {
+    "id": "fossil-11",
+    "tcgApiId": "base3-11",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Magnéton",
+    "englishName": "Magneton",
+    "number": "11/62",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Magnéton",
+      "Magneton",
+      "Magnéton fossile",
+      "Magneton fossile",
+      "Magnéton 11/62",
+      "Magneton 11/62"
+    ],
+    "aliases": [
+      "Magnéton",
+      "Magneton",
+      "Magnéton fossile",
+      "Magneton fossile",
+      "Magnéton 11/62",
+      "Magneton 11/62"
+    ]
+  },
+  {
+    "id": "fossil-12",
+    "tcgApiId": "base3-12",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Sulfura",
+    "englishName": "Moltres",
+    "number": "12/62",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Sulfura",
+      "Moltres",
+      "Sulfura fossile",
+      "Moltres fossile",
+      "Sulfura 12/62",
+      "Moltres 12/62"
+    ],
+    "aliases": [
+      "Sulfura",
+      "Moltres",
+      "Sulfura fossile",
+      "Moltres fossile",
+      "Sulfura 12/62",
+      "Moltres 12/62"
+    ]
+  },
+  {
+    "id": "fossil-13",
+    "tcgApiId": "base3-13",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Grotadmorv",
+    "englishName": "Muk",
+    "number": "13/62",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Grotadmorv",
+      "Muk",
+      "Grotadmorv fossile",
+      "Muk fossile",
+      "Grotadmorv 13/62",
+      "Muk 13/62"
+    ],
+    "aliases": [
+      "Grotadmorv",
+      "Muk",
+      "Grotadmorv fossile",
+      "Muk fossile",
+      "Grotadmorv 13/62",
+      "Muk 13/62"
+    ]
+  },
+  {
+    "id": "fossil-14",
+    "tcgApiId": "base3-14",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Raichu",
+    "englishName": "Raichu",
+    "number": "14/62",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Raichu",
+      "Raichu fossile",
+      "Raichu 14/62"
+    ],
+    "aliases": [
+      "Raichu",
+      "Raichu fossile",
+      "Raichu 14/62"
+    ]
+  },
+  {
+    "id": "fossil-15",
+    "tcgApiId": "base3-15",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Électhor",
+    "englishName": "Zapdos",
+    "number": "15/62",
+    "rarity": "Rare Holo",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Électhor",
+      "Zapdos",
+      "Électhor fossile",
+      "Zapdos fossile",
+      "Électhor 15/62",
+      "Zapdos 15/62"
+    ],
+    "aliases": [
+      "Électhor",
+      "Zapdos",
+      "Électhor fossile",
+      "Zapdos fossile",
+      "Électhor 15/62",
+      "Zapdos 15/62"
+    ]
+  },
+  {
+    "id": "fossil-16",
+    "tcgApiId": "base3-16",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Ptéra",
+    "englishName": "Aerodactyl",
+    "number": "16/62",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Ptéra",
+      "Aerodactyl",
+      "Ptéra fossile",
+      "Aerodactyl fossile",
+      "Ptéra 16/62",
+      "Aerodactyl 16/62"
+    ],
+    "aliases": [
+      "Ptéra",
+      "Aerodactyl",
+      "Ptéra fossile",
+      "Aerodactyl fossile",
+      "Ptéra 16/62",
+      "Aerodactyl 16/62"
+    ]
+  },
+  {
+    "id": "fossil-17",
+    "tcgApiId": "base3-17",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Artikodin",
+    "englishName": "Articuno",
+    "number": "17/62",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Artikodin",
+      "Articuno",
+      "Artikodin fossile",
+      "Articuno fossile",
+      "Artikodin 17/62",
+      "Articuno 17/62"
+    ],
+    "aliases": [
+      "Artikodin",
+      "Articuno",
+      "Artikodin fossile",
+      "Articuno fossile",
+      "Artikodin 17/62",
+      "Articuno 17/62"
+    ]
+  },
+  {
+    "id": "fossil-18",
+    "tcgApiId": "base3-18",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Ditto",
+    "englishName": "Ditto",
+    "number": "18/62",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Ditto",
+      "Ditto fossile",
+      "Ditto 18/62"
+    ],
+    "aliases": [
+      "Ditto",
+      "Ditto fossile",
+      "Ditto 18/62"
+    ]
+  },
+  {
+    "id": "fossil-19",
+    "tcgApiId": "base3-19",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Dracolosse",
+    "englishName": "Dragonite",
+    "number": "19/62",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Dracolosse",
+      "Dragonite",
+      "Dracolosse fossile",
+      "Dragonite fossile",
+      "Dracolosse 19/62",
+      "Dragonite 19/62"
+    ],
+    "aliases": [
+      "Dracolosse",
+      "Dragonite",
+      "Dracolosse fossile",
+      "Dragonite fossile",
+      "Dracolosse 19/62",
+      "Dragonite 19/62"
+    ]
+  },
+  {
+    "id": "fossil-20",
+    "tcgApiId": "base3-20",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Ectoplasma",
+    "englishName": "Gengar",
+    "number": "20/62",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Ectoplasma",
+      "Gengar",
+      "Ectoplasma fossile",
+      "Gengar fossile",
+      "Ectoplasma 20/62",
+      "Gengar 20/62"
+    ],
+    "aliases": [
+      "Ectoplasma",
+      "Gengar",
+      "Ectoplasma fossile",
+      "Gengar fossile",
+      "Ectoplasma 20/62",
+      "Gengar 20/62"
+    ]
+  },
+  {
+    "id": "fossil-21",
+    "tcgApiId": "base3-21",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Spectrum",
+    "englishName": "Haunter",
+    "number": "21/62",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Spectrum",
+      "Haunter",
+      "Spectrum fossile",
+      "Haunter fossile",
+      "Spectrum 21/62",
+      "Haunter 21/62"
+    ],
+    "aliases": [
+      "Spectrum",
+      "Haunter",
+      "Spectrum fossile",
+      "Haunter fossile",
+      "Spectrum 21/62",
+      "Haunter 21/62"
+    ]
+  },
+  {
+    "id": "fossil-22",
+    "tcgApiId": "base3-22",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Hitmonlee",
+    "englishName": "Hitmonlee",
+    "number": "22/62",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Hitmonlee",
+      "Hitmonlee fossile",
+      "Hitmonlee 22/62"
+    ],
+    "aliases": [
+      "Hitmonlee",
+      "Hitmonlee fossile",
+      "Hitmonlee 22/62"
+    ]
+  },
+  {
+    "id": "fossil-23",
+    "tcgApiId": "base3-23",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Hypnomade",
+    "englishName": "Hypno",
+    "number": "23/62",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Hypnomade",
+      "Hypno",
+      "Hypnomade fossile",
+      "Hypno fossile",
+      "Hypnomade 23/62",
+      "Hypno 23/62"
+    ],
+    "aliases": [
+      "Hypnomade",
+      "Hypno",
+      "Hypnomade fossile",
+      "Hypno fossile",
+      "Hypnomade 23/62",
+      "Hypno 23/62"
+    ]
+  },
+  {
+    "id": "fossil-24",
+    "tcgApiId": "base3-24",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Kabutops",
+    "englishName": "Kabutops",
+    "number": "24/62",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Kabutops",
+      "Kabutops fossile",
+      "Kabutops 24/62"
+    ],
+    "aliases": [
+      "Kabutops",
+      "Kabutops fossile",
+      "Kabutops 24/62"
+    ]
+  },
+  {
+    "id": "fossil-25",
+    "tcgApiId": "base3-25",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Lokhlass",
+    "englishName": "Lapras",
+    "number": "25/62",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Lokhlass",
+      "Lapras",
+      "Lokhlass fossile",
+      "Lapras fossile",
+      "Lokhlass 25/62",
+      "Lapras 25/62"
+    ],
+    "aliases": [
+      "Lokhlass",
+      "Lapras",
+      "Lokhlass fossile",
+      "Lapras fossile",
+      "Lokhlass 25/62",
+      "Lapras 25/62"
+    ]
+  },
+  {
+    "id": "fossil-26",
+    "tcgApiId": "base3-26",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Magnéton",
+    "englishName": "Magneton",
+    "number": "26/62",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Magnéton",
+      "Magneton",
+      "Magnéton fossile",
+      "Magneton fossile",
+      "Magnéton 26/62",
+      "Magneton 26/62"
+    ],
+    "aliases": [
+      "Magnéton",
+      "Magneton",
+      "Magnéton fossile",
+      "Magneton fossile",
+      "Magnéton 26/62",
+      "Magneton 26/62"
+    ]
+  },
+  {
+    "id": "fossil-27",
+    "tcgApiId": "base3-27",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Sulfura",
+    "englishName": "Moltres",
+    "number": "27/62",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Sulfura",
+      "Moltres",
+      "Sulfura fossile",
+      "Moltres fossile",
+      "Sulfura 27/62",
+      "Moltres 27/62"
+    ],
+    "aliases": [
+      "Sulfura",
+      "Moltres",
+      "Sulfura fossile",
+      "Moltres fossile",
+      "Sulfura 27/62",
+      "Moltres 27/62"
+    ]
+  },
+  {
+    "id": "fossil-28",
+    "tcgApiId": "base3-28",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Grotadmorv",
+    "englishName": "Muk",
+    "number": "28/62",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Grotadmorv",
+      "Muk",
+      "Grotadmorv fossile",
+      "Muk fossile",
+      "Grotadmorv 28/62",
+      "Muk 28/62"
+    ],
+    "aliases": [
+      "Grotadmorv",
+      "Muk",
+      "Grotadmorv fossile",
+      "Muk fossile",
+      "Grotadmorv 28/62",
+      "Muk 28/62"
+    ]
+  },
+  {
+    "id": "fossil-29",
+    "tcgApiId": "base3-29",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Raichu",
+    "englishName": "Raichu",
+    "number": "29/62",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Raichu",
+      "Raichu fossile",
+      "Raichu 29/62"
+    ],
+    "aliases": [
+      "Raichu",
+      "Raichu fossile",
+      "Raichu 29/62"
+    ]
+  },
+  {
+    "id": "fossil-30",
+    "tcgApiId": "base3-30",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Électhor",
+    "englishName": "Zapdos",
+    "number": "30/62",
+    "rarity": "Rare",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Électhor",
+      "Zapdos",
+      "Électhor fossile",
+      "Zapdos fossile",
+      "Électhor 30/62",
+      "Zapdos 30/62"
+    ],
+    "aliases": [
+      "Électhor",
+      "Zapdos",
+      "Électhor fossile",
+      "Zapdos fossile",
+      "Électhor 30/62",
+      "Zapdos 30/62"
+    ]
+  },
+  {
+    "id": "fossil-31",
+    "tcgApiId": "base3-31",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Arbok",
+    "englishName": "Arbok",
+    "number": "31/62",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Arbok",
+      "Arbok fossile",
+      "Arbok 31/62"
+    ],
+    "aliases": [
+      "Arbok",
+      "Arbok fossile",
+      "Arbok 31/62"
+    ]
+  },
+  {
+    "id": "fossil-32",
+    "tcgApiId": "base3-32",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Crustabri",
+    "englishName": "Cloyster",
+    "number": "32/62",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Crustabri",
+      "Cloyster",
+      "Crustabri fossile",
+      "Cloyster fossile",
+      "Crustabri 32/62",
+      "Cloyster 32/62"
+    ],
+    "aliases": [
+      "Crustabri",
+      "Cloyster",
+      "Crustabri fossile",
+      "Cloyster fossile",
+      "Crustabri 32/62",
+      "Cloyster 32/62"
+    ]
+  },
+  {
+    "id": "fossil-33",
+    "tcgApiId": "base3-33",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Fantominus",
+    "englishName": "Gastly",
+    "number": "33/62",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Fantominus",
+      "Gastly",
+      "Fantominus fossile",
+      "Gastly fossile",
+      "Fantominus 33/62",
+      "Gastly 33/62"
+    ],
+    "aliases": [
+      "Fantominus",
+      "Gastly",
+      "Fantominus fossile",
+      "Gastly fossile",
+      "Fantominus 33/62",
+      "Gastly 33/62"
+    ]
+  },
+  {
+    "id": "fossil-34",
+    "tcgApiId": "base3-34",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Nosferalto",
+    "englishName": "Golbat",
+    "number": "34/62",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Nosferalto",
+      "Golbat",
+      "Nosferalto fossile",
+      "Golbat fossile",
+      "Nosferalto 34/62",
+      "Golbat 34/62"
+    ],
+    "aliases": [
+      "Nosferalto",
+      "Golbat",
+      "Nosferalto fossile",
+      "Golbat fossile",
+      "Nosferalto 34/62",
+      "Golbat 34/62"
+    ]
+  },
+  {
+    "id": "fossil-35",
+    "tcgApiId": "base3-35",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Akwakwak",
+    "englishName": "Golduck",
+    "number": "35/62",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Akwakwak",
+      "Golduck",
+      "Akwakwak fossile",
+      "Golduck fossile",
+      "Akwakwak 35/62",
+      "Golduck 35/62"
+    ],
+    "aliases": [
+      "Akwakwak",
+      "Golduck",
+      "Akwakwak fossile",
+      "Golduck fossile",
+      "Akwakwak 35/62",
+      "Golduck 35/62"
+    ]
+  },
+  {
+    "id": "fossil-36",
+    "tcgApiId": "base3-36",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Grolem",
+    "englishName": "Golem",
+    "number": "36/62",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Grolem",
+      "Golem",
+      "Grolem fossile",
+      "Golem fossile",
+      "Grolem 36/62",
+      "Golem 36/62"
+    ],
+    "aliases": [
+      "Grolem",
+      "Golem",
+      "Grolem fossile",
+      "Golem fossile",
+      "Grolem 36/62",
+      "Golem 36/62"
+    ]
+  },
+  {
+    "id": "fossil-37",
+    "tcgApiId": "base3-37",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Gravalanch",
+    "englishName": "Graveler",
+    "number": "37/62",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Gravalanch",
+      "Graveler",
+      "Gravalanch fossile",
+      "Graveler fossile",
+      "Gravalanch 37/62",
+      "Graveler 37/62"
+    ],
+    "aliases": [
+      "Gravalanch",
+      "Graveler",
+      "Gravalanch fossile",
+      "Graveler fossile",
+      "Gravalanch 37/62",
+      "Graveler 37/62"
+    ]
+  },
+  {
+    "id": "fossil-38",
+    "tcgApiId": "base3-38",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Kingler",
+    "englishName": "Kingler",
+    "number": "38/62",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Kingler",
+      "Kingler fossile",
+      "Kingler 38/62"
+    ],
+    "aliases": [
+      "Kingler",
+      "Kingler fossile",
+      "Kingler 38/62"
+    ]
+  },
+  {
+    "id": "fossil-39",
+    "tcgApiId": "base3-39",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Magmar",
+    "englishName": "Magmar",
+    "number": "39/62",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Magmar",
+      "Magmar fossile",
+      "Magmar 39/62"
+    ],
+    "aliases": [
+      "Magmar",
+      "Magmar fossile",
+      "Magmar 39/62"
+    ]
+  },
+  {
+    "id": "fossil-40",
+    "tcgApiId": "base3-40",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Amonistar",
+    "englishName": "Omastar",
+    "number": "40/62",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 2"
+    ],
+    "queryTerms": [
+      "Amonistar",
+      "Omastar",
+      "Amonistar fossile",
+      "Omastar fossile",
+      "Amonistar 40/62",
+      "Omastar 40/62"
+    ],
+    "aliases": [
+      "Amonistar",
+      "Omastar",
+      "Amonistar fossile",
+      "Omastar fossile",
+      "Amonistar 40/62",
+      "Omastar 40/62"
+    ]
+  },
+  {
+    "id": "fossil-41",
+    "tcgApiId": "base3-41",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Sablaireau",
+    "englishName": "Sandslash",
+    "number": "41/62",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Sablaireau",
+      "Sandslash",
+      "Sablaireau fossile",
+      "Sandslash fossile",
+      "Sablaireau 41/62",
+      "Sandslash 41/62"
+    ],
+    "aliases": [
+      "Sablaireau",
+      "Sandslash",
+      "Sablaireau fossile",
+      "Sandslash fossile",
+      "Sablaireau 41/62",
+      "Sandslash 41/62"
+    ]
+  },
+  {
+    "id": "fossil-42",
+    "tcgApiId": "base3-42",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Hypocéan",
+    "englishName": "Seadra",
+    "number": "42/62",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Hypocéan",
+      "Seadra",
+      "Hypocéan fossile",
+      "Seadra fossile",
+      "Hypocéan 42/62",
+      "Seadra 42/62"
+    ],
+    "aliases": [
+      "Hypocéan",
+      "Seadra",
+      "Hypocéan fossile",
+      "Seadra fossile",
+      "Hypocéan 42/62",
+      "Seadra 42/62"
+    ]
+  },
+  {
+    "id": "fossil-43",
+    "tcgApiId": "base3-43",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Flagadoss",
+    "englishName": "Slowbro",
+    "number": "43/62",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Flagadoss",
+      "Slowbro",
+      "Flagadoss fossile",
+      "Slowbro fossile",
+      "Flagadoss 43/62",
+      "Slowbro 43/62"
+    ],
+    "aliases": [
+      "Flagadoss",
+      "Slowbro",
+      "Flagadoss fossile",
+      "Slowbro fossile",
+      "Flagadoss 43/62",
+      "Slowbro 43/62"
+    ]
+  },
+  {
+    "id": "fossil-44",
+    "tcgApiId": "base3-44",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Tentacruel",
+    "englishName": "Tentacruel",
+    "number": "44/62",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Tentacruel",
+      "Tentacruel fossile",
+      "Tentacruel 44/62"
+    ],
+    "aliases": [
+      "Tentacruel",
+      "Tentacruel fossile",
+      "Tentacruel 44/62"
+    ]
+  },
+  {
+    "id": "fossil-45",
+    "tcgApiId": "base3-45",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Smogogo",
+    "englishName": "Weezing",
+    "number": "45/62",
+    "rarity": "Uncommon",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Smogogo",
+      "Weezing",
+      "Smogogo fossile",
+      "Weezing fossile",
+      "Smogogo 45/62",
+      "Weezing 45/62"
+    ],
+    "aliases": [
+      "Smogogo",
+      "Weezing",
+      "Smogogo fossile",
+      "Weezing fossile",
+      "Smogogo 45/62",
+      "Weezing 45/62"
+    ]
+  },
+  {
+    "id": "fossil-46",
+    "tcgApiId": "base3-46",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Abo",
+    "englishName": "Ekans",
+    "number": "46/62",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Abo",
+      "Ekans",
+      "Abo fossile",
+      "Ekans fossile",
+      "Abo 46/62",
+      "Ekans 46/62"
+    ],
+    "aliases": [
+      "Abo",
+      "Ekans",
+      "Abo fossile",
+      "Ekans fossile",
+      "Abo 46/62",
+      "Ekans 46/62"
+    ]
+  },
+  {
+    "id": "fossil-47",
+    "tcgApiId": "base3-47",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Racaillou",
+    "englishName": "Geodude",
+    "number": "47/62",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Racaillou",
+      "Geodude",
+      "Racaillou fossile",
+      "Geodude fossile",
+      "Racaillou 47/62",
+      "Geodude 47/62"
+    ],
+    "aliases": [
+      "Racaillou",
+      "Geodude",
+      "Racaillou fossile",
+      "Geodude fossile",
+      "Racaillou 47/62",
+      "Geodude 47/62"
+    ]
+  },
+  {
+    "id": "fossil-48",
+    "tcgApiId": "base3-48",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Tadmorv",
+    "englishName": "Grimer",
+    "number": "48/62",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Tadmorv",
+      "Grimer",
+      "Tadmorv fossile",
+      "Grimer fossile",
+      "Tadmorv 48/62",
+      "Grimer 48/62"
+    ],
+    "aliases": [
+      "Tadmorv",
+      "Grimer",
+      "Tadmorv fossile",
+      "Grimer fossile",
+      "Tadmorv 48/62",
+      "Grimer 48/62"
+    ]
+  },
+  {
+    "id": "fossil-49",
+    "tcgApiId": "base3-49",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Hypotrempe",
+    "englishName": "Horsea",
+    "number": "49/62",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Hypotrempe",
+      "Horsea",
+      "Hypotrempe fossile",
+      "Horsea fossile",
+      "Hypotrempe 49/62",
+      "Horsea 49/62"
+    ],
+    "aliases": [
+      "Hypotrempe",
+      "Horsea",
+      "Hypotrempe fossile",
+      "Horsea fossile",
+      "Hypotrempe 49/62",
+      "Horsea 49/62"
+    ]
+  },
+  {
+    "id": "fossil-50",
+    "tcgApiId": "base3-50",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Kabuto",
+    "englishName": "Kabuto",
+    "number": "50/62",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Kabuto",
+      "Kabuto fossile",
+      "Kabuto 50/62"
+    ],
+    "aliases": [
+      "Kabuto",
+      "Kabuto fossile",
+      "Kabuto 50/62"
+    ]
+  },
+  {
+    "id": "fossil-51",
+    "tcgApiId": "base3-51",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Krabby",
+    "englishName": "Krabby",
+    "number": "51/62",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Krabby",
+      "Krabby fossile",
+      "Krabby 51/62"
+    ],
+    "aliases": [
+      "Krabby",
+      "Krabby fossile",
+      "Krabby 51/62"
+    ]
+  },
+  {
+    "id": "fossil-52",
+    "tcgApiId": "base3-52",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Amonita",
+    "englishName": "Omanyte",
+    "number": "52/62",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Stage 1"
+    ],
+    "queryTerms": [
+      "Amonita",
+      "Omanyte",
+      "Amonita fossile",
+      "Omanyte fossile",
+      "Amonita 52/62",
+      "Omanyte 52/62"
+    ],
+    "aliases": [
+      "Amonita",
+      "Omanyte",
+      "Amonita fossile",
+      "Omanyte fossile",
+      "Amonita 52/62",
+      "Omanyte 52/62"
+    ]
+  },
+  {
+    "id": "fossil-53",
+    "tcgApiId": "base3-53",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Psykokwak",
+    "englishName": "Psyduck",
+    "number": "53/62",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Psykokwak",
+      "Psyduck",
+      "Psykokwak fossile",
+      "Psyduck fossile",
+      "Psykokwak 53/62",
+      "Psyduck 53/62"
+    ],
+    "aliases": [
+      "Psykokwak",
+      "Psyduck",
+      "Psykokwak fossile",
+      "Psyduck fossile",
+      "Psykokwak 53/62",
+      "Psyduck 53/62"
+    ]
+  },
+  {
+    "id": "fossil-54",
+    "tcgApiId": "base3-54",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Kokiyas",
+    "englishName": "Shellder",
+    "number": "54/62",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Kokiyas",
+      "Shellder",
+      "Kokiyas fossile",
+      "Shellder fossile",
+      "Kokiyas 54/62",
+      "Shellder 54/62"
+    ],
+    "aliases": [
+      "Kokiyas",
+      "Shellder",
+      "Kokiyas fossile",
+      "Shellder fossile",
+      "Kokiyas 54/62",
+      "Shellder 54/62"
+    ]
+  },
+  {
+    "id": "fossil-55",
+    "tcgApiId": "base3-55",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Ramoloss",
+    "englishName": "Slowpoke",
+    "number": "55/62",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Ramoloss",
+      "Slowpoke",
+      "Ramoloss fossile",
+      "Slowpoke fossile",
+      "Ramoloss 55/62",
+      "Slowpoke 55/62"
+    ],
+    "aliases": [
+      "Ramoloss",
+      "Slowpoke",
+      "Ramoloss fossile",
+      "Slowpoke fossile",
+      "Ramoloss 55/62",
+      "Slowpoke 55/62"
+    ]
+  },
+  {
+    "id": "fossil-56",
+    "tcgApiId": "base3-56",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Tentacool",
+    "englishName": "Tentacool",
+    "number": "56/62",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Tentacool",
+      "Tentacool fossile",
+      "Tentacool 56/62"
+    ],
+    "aliases": [
+      "Tentacool",
+      "Tentacool fossile",
+      "Tentacool 56/62"
+    ]
+  },
+  {
+    "id": "fossil-57",
+    "tcgApiId": "base3-57",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Nosferapti",
+    "englishName": "Zubat",
+    "number": "57/62",
+    "rarity": "Common",
+    "supertype": "Pokémon",
+    "subtypes": [
+      "Basic"
+    ],
+    "queryTerms": [
+      "Nosferapti",
+      "Zubat",
+      "Nosferapti fossile",
+      "Zubat fossile",
+      "Nosferapti 57/62",
+      "Zubat 57/62"
+    ],
+    "aliases": [
+      "Nosferapti",
+      "Zubat",
+      "Nosferapti fossile",
+      "Zubat fossile",
+      "Nosferapti 57/62",
+      "Zubat 57/62"
+    ]
+  },
+  {
+    "id": "fossil-58",
+    "tcgApiId": "base3-58",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Mr. Fuji",
+    "englishName": "Mr. Fuji",
+    "number": "58/62",
+    "rarity": "Uncommon",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Mr. Fuji",
+      "Mr. Fuji fossile",
+      "Mr. Fuji 58/62"
+    ],
+    "aliases": [
+      "Mr. Fuji",
+      "Mr. Fuji fossile",
+      "Mr. Fuji 58/62"
+    ]
+  },
+  {
+    "id": "fossil-59",
+    "tcgApiId": "base3-59",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Energy Search",
+    "englishName": "Energy Search",
+    "number": "59/62",
+    "rarity": "Common",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Energy Search",
+      "Energy Search fossile",
+      "Energy Search 59/62"
+    ],
+    "aliases": [
+      "Energy Search",
+      "Energy Search fossile",
+      "Energy Search 59/62"
+    ]
+  },
+  {
+    "id": "fossil-60",
+    "tcgApiId": "base3-60",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Gambler",
+    "englishName": "Gambler",
+    "number": "60/62",
+    "rarity": "Common",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Gambler",
+      "Gambler fossile",
+      "Gambler 60/62"
+    ],
+    "aliases": [
+      "Gambler",
+      "Gambler fossile",
+      "Gambler 60/62"
+    ]
+  },
+  {
+    "id": "fossil-61",
+    "tcgApiId": "base3-61",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Recycle",
+    "englishName": "Recycle",
+    "number": "61/62",
+    "rarity": "Common",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Recycle",
+      "Recycle fossile",
+      "Recycle 61/62"
+    ],
+    "aliases": [
+      "Recycle",
+      "Recycle fossile",
+      "Recycle 61/62"
+    ]
+  },
+  {
+    "id": "fossil-62",
+    "tcgApiId": "base3-62",
+    "setId": "fossil",
+    "setLabel": "Fossile",
+    "name": "Mysterious Fossil",
+    "englishName": "Mysterious Fossil",
+    "number": "62/62",
+    "rarity": "Common",
+    "supertype": "Trainer",
+    "subtypes": [],
+    "queryTerms": [
+      "Mysterious Fossil",
+      "Mysterious Fossil fossile",
+      "Mysterious Fossil 62/62"
+    ],
+    "aliases": [
+      "Mysterious Fossil",
+      "Mysterious Fossil fossile",
+      "Mysterious Fossil 62/62"
+    ]
+  }
+]

@@ -1,0 +1,62 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="crownGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#D4AF37;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFB700;stop-opacity:1" />
+    </linearGradient>
+    <filter id="crownGlow">
+      <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Crown band -->
+  <ellipse cx="32" cy="38" rx="18" ry="6" fill="url(#crownGradient)" filter="url(#crownGlow)" stroke="#FFB700" stroke-width="1.5"/>
+  
+  <!-- Left gem point -->
+  <polygon points="18,38 14,20 22,30" fill="url(#crownGradient)" filter="url(#crownGlow)" stroke="#FFD700" stroke-width="1"/>
+  
+  <!-- Center gem point (tallest) -->
+  <polygon points="32,38 32,10 36,26 28,26" fill="url(#crownGradient)" filter="url(#crownGlow)" stroke="#FFD700" stroke-width="1"/>
+  
+  <!-- Right gem point -->
+  <polygon points="46,38 50,20 42,30" fill="url(#crownGradient)" filter="url(#crownGlow)" stroke="#FFD700" stroke-width="1"/>
+  
+  <!-- Inner jewels (magical stones) -->
+  <!-- Left jewel -->
+  <circle cx="18" cy="38" r="3" fill="#00D9FF" filter="url(#crownGlow)"/>
+  <circle cx="18" cy="38" r="2" fill="none" stroke="#00D9FF" stroke-width="1" opacity="0.7"/>
+  
+  <!-- Center jewel -->
+  <circle cx="32" cy="38" r="4" fill="#7C3AED" filter="url(#crownGlow)"/>
+  <circle cx="32" cy="38" r="3" fill="none" stroke="#C77DFF" stroke-width="1.5" opacity="0.8"/>
+  
+  <!-- Right jewel -->
+  <circle cx="46" cy="38" r="3" fill="#00D9FF" filter="url(#crownGlow)"/>
+  <circle cx="46" cy="38" r="2" fill="none" stroke="#00D9FF" stroke-width="1" opacity="0.7"/>
+  
+  <!-- Gem sparkles (top points) -->
+  <g fill="#FFD700" opacity="0.8">
+    <rect x="30" y="12" width="1" height="1"/>
+    <rect x="16" y="22" width="1" height="1"/>
+    <rect x="47" y="22" width="1" height="1"/>
+  </g>
+  
+  <!-- Magical aura pattern (pixel borders) -->
+  <g stroke="#C77DFF" stroke-width="0.8" opacity="0.3">
+    <line x1="10" y1="40" x2="54" y2="40"/>
+    <line x1="8" y1="44" x2="56" y2="44"/>
+  </g>
+  
+  <!-- Energy glyphs around crown -->
+  <g fill="#C77DFF" opacity="0.5">
+    <circle cx="8" cy="35" r="1"/>
+    <circle cx="56" cy="35" r="1"/>
+    <circle cx="12" cy="48" r="0.8"/>
+    <circle cx="52" cy="48" r="0.8"/>
+  </g>
+</svg>

@@ -1,0 +1,471 @@
+const COMMON_LOT_ANCIENT_QUERIES = [
+  'lot cartes pokemon anciennes',
+  'lot cartes pokémon anciennes',
+  'lot pokemon ancien',
+  'lot pokémon ancien',
+  'collection cartes pokemon anciennes',
+  'collection cartes pokémon anciennes',
+  'cartes pokemon années 2000',
+  'cartes pokémon années 2000',
+  'cartes pokemon 1999 2000',
+  'cartes pokémon 1999 2000',
+  'lot pokemon wizards',
+  'lot pokémon wizards',
+  'cartes pokemon wizards',
+  'cartes pokémon wizards',
+  'lot cartes wizards',
+  'collection pokemon wizards',
+  'collection pokémon wizards',
+  'cartes pokemon vintage',
+  'cartes pokémon vintage',
+  'lot pokemon vintage',
+  'lot pokémon vintage',
+  'ancienne collection pokemon',
+  'ancienne collection pokémon',
+  'cartes pokemon de mon enfance',
+  'cartes pokémon de mon enfance',
+];
+
+const COMMON_LOT_BROAD_QUERIES = [
+  'lot cartes pokemon',
+  'lot cartes pokémon',
+  'gros lot cartes pokemon',
+  'gros lot cartes pokémon',
+  'lot collection pokemon',
+  'lot collection pokémon',
+  'lot classeur pokemon',
+  'lot classeur pokémon',
+  'classeur cartes pokemon',
+  'classeur cartes pokémon',
+  'collection complète pokemon',
+  'collection complète pokémon',
+  'ancienne collection pokemon',
+  'ancien classeur pokemon',
+  'cartes pokemon anciennes holo',
+  'cartes pokémon anciennes holo',
+  'lot cartes pokemon holo anciennes',
+  'lot cartes pokémon holo anciennes',
+];
+
+const COMMON_WIZARDS_CARD_QUERIES = [
+  'carte pokemon ancienne',
+  'cartes pokemon anciennes',
+  'carte pokémon ancienne',
+  'cartes pokémon anciennes',
+  'pokemon wizards fr',
+  'pokémon wizards fr',
+  'carte pokemon wizards',
+  'carte pokémon wizards',
+  'pokemon wotc francais',
+  'pokémon wotc français',
+  'pokemon edition 1 francaise',
+  'pokémon édition 1 française',
+  'carte pokemon vintage',
+  'carte pokémon vintage',
+];
+
+const QUERY_PLAYBOOKS = {
+  all: {
+    all: [
+      'pokemon cartes wizards francais lot',
+      'carte pokemon ancienne',
+      'lot pokemon ancien',
+      'pokemon wizard francais',
+      'pokemon wotc francais',
+      'pokemon edition 1 francaise',
+      ...COMMON_LOT_ANCIENT_QUERIES,
+      ...COMMON_LOT_BROAD_QUERIES,
+      ...COMMON_WIZARDS_CARD_QUERIES,
+    ],
+    lot: [
+      'lot cartes pokemon anciennes',
+      'lot cartes pokémon anciennes',
+      'lot pokemon wizards',
+      'lot pokémon wizards',
+      'lot cartes wizards',
+      'collection pokemon wizards',
+      'collection pokémon wizards',
+      'classeur cartes pokemon ancien',
+      'ancien classeur pokemon',
+      'cartes pokemon de mon enfance',
+      'collection pokemon ancienne',
+      ...COMMON_LOT_ANCIENT_QUERIES,
+      ...COMMON_LOT_BROAD_QUERIES,
+    ],
+    cards: [
+      ...COMMON_WIZARDS_CARD_QUERIES,
+      'dracaufeu set de base',
+      'tortank set de base',
+      'florizarre set de base',
+      'dracolosse fossile',
+      'ronflex jungle',
+      'dracaufeu obscur',
+    ],
+  },
+  base: {
+    all: [
+      'pokemon set de base',
+      'base set pokemon',
+      'cartes pokemon set de base',
+      'cartes pokémon set de base',
+      'pokemon set de base francais',
+      'pokémon set de base français',
+      'set de base pokemon français',
+      'wizards base set',
+      'dracaufeu set de base',
+      'tortank set de base',
+      'florizarre set de base',
+      'mewtwo set de base',
+      'alakazam set de base',
+      'raichu set de base',
+      'edition 1 set de base',
+      '1ère édition set de base',
+    ],
+    lot: [
+      'lot pokemon set de base',
+      'lot pokémon set de base',
+      'lot cartes pokemon set de base',
+      'lot cartes pokémon set de base',
+      'collection pokemon set de base',
+      'collection pokémon set de base',
+      'set de base pokemon français',
+      'cartes pokemon set de base françaises',
+      'lot pokemon base set',
+      'lot cartes pokemon base set',
+      'classeur pokemon set de base',
+      'ancienne collection pokemon set de base',
+      ...COMMON_LOT_ANCIENT_QUERIES,
+    ],
+    cards: [
+      'carte pokemon set de base',
+      'carte pokémon set de base',
+      'dracaufeu set de base',
+      'charizard base set',
+      'tortank set de base',
+      'blastoise base set',
+      'florizarre set de base',
+      'venusaur base set',
+      'mewtwo set de base',
+      'alakazam set de base',
+      'raichu set de base',
+      'leveinard set de base',
+      'nidoking set de base',
+      'feunard set de base',
+    ],
+  },
+  jungle: {
+    all: [
+      'pokemon jungle',
+      'carte pokemon jungle',
+      'cartes pokémon jungle',
+      'jungle holo',
+      'jungle 64 pokemon',
+      'pokemon jungle 64',
+      'ronflex jungle',
+      'scarabrute jungle',
+      'insecateur jungle',
+      'aquali jungle',
+      'wizards jungle',
+      'carte pokemon ancienne jungle',
+      'cartes pokemon jungle françaises',
+      'extension jungle pokemon',
+      'set jungle pokemon',
+    ],
+    lot: [
+      'lot pokemon jungle',
+      'lot pokémon jungle',
+      'lot carte pokemon jungle',
+      'lot cartes pokémon jungle',
+      'lot pokemon jungle 64',
+      'collection pokemon jungle',
+      'collection pokémon jungle',
+      'classeur cartes pokemon jungle',
+      'set jungle pokemon',
+      'extension jungle pokemon',
+      'lot pokemon scarabrute jungle',
+      'lot pokemon ronflex jungle',
+      'lot pokemon aquali jungle',
+      'lot pokemon insecateur jungle',
+      'cartes pokemon jungle françaises',
+      ...COMMON_LOT_ANCIENT_QUERIES,
+    ],
+    cards: [
+      'carte pokemon jungle',
+      'carte pokémon jungle',
+      'ronflex jungle',
+      'scarabrute jungle',
+      'insecateur jungle',
+      'aquali jungle',
+      'voltali jungle',
+      'jolteon jungle',
+      'pyroli jungle',
+      'nidoqueen jungle',
+      'kangourex jungle',
+      'jungle 64 pokemon',
+    ],
+  },
+  fossil: {
+    all: [
+      'pokemon fossile',
+      'pokémon fossile',
+      'pokemon fossil',
+      'cartes pokemon fossile',
+      'cartes pokémon fossile',
+      'fossile holo',
+      'fossil holo',
+      'dracolosse fossile',
+      'artikodin fossile',
+      'wizards fossile',
+      'carte pokemon ancienne fossile',
+      'pokemon fossile 62',
+      'set fossile pokemon',
+      'extension fossile pokemon',
+    ],
+    lot: [
+      'lot pokemon fossile',
+      'lot pokémon fossile',
+      'lot pokemon fossil',
+      'lot cartes pokemon fossile',
+      'lot cartes pokémon fossile',
+      'collection pokemon fossile',
+      'collection pokémon fossile',
+      'classeur cartes pokemon fossile',
+      'set fossile pokemon',
+      'extension fossile pokemon',
+      'lot pokemon dracolosse fossile',
+      'lot pokemon artikodin fossile',
+      'lot pokemon ectoplasma fossile',
+      'lot pokemon fossile 62',
+      ...COMMON_LOT_ANCIENT_QUERIES,
+    ],
+    cards: [
+      'carte pokemon fossile',
+      'carte pokémon fossile',
+      'dracolosse fossile',
+      'dragonite fossil',
+      'artikodin fossile',
+      'articuno fossil',
+      'ectoplasma fossile',
+      'gengar fossil',
+      'lokhlass fossile',
+      'lapras fossil',
+      'raichu fossile',
+      'magneton fossile',
+      'hypnomade fossile',
+      'aerodactyl fossile',
+      'pokemon fossile 62',
+    ],
+  },
+  rocket: {
+    all: [
+      'pokemon team rocket',
+      'carte pokemon team rocket',
+      'team rocket edition 1',
+      'dracolosse obscur',
+      'dracaufeu obscur',
+      'tortank obscur',
+      'raichu obscur',
+      'wizard rocket',
+      'wizards team rocket',
+      'pokemon rocket francais',
+      'team rocket pokémon',
+      'cartes team rocket fr',
+      'dark charizard',
+      'dark blastoise',
+      'dark dragonite',
+      'dark raichu',
+    ],
+    lot: [
+      'lot pokemon team rocket',
+      'lot pokémon team rocket',
+      'lot cartes pokemon team rocket',
+      'lot cartes pokémon team rocket',
+      'team rocket pokemon',
+      'team rocket pokémon',
+      'cartes team rocket fr',
+      'team rocket français',
+      'lot pokemon wizards',
+      'lot pokémon wizards',
+      'lot cartes pokemon anciennes',
+      'lot cartes pokémon anciennes',
+      'classeur cartes pokemon ancien',
+      'cartes pokemon de mon enfance',
+      'collection pokemon ancienne',
+      'team rocket pokemon',
+      'team rocket pokémon',
+      'pokemon team rocket',
+      'pokémon team rocket',
+      'cartes pokemon team rocket',
+      'cartes pokémon team rocket',
+      'collection pokemon team rocket',
+      'collection pokémon team rocket',
+      'set team rocket pokemon',
+      'set team rocket pokémon',
+      'édition team rocket',
+      'extension team rocket',
+      'bloc team rocket',
+      'rocket pokemon',
+      'rocket pokémon',
+      'team rocket fr',
+      'team rocket français',
+      'team rocket francaise',
+      'team rocket française',
+      'cartes team rocket fr',
+      'cartes team rocket françaises',
+      'lot team rocket fr',
+      'lot team rocket français',
+      'pokemon team rocket fr',
+      'pokémon team rocket fr',
+      'extension team rocket française',
+      'set team rocket français',
+      ...COMMON_LOT_ANCIENT_QUERIES,
+      'holo team rocket',
+      'holos team rocket',
+      'holographique team rocket',
+      'holographiques team rocket',
+      'brillante team rocket',
+      'brillantes team rocket',
+      'rare team rocket',
+      'rares team rocket',
+      'secrète team rocket',
+      'secret rare team rocket',
+      'édition 1 team rocket',
+      'edition 1 team rocket',
+      '1ere edition team rocket',
+      '1ère édition team rocket',
+      'première édition team rocket',
+      'team roket pokemon',
+      'team roquette pokemon',
+      'team rocket carte',
+      'team rocket cartes',
+      'carte rocket pokemon',
+      'cartes rocket pokemon',
+      'rocket carte pokemon',
+      'rocket cartes pokemon',
+      'cartes pokemon obscures',
+      'carte pokemon sombre',
+      'cartes pokemon sombres',
+      ...COMMON_LOT_BROAD_QUERIES,
+    ],
+    cards: [
+      'carte pokemon team rocket',
+      'carte pokémon team rocket',
+      'cartes team rocket fr',
+      'team rocket français',
+      'dracaufeu obscur',
+      'dracaufeu sombre',
+      'dark charizard',
+      'charizard team rocket',
+      'tortank obscur',
+      'dark blastoise',
+      'raichu obscur',
+      'dark raichu',
+      'dracolosse obscur',
+      'dark dragonite',
+      'alakazam obscur',
+      'dark alakazam',
+      'arbok obscur',
+      'dark arbok',
+      'holo team rocket',
+      'édition 1 team rocket',
+      'team rocket carte',
+      'dracofeu obscur',
+      'carte pokemon obscure',
+      'carte pokemon sombre',
+    ],
+  },
+};
+
+function hasLotSearchIntent(query = '') {
+  return /\b(lot|lots|collection|classeur|vrac|cartes|cards|gros\s+lot)\b/i.test(query);
+}
+
+function normalizeLotSearchIntent(query = '') {
+  const trimmed = String(query || '').trim().replace(/\s+/g, ' ');
+  if (!trimmed || hasLotSearchIntent(trimmed)) return trimmed;
+  const withoutPokemonPrefix = trimmed
+    .replace(/^pok[eé]mon\s+/i, '')
+    .replace(/\bpok[eé]mon\b/ig, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return `lot pokemon ${withoutPokemonPrefix || trimmed}`.trim();
+}
+
+function queriesFor(series, listingType) {
+  const playbook = QUERY_PLAYBOOKS[series] || QUERY_PLAYBOOKS.all;
+  if (listingType === 'lot') return (playbook.lot || playbook.all || []).map(normalizeLotSearchIntent);
+  if (listingType === 'cards') return playbook.cards || playbook.all || [];
+  return playbook.all || [...(playbook.cards || []), ...(playbook.lot || [])];
+}
+
+function normalizeTargetQuery(query, listingType) {
+  const trimmed = String(query || '').trim().replace(/\s+/g, ' ');
+  if (!trimmed) return null;
+  return listingType === 'lot' ? normalizeLotSearchIntent(trimmed) : trimmed;
+}
+
+function getTargetCardQueries(filters = {}, listingType = 'all') {
+  const rawTargetQueries = [
+    ...(Array.isArray(filters.targetCardQueries) ? filters.targetCardQueries : []),
+    ...(Array.isArray(filters.target_card_queries) ? filters.target_card_queries : []),
+    ...(Array.isArray(filters.targetCards) ? filters.targetCards.flatMap(card => {
+      if (typeof card === 'string') return [card];
+      return [...(card.queryTerms || []), card.name, ...(card.aliases || [])];
+    }) : []),
+  ];
+
+  return rawTargetQueries
+    .map(query => normalizeTargetQuery(query, listingType))
+    .filter(Boolean);
+}
+
+export function buildHuntQueries({ profile = 'wizards-fr', filters = {}, maxQueries } = {}) {
+  const series = filters.series || 'all';
+  const listingType = filters.listingType || filters.listing_type || filters.type || 'all';
+  const baseQueries = queriesFor(series, listingType);
+  const targetQueries = getTargetCardQueries(filters, listingType);
+  const sourceQueries = targetQueries.length > 0 ? targetQueries : baseQueries;
+  const queries = profile === 'wizards-fr'
+    ? sourceQueries
+    : sourceQueries.map(query => `${profile} ${query}`);
+
+  const unique = [...new Set(queries.map(query => query.trim()).filter(Boolean))];
+  return Number.isFinite(Number(maxQueries)) && Number(maxQueries) > 0
+    ? unique.slice(0, Number(maxQueries))
+    : unique;
+}
+
+export function buildPrimaryHuntQuery(options = {}) {
+  return buildHuntQueries({ ...options, maxQueries: 1 })[0] || QUERY_PLAYBOOKS.all.all[0];
+}
+
+export function listingDedupeKey(listing) {
+  const source = listing.source || listing.platform || 'unknown';
+  const externalId = listing.external_id || listing.id || listing.url || listing.title;
+  return `${source}:${externalId}`;
+}
+
+export function dedupeListingsBySourceExternalId(listings = []) {
+  const byKey = new Map();
+
+  for (const listing of listings) {
+    const key = listingDedupeKey(listing);
+    const query = listing.query || listing.matched_query;
+
+    if (!byKey.has(key)) {
+      byKey.set(key, {
+        ...listing,
+        matched_queries: query ? [query] : [...(listing.matched_queries || [])],
+      });
+      continue;
+    }
+
+    const existing = byKey.get(key);
+    byKey.set(key, {
+      ...existing,
+      matched_queries: [...new Set([...(existing.matched_queries || []), ...(listing.matched_queries || []), query].filter(Boolean))],
+    });
+  }
+
+  return [...byKey.values()];
+}

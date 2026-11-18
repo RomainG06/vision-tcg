@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vision TCG — Design System Preview (Heroic Fantasy Magic)</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0F1419 0%, #1A2332 100%);
+      color: #F8F9FA;
+      line-height: 1.6;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid #7C3AED;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+    }
+
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #F8F9FA;
+      text-shadow: 0 0 16px rgba(124, 58, 237, 0.6);
+    }
+
+    .tagline {
+      font-size: 16px;
+      color: #B8BCC4;
+      margin-top: 8px;
+    }
+
+    .tagline-highlight {
+      color: #00D9FF;
+      font-weight: 600;
+    }
+
+    .section {
+      margin-bottom: 64px;
+    }
+
+    h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: #FFD700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .section-description {
+      color: #B8BCC4;
+      margin-bottom: 24px;
+      padding: 16px;
+      background: rgba(42, 51, 71, 0.3);
+      border-left: 3px solid #7C3AED;
+      border-radius: 4px;
+    }
+
+    .icons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .icon-card {
+      background: #252E3E;
+      border: 2px solid #7C3AED;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+      transition: all 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .icon-card:hover {
+      box-shadow: 0 0 20px rgba(124, 58, 237, 0.6);
+      transform: translateY(-4px) scale(1.05);
+      border-color: #00D9FF;
+    }
+
+    .icon-card svg {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 12px;
+      display: block;
+    }
+
+    .icon-card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #FFD700;
+      margin-top: 8px;
+    }
+
+    .icon-card-desc {
+      font-size: 11px;
+      color: #B8BCC4;
+      margin-top: 4px;
+    }
+
+    .mockups-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+
+    @media (max-width: 1024px) {
+      .mockups-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .mockup-container {
+      background: #1A2332;
+      border: 2px solid #7C3AED;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(124, 58, 237, 0.3);
+      position: relative;
+    }
+
+    .mockup-container h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #FFD700;
+    }
+
+    .mockup-container svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: linear-gradient(135deg, #0F1419 0%, #1A2332 100%);
+      border-radius: 8px;
+      margin-top: 12px;
+    }
+
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .color-swatch {
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #3A4557;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .color-box {
+      width: 100%;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: #F8F9FA;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    }
+
+    .color-info {
+      padding: 12px;
+      background: #252E3E;
+      font-size: 11px;
+      color: #B8BCC4;
+    }
+
+    .color-name {
+      font-weight: 600;
+      color: #FFD700;
+      margin-bottom: 4px;
+    }
+
+    .tokens-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      background: #1A2332;
+      border: 1px solid #7C3AED;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+    }
+
+    .tokens-table thead {
+      background: #252E3E;
+      border-bottom: 2px solid #7C3AED;
+    }
+
+    .tokens-table th {
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #FFD700;
+      font-size: 13px;
+    }
+
+    .tokens-table td {
+      padding: 12px;
+      border-bottom: 1px solid #3A4557;
+      font-size: 12px;
+    }
+
+    .tokens-table tr:hover {
+      background: rgba(124, 58, 237, 0.1);
+    }
+
+    .token-name {
+      font-weight: 600;
+      color: #F8F9FA;
+    }
+
+    .token-value {
+      font-family: 'JetBrains Mono', monospace;
+      color: #00D9FF;
+    }
+
+    .features-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .feature {
+      background: #252E3E;
+      border: 1px solid #7C3AED;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(124, 58, 237, 0.1);
+    }
+
+    .feature-title {
+      font-weight: 600;
+      color: #FFD700;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .feature-desc {
+      font-size: 12px;
+      color: #B8BCC4;
+      line-height: 1.5;
+    }
+
+    .footer {
+      margin-top: 64px;
+      padding-top: 24px;
+      border-top: 1px solid #7C3AED;
+      text-align: center;
+      color: #B8BCC4;
+      font-size: 12px;
+    }
+
+    .highlight {
+      color: #00D9FF;
+      font-weight: 600;
+    }
+
+    code {
+      background: #1A2332;
+      border: 1px solid #7C3AED;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #00D9FF;
+    }
+
+    .button-demo {
+      display: inline-flex;
+      gap: 16px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .btn-primary {
+      background: #7C3AED;
+      color: #FFD700;
+      border: 1.5px solid #D4AF37;
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 0 24px rgba(124, 58, 237, 0.8);
+      transform: scale(1.05);
+    }
+
+    .btn-secondary {
+      background: #252E3E;
+      color: #00D9FF;
+      border: 1.5px solid #00D9FF;
+    }
+
+    .btn-secondary:hover {
+      box-shadow: 0 0 24px rgba(0, 217, 255, 0.6);
+      transform: scale(1.05);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid #7C3AED;
+      padding-bottom: 12px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: #B8BCC4;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      border-bottom: 2px solid transparent;
+      transition: all 300ms ease;
+    }
+
+    .tab-btn:hover {
+      color: #FFD700;
+    }
+
+    .tab-btn.active {
+      color: #FFD700;
+      border-bottom-color: #FFD700;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>🧙‍♂️ Vision TCG Design System</h1>
+      <div class="tagline">
+        <strong>Theme:</strong> <span class="tagline-highlight">Heroic Fantasy Magic</span><br>
+        <em>Modern Interface + Mystical Pixelated Magic</em>
+      </div>
+    </div>
+
+    <!-- Design Philosophy -->
+    <div class="section">
+      <h2>✨ Design Philosophy</h2>
+      <div class="section-description">
+        A contemporary, clean SaaS interface infused with heroic fantasy elements. Think modern Stripe meets a wizard's grimoire.<br><br>
+        <strong>Foundation:</strong> Sleek, usable design | <strong>Magic:</strong> Glowing runes, arcane borders, pixel sparkles | <strong>Tone:</strong> Professional yet enchanted
+      </div>
+    </div>
+
+    <!-- Icon System -->
+    <div class="section">
+      <h2>🛡️ Heroic Fantasy Icons</h2>
+      <div class="section-description">
+        Five custom SVG icons representing core navigation. Each features gradient fills, glow effects, and mystical pixel accents.
+      </div>
+      <div class="icons-grid">
+        <div class="icon-card">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="swordGradient1" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#00D9FF;stop-opacity:1" />
+                <stop offset="50%" style="stop-color:#0B3D91;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+              </linearGradient>
+              <filter id="swordGlow1">
+                <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+            <polygon points="32,8 38,28 32,48 26,28" fill="url(#swordGradient1)" filter="url(#swordGlow1)"/>
+            <rect x="30" y="38" width="4" height="16" fill="#D4AF37" opacity="0.8"/>
+            <rect x="26" y="54" width="12" height="3" fill="#8B4513" opacity="0.8"/>
+            <g fill="#FFD700" opacity="0.6">
+              <circle cx="20" cy="20" r="1"/>
+              <circle cx="44" cy="20" r="1"/>
+            </g>
+          </svg>
+          <div class="icon-card-title">Sword</div>
+          <div class="icon-card-desc">Home / Accueil</div>
+        </div>
+
+        <div class="icon-card">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="crystalGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#C77DFF;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#5B21B6;stop-opacity:1" />
+              </linearGradient>
+              <filter id="crystalGlow1">
+                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+            <polygon points="32,8 38,18 26,18" fill="url(#crystalGradient1)" filter="url(#crystalGlow1)"/>
+            <polygon points="24,18 40,18 44,38 20,38" fill="url(#crystalGradient1)" filter="url(#crystalGlow1)"/>
+            <polygon points="20,38 24,50 32,48 40,50 44,38" fill="url(#crystalGradient1)" filter="url(#crystalGlow1)"/>
+            <g fill="#FFD700" opacity="0.6">
+              <circle cx="16" cy="16" r="1"/>
+              <circle cx="48" cy="16" r="1"/>
+            </g>
+          </svg>
+          <div class="icon-card-title">Crystal</div>
+          <div class="icon-card-desc">Search / Recherche</div>
+        </div>
+
+        <div class="icon-card">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="grimoireGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#8B2323;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#5A1F1F;stop-opacity:1" />
+              </linearGradient>
+            </defs>
+            <rect x="18" y="12" width="28" height="40" rx="2" fill="url(#grimoireGradient1)" stroke="#FFB700" stroke-width="1.5"/>
+            <circle cx="32" cy="32" r="6" fill="none" stroke="#FFD700" stroke-width="1.5" opacity="0.8"/>
+            <line x1="32" y1="28" x2="32" y2="36" stroke="#FFD700" stroke-width="1.5"/>
+            <line x1="28" y1="32" x2="36" y2="32" stroke="#FFD700" stroke-width="1.5"/>
+            <g fill="#FFD700" opacity="0.6">
+              <circle cx="12" cy="22" r="1"/>
+              <circle cx="50" cy="26" r="1"/>
+            </g>
+          </svg>
+          <div class="icon-card-title">Grimoire</div>
+          <div class="icon-card-desc">Add / Ajouter</div>
+        </div>
+
+        <div class="icon-card">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="scrollGradient1" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#5A1F1F;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#5A1F1F;stop-opacity:1" />
+              </linearGradient>
+            </defs>
+            <circle cx="12" cy="32" r="6" fill="#3D0F0F" stroke="#D4AF37" stroke-width="1"/>
+            <circle cx="52" cy="32" r="6" fill="#3D0F0F" stroke="#D4AF37" stroke-width="1"/>
+            <rect x="18" y="16" width="28" height="32" rx="2" fill="url(#scrollGradient1)" stroke="#D4AF37" stroke-width="1.5"/>
+            <g stroke="#D4AF37" stroke-width="1" opacity="0.6">
+              <line x1="24" y1="24" x2="40" y2="24"/>
+              <line x1="24" y1="32" x2="40" y2="32"/>
+            </g>
+            <g fill="#00D9FF" opacity="0.6">
+              <circle cx="14" cy="14" r="1"/>
+              <circle cx="50" cy="50" r="1"/>
+            </g>
+          </svg>
+          <div class="icon-card-title">Scroll</div>
+          <div class="icon-card-desc">Messages</div>
+        </div>
+
+        <div class="icon-card">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="crownGradient1" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#FFB700;stop-opacity:1" />
+              </linearGradient>
+            </defs>
+            <ellipse cx="32" cy="38" rx="18" ry="6" fill="url(#crownGradient1)" stroke="#FFB700" stroke-width="1.5"/>
+            <polygon points="18,38 14,20 22,30" fill="url(#crownGradient1)" stroke="#FFD700" stroke-width="1"/>
+            <polygon points="32,38 32,10 36,26 28,26" fill="url(#crownGradient1)" stroke="#FFD700" stroke-width="1"/>
+            <polygon points="46,38 50,20 42,30" fill="url(#crownGradient1)" stroke="#FFD700" stroke-width="1"/>
+            <circle cx="32" cy="38" r="4" fill="#7C3AED" opacity="0.6"/>
+            <g fill="#FFD700" opacity="0.8">
+              <circle cx="56" cy="35" r="1"/>
+              <circle cx="8" cy="35" r="1"/>
+            </g>
+          </svg>
+          <div class="icon-card-title">Crown</div>
+          <div class="icon-card-desc">Profile / Profil</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Color System -->
+    <div class="section">
+      <h2>🎨 Color Palette (Heroic Fantasy Magic)</h2>
+      <div class="section-description">
+        Deep blues, arcane purples, mana cyan, and parchment gold — tuned for dark mode with magical glows.
+      </div>
+      
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('colors', 'all')">All Colors</button>
+        <button class="tab-btn" onclick="switchTab('colors', 'primary')">Primary</button>
+        <button class="tab-btn" onclick="switchTab('colors', 'accent')">Accent</button>
+        <button class="tab-btn" onclick="switchTab('colors', 'dark')">Dark</button>
+      </div>
+
+      <div id="colors-all" class="tab-content active">
+        <div class="color-grid">
+          <div class="color-swatch">
+            <div class="color-box" style="background: #0B3D91;">Deep Blue</div>
+            <div class="color-info">
+              <div class="color-name">#0B3D91</div>
+              <div>Primary brand color</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-box" style="background: #5B21B6;">Arcane Purple</div>
+            <div class="color-info">
+              <div class="color-name">#5B21B6</div>
+              <div>Mystical borders</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-box" style="background: #7C3AED;">Purple Glow</div>
+            <div class="color-info">
+              <div class="color-name">#7C3AED</div>
+              <div>Magic effects</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-box" style="background: #00D9FF;">Mana Cyan</div>
+            <div class="color-info">
+              <div class="color-name">#00D9FF</div>
+              <div>Energy & life</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-box" style="background: #D4AF37;">Parchment Gold</div>
+            <div class="color-info">
+              <div class="color-name">#D4AF37</div>
+              <div>Runes & details</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-box" style="background: #FFD700;">Enchant Gold</div>
+            <div class="color-info">
+              <div class="color-name">#FFD700</div>
+              <div>Magical sparkle</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-box" style="background: #0F1419;">Dark BG</div>
+            <div class="color-info">
+              <div class="color-name">#0F1419</div>
+              <div>Main void</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-box" style="background: #1A2332;">Card BG</div>
+            <div class="color-info">
+              <div class="color-name">#1A2332</div>
+              <div>Elevated surface</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="colors-primary" class="tab-content">
+        <div class="color-grid">
+          <div class="color-swatch">
+            <div class="color-box" style="background: #0B3D91;">Deep Blue</div>
+            <div class="color-info"><div class="color-name">#0B3D91</div></div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-box" style="background: #1E5BA8;">Deep Blue Light</div>
+            <div class="color-info"><div class="color-name">#1E5BA8</div></div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-box" style="background: #3A7BC8;">Deep Blue Lighter</div>
+            <div class="color-info"><div class="color-name">#3A7BC8</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="colors-accent" class="tab-content">
+        <div class="color-grid">
+          <div class="color-swatch">
+            <div class="color-box" style="background: #7C3AED;">Arcane Purple</div>
+            <div class="color-info"><div class="color-name">#7C3AED</div></div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-box" style="background: #00D9FF;">Mana Cyan</div>
+            <div class="color-info"><div class="color-name">#00D9FF</div></div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-box" style="background: #FFD700;">Enchant Gold</div>
+            <div class="color-info"><div class="color-name">#FFD700</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="colors-dark" class="tab-content">
+        <div class="color-grid">
+          <div class="color-swatch">
+            <div class="color-box" style="background: #0F1419;">Dark BG</div>
+            <div class="color-info"><div class="color-name">#0F1419</div></div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-box" style="background: #1A2332;">Card BG</div>
+            <div class="color-info"><div class="color-name">#1A2332</div></div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-box" style="background: #252E3E;">Hover State</div>
+            <div class="color-info"><div class="color-name">#252E3E</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mockups -->
+    <div class="section">
+      <h2>📱 Responsive Mockups</h2>
+      <div class="section-description">
+        Desktop (1440×900) with 3-column card grid and mobile (375×812) with responsive bottom navigation.
+      </div>
+      <div class="mockups-grid">
+        <div class="mockup-container">
+          <h3>🖥️ Desktop (1440×900)</h3>
+          <svg viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" style="max-height: 400px;">
+            <rect width="1440" height="900" fill="#0F1419"/>
+            <text x="720" y="450" text-anchor="middle" fill="#B8BCC4" font-size="16" font-family="Inter">
+              [Desktop mockup loads from SVG file]
+            </text>
+          </svg>
+        </div>
+        <div class="mockup-container">
+          <h3>📱 Mobile (375×812)</h3>
+          <svg viewBox="0 0 375 812" xmlns="http://www.w3.org/2000/svg" style="max-height: 400px;">
+            <rect width="375" height="812" fill="#0F1419"/>
+            <text x="187.5" y="406" text-anchor="middle" fill="#B8BCC4" font-size="14" font-family="Inter">
+              [Mobile mockup loads from SVG file]
+            </text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Features -->
+    <div class="section">
+      <h2>✨ Key Features</h2>
+      <div class="features-list">
+        <div class="feature">
+          <div class="feature-title">🌙 Dark Mode First</div>
+          <div class="feature-desc">All colors tuned for dark backgrounds with magical glows and high contrast.</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">✨ Magical Effects</div>
+          <div class="feature-desc">Glowing runes, arcane borders, pixel sparkles — heroic fantasy magic woven throughout.</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">🎪 Pixel Accents</div>
+          <div class="feature-desc">Subtle pixelization in corners, dividers, and micro-details — not overwhelming.</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">📏 Responsive Grid</div>
+          <div class="feature-desc">Desktop: 3 columns. Mobile: 1 column + fixed bottom navigation.</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">🛡️ Heroic Icons</div>
+          <div class="feature-desc">5 custom SVG icons: Sword, Crystal, Grimoire, Scroll, Crown.</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">🎨 Design Tokens</div>
+          <div class="feature-desc">JSON tokens export for Tailwind, CSS custom properties, or any framework.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Implementation Tips -->
+    <div class="section">
+      <h2>🛠️ Implementation Quick Start</h2>
+      <div class="section-description">
+        <strong>1. Load Design Tokens</strong><br>
+        Import <code>tokens/tokens.json</code> into your Tailwind config or create CSS custom properties.
+        <br><br>
+        <strong>2. Build Card Component</strong><br>
+        Use <code>card-template.svg</code> as reference for structure, borders, and magical accents.
+        <br><br>
+        <strong>3. Use Icon System</strong><br>
+        All 5 icons available as SVG in <code>assets/icon-*.svg</code>. Recommended: SVG sprites or inline imports.
+        <br><br>
+        <strong>4. Add Animations</strong><br>
+        Card hover: scale(1.02) + glow-pulse | Button hover: pixel-flicker + glow-pulse | Price: always glowing
+        <br><br>
+        <strong>5. Set Responsive Breakpoints</strong><br>
+        Desktop: 1440px (3-col grid) | Mobile: 375px (1-col grid + bottom nav)
+      </div>
+    </div>
+
+    <!-- Buttons Demo -->
+    <div class="section">
+      <h2>🔘 Interactive Elements</h2>
+      <div class="section-description">
+        Button styles with magical hover effects.
+      </div>
+      <div class="button-demo">
+        <button class="btn btn-primary">✨ Primary CTA</button>
+        <button class="btn btn-secondary">🔮 Secondary Action</button>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p><strong>Vision TCG Design System</strong> — Heroic Fantasy Magic Theme</p>
+      <p style="margin-top: 12px;">Created: June 14, 2026 | Updated by Design Team</p>
+      <p style="margin-top: 8px;">For full documentation, see <code>README-design.md</code> and <code>tokens/tokens.json</code></p>
+    </div>
+
+  </div>
+
+  <script>
+    function switchTab(category, tab) {
+      // Hide all tabs in category
+      const tabs = document.querySelectorAll(`#${category}-[id]`);
+      document.querySelectorAll(`#${category}-${category} .tab-content`).forEach(el => {
+        el.classList.remove('active');
+      });
+
+      // Show selected tab
+      const selectedTab = document.getElementById(`${category}-${tab}`);
+      if (selectedTab) {
+        selectedTab.classList.add('active');
+      }
+
+      // Update button states
+      document.querySelectorAll(`#${category}-${category} .tab-btn`).forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+    }
+  </script>
+</body>
+</html>

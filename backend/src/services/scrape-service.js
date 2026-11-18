@@ -347,6 +347,7 @@ export async function startScrape(options = {}) {
           errors.push({ source, type: 'quality_filtered', count: rejectedCount });
         }
 
+        // Disable for LOT
         const enrichedQualityListings = await enrichListingsWithEbaySoldPrices(qualityListings, {
           enabled: filters.priceInfo !== false && filters.price_info !== false,
           maxComparables: filters.priceInfoMaxComparables || filters.price_info_max_comparables,

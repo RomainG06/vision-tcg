@@ -10,6 +10,7 @@ import { browserPool } from '../fetchers/browser-pool.js';
 import router from './routes.js';
 import profileRoutes from './routes-profiles.js';
 import { initDatabase } from '../db/database.js';
+import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
 
 export const app = express();
 
@@ -75,15 +76,10 @@ app.use('/api', router);
 app.use('/api', profileRoutes);
 
 // 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: 'Not found' });
-});
+app.use(notFoundHandler);
 
-// Error handler
-app.use((err, req, res, next) => {
-  logger.error('Error:', err);
-  res.status(500).json({ error: 'Internal server error' });
-});
+// Error handler centralisé (doit être le dernier middleware)
+app.use(errorHandler);
 
 /**
  * Start the server
